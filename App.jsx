@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import * as XLSX from "xlsx";
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, BorderStyle, WidthType, AlignmentType } from "docx";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // AUDITENGINE v9.1 — LIVE AUDIT SOFTWARE
@@ -635,6 +637,147 @@ export default function AuditEngine() {
     a.click();
   };
 
+  const doExportExcel = () => {
+    if(!cfg.configured||!ind) return;
+    const wb = XLSX.utils.book_new();
+
+    // Summary sheet
+    const summary = [
+      ["AUDIT WORKING PAPER FILE"],
+      ["Entity:", cfg.entityName],
+      ["Generated:", new Date().toISOString().slice(0,10)],
+      [],
+      ["Industry:", ind.label],
+      ["Sector:", cfg.sector],
+      ["Framework:", fw?.label],
+      ["Size:", sz?.label],
+      ["FYE:", cfg.fye],
+      ["Partner:", cfg.partner],
+      ["Manager:", cfg.manager],
+      ["Firm:", cfg.firmName],
+      ["Materiality:", "£"+cfg.materiality],
+      ["Perf Materiality:", "£"+cfg.perfMateriality],
+      ["Trivial:", "£"+cfg.trivial]
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary), "Summary");
+
+    // Risk Assessment sheet
+    const risks = [["Ref","Risk","Level","ISA","Planned Response"]];
+    [...ind.risks,...customItems.risks].forEach(x=>risks.push([x.id,x.text,x.level,x.isa,x.response||""]));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(risks), "Risk Assessment");
+
+    // FSLI Lead Schedules sheet
+    const fsli = [["FSLI LEAD SCHEDULES"]];
+    WP_SECTIONS.filter(w=>w.fsliKey&&ind.fsli[w.fsliKey]).forEach(wp=>{
+      fsli.push([]);
+      fsli.push([wp.ref, wp.label]);
+      fsli.push(["Line Item","PY","CY","Movement","Movement %","Status"]);
+      ind.fsli[wp.fsliKey].forEach((l,i)=>{
+        fsli.push([l,getCell("fsli_"+wp.id,i,1),getCell("fsli_"+wp.id,i,2),getCell("fsli_"+wp.id,i,3),getCell("fsli_"+wp.id,i,4),getCell("fsli_"+wp.id,i,6)]);
+      });
+    });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(fsli), "FSLI Lead Schedules");
+
+    // Audit Procedures sheet
+    const procs = [["WP","Area","Procedure","Assertion","ISA","Result","Prepared","Reviewed"]];
+    ind.procedures.forEach(x=>procs.push([x.ref,x.area,x.proc,x.assertion,x.isa,"","",""]));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(procs), "Procedures");
+
+    // Test Programmes sheet
+    const tests = [["TEST PROGRAMMES (with user inputs)"]];
+    Object.entries(ADD_TESTS).forEach(([ref,testList])=>{
+      const allTests = [...testList,...(customItems.tests[ref]||[])];
+      tests.push([]);
+      tests.push([ref.toUpperCase()]);
+      tests.push(["#","Test","Sample","Result","Exception","Prepared","Reviewed"]);
+      allTests.forEach((t,i)=>tests.push([ref.toUpperCase()+".S"+String(i+1).padStart(2,"0"),t,getCell("test_"+ref,i,2),getCell("test_"+ref,i,3),getCell("test_"+ref,i,4),getCell("test_"+ref,i,5),getCell("test_"+ref,i,6)]));
+    });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(tests), "Test Programmes");
+
+    // KPIs sheet
+    const kpis = [["KPI","CY","PY","Movement","Comment"]];
+    ind.kpis.forEach((k,i)=>kpis.push([k,getCell("kpi",i,1),getCell("kpi",i,2),getCell("kpi",i,3),getCell("kpi",i,4)]));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(kpis), "KPIs");
+
+    // Disclosures, Controls, Going Concern, Laws sheet
+    const other = [
+      ["DISCLOSURES"],...ind.disclosures.map(d=>[d]),
+      [],["CONTROLS"],...ind.controls.map(c=>[c]),
+      [],["GOING CONCERN"],...ind.goingConcern.map(g=>[g]),
+      [],["LAWS & REGULATIONS"],...ind.laws.map(l=>[l])
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(other), "Compliance");
+
+    // WP Index sheet
+    const index = [["Ref","WP","ISA","Status","Prepared","Reviewed","Notes"]];
+    WP_SECTIONS.filter(w=>w.type!=="separator").forEach(w=>{
+      const so=signOffs[w.id]||{};
+      index.push([w.ref,w.label,w.isa||"",so.preparedBy?"Complete":"Open",so.preparedBy||"",so.reviewedBy||"",wpNotes[w.id]||""]);
+    });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(index), "WP Index");
+
+    XLSX.writeFile(wb, (cfg.entityName.replace(/[^a-zA-Z0-9]/g,"_")||"Audit")+"_"+cfg.fye.replace(/\//g,"-")+".xlsx");
+  };
+
+  const doExportWord = async () => {
+    if(!cfg.configured||!ind) return;
+
+    const sections = [];
+
+    // Title and metadata
+    sections.push(
+      new Paragraph({text: "AUDIT WORKING PAPER FILE", bold: true, size: 28}),
+      new Paragraph({text: "Entity: "+cfg.entityName, size: 20}),
+      new Paragraph({text: "Generated: "+new Date().toISOString().slice(0,10), size: 20}),
+      new Paragraph({text: ""})
+    );
+
+    // Configuration
+    sections.push(
+      new Paragraph({text: "CONFIGURATION", bold: true, size: 24}),
+      new Table({
+        rows: [
+          new TableRow({cells: [new TableCell({children: [new Paragraph("Industry")]}), new TableCell({children: [new Paragraph(ind.label)]})]}),
+          new TableRow({cells: [new TableCell({children: [new Paragraph("Sector")]}), new TableCell({children: [new Paragraph(cfg.sector)]})]}),
+          new TableRow({cells: [new TableCell({children: [new Paragraph("Framework")]}), new TableCell({children: [new Paragraph(fw?.label)]})]}),
+          new TableRow({cells: [new TableCell({children: [new Paragraph("Size")]}), new TableCell({children: [new Paragraph(sz?.label)]})]}),
+          new TableRow({cells: [new TableCell({children: [new Paragraph("FYE")]}), new TableCell({children: [new Paragraph(cfg.fye)]})]}),
+          new TableRow({cells: [new TableCell({children: [new Paragraph("Partner")]}), new TableCell({children: [new Paragraph(cfg.partner)]})]}),
+          new TableRow({cells: [new TableCell({children: [new Paragraph("Manager")]}), new TableCell({children: [new Paragraph(cfg.manager)]})]}),
+          new TableRow({cells: [new TableCell({children: [new Paragraph("Firm")]}), new TableCell({children: [new Paragraph(cfg.firmName)]})]}),
+          new TableRow({cells: [new TableCell({children: [new Paragraph("Materiality")]}), new TableCell({children: [new Paragraph("£"+cfg.materiality)]})]}),
+          new TableRow({cells: [new TableCell({children: [new Paragraph("Perf Materiality")]}), new TableCell({children: [new Paragraph("£"+cfg.perfMateriality)]})]}),
+          new TableRow({cells: [new TableCell({children: [new Paragraph("Trivial")]}), new TableCell({children: [new Paragraph("£"+cfg.trivial)]})]}),
+        ]
+      }),
+      new Paragraph({text: ""})
+    );
+
+    // Risk Assessment
+    sections.push(new Paragraph({text: "RISK ASSESSMENT", bold: true, size: 24}));
+    const riskRows = [new TableRow({cells: [new TableCell({children: [new Paragraph("Ref")]}), new TableCell({children: [new Paragraph("Risk")]}), new TableCell({children: [new Paragraph("Level")]}), new TableCell({children: [new Paragraph("ISA")]}), new TableCell({children: [new Paragraph("Response")]})]}), ];
+    [...ind.risks,...customItems.risks].forEach(x=>{
+      riskRows.push(new TableRow({cells: [new TableCell({children: [new Paragraph(x.id)]}), new TableCell({children: [new Paragraph(x.text)]}), new TableCell({children: [new Paragraph(x.level)]}), new TableCell({children: [new Paragraph(x.isa)]}), new TableCell({children: [new Paragraph(x.response||"")]})]}));
+    });
+    sections.push(new Table({rows: riskRows}), new Paragraph({text: ""}));
+
+    // WP Index
+    sections.push(new Paragraph({text: "WORKING PAPER INDEX", bold: true, size: 24}));
+    const wpRows = [new TableRow({cells: [new TableCell({children: [new Paragraph("Ref")]}), new TableCell({children: [new Paragraph("WP")]}), new TableCell({children: [new Paragraph("ISA")]}), new TableCell({children: [new Paragraph("Status")]}), new TableCell({children: [new Paragraph("Prepared")]}), new TableCell({children: [new Paragraph("Reviewed")]}), new TableCell({children: [new Paragraph("Notes")]})]}), ];
+    WP_SECTIONS.filter(w=>w.type!=="separator").forEach(w=>{
+      const so=signOffs[w.id]||{};
+      wpRows.push(new TableRow({cells: [new TableCell({children: [new Paragraph(w.ref)]}), new TableCell({children: [new Paragraph(w.label)]}), new TableCell({children: [new Paragraph(w.isa||"")]}), new TableCell({children: [new Paragraph(so.preparedBy?"Complete":"Open")]}), new TableCell({children: [new Paragraph(so.preparedBy||"")]}), new TableCell({children: [new Paragraph(so.reviewedBy||"")]}), new TableCell({children: [new Paragraph(wpNotes[w.id]||"")]})]}));
+    });
+    sections.push(new Table({rows: wpRows}));
+
+    const doc = new Document({sections: [{children: sections}]});
+    const blob = await Packer.toBlob(doc);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = (cfg.entityName.replace(/[^a-zA-Z0-9]/g,"_")||"Audit")+"_"+cfg.fye.replace(/\//g,"-")+".docx";
+    a.click();
+  };
+
   /* ─── WP BODY RENDERERS ─── */
   const renderBody = (wp) => {
     if(!ind) return null;
@@ -767,9 +910,11 @@ export default function AuditEngine() {
           <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:32,fontWeight:600,color:C.text,margin:0}}>{cfg.entityName}</h1>
           <div style={{fontSize:12,color:C.dim,marginTop:4}}>{ind?.icon} {ind?.label} -- {cfg.sector} | {fw?.label} | {sz?.label}</div>
         </div>
-        <div style={{display:"flex",gap:8}}>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
           <button onClick={()=>upd("configured",false)} style={{padding:"10px 20px",borderRadius:8,background:"rgba(255,255,255,0.05)",border:"1px solid "+C.border,color:C.dim,cursor:"pointer",fontSize:11,fontWeight:600}}>Edit Config</button>
-          <button onClick={doExport} style={{padding:"10px 24px",borderRadius:8,background:"linear-gradient(135deg, "+C.accent+", "+C.accentLight+")",border:"none",color:"#000",fontSize:12,fontWeight:700,cursor:"pointer",textTransform:"uppercase",letterSpacing:"0.08em"}}>Export Audit File</button>
+          <button onClick={doExport} style={{padding:"10px 24px",borderRadius:8,background:C.blue+"30",border:"1px solid "+C.blue+"60",color:C.blue,fontSize:12,fontWeight:700,cursor:"pointer",textTransform:"uppercase",letterSpacing:"0.08em"}}>📊 CSV Export</button>
+          <button onClick={doExportExcel} style={{padding:"10px 24px",borderRadius:8,background:C.green+"30",border:"1px solid "+C.green+"60",color:C.green,fontSize:12,fontWeight:700,cursor:"pointer",textTransform:"uppercase",letterSpacing:"0.08em"}}>📑 Excel Export</button>
+          <button onClick={doExportWord} style={{padding:"10px 24px",borderRadius:8,background:C.purple+"30",border:"1px solid "+C.purple+"60",color:C.purple,fontSize:12,fontWeight:700,cursor:"pointer",textTransform:"uppercase",letterSpacing:"0.08em"}}>📄 Word Export</button>
         </div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:12,marginBottom:24}}>
