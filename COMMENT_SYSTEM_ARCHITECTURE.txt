@@ -1,0 +1,386 @@
+═════════════════════════════════════════════════════════════════════════════════
+  AUDIT WORKPAPER COMMENTING & ANNOTATION SYSTEM - ARCHITECTURE DIAGRAM
+═════════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          USER INTERFACE LAYER                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │ Comment      │  │ Comment      │  │ Compliance   │  │ Analytics    │   │
+│  │ Panel        │  │ Templates    │  │ Dashboard    │  │ Dashboard    │   │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘   │
+│         │                 │                 │                 │             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │ Comment      │  │ Evidence     │  │ Smart        │  │ Export       │   │
+│  │ Form         │  │ Linker       │  │ Suggestions  │  │ Manager      │   │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘   │
+│         │                 │                 │                 │             │
+│         └─────────────────┼─────────────────┼─────────────────┘             │
+│                           │                 │                               │
+│           ┌───────────────┴─────────────────┴──────────────┐                │
+│           │   REACT COMPONENTS (JSX)                      │                │
+│           │   - CommentPanel.jsx                          │                │
+│           │   - CommentForm.jsx                           │                │
+│           │   - CommentItem.jsx                           │                │
+│           └───────────────────────────────────────────────┘                │
+│                           │                                                 │
+└───────────────────────────┼─────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        APPLICATION LOGIC LAYER                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │ commentService.js - Core Service Methods                             │  │
+│  ├──────────────────────────────────────────────────────────────────────┤  │
+│  │                                                                      │  │
+│  │ CRUD Operations:              Threading & Collaboration:            │  │
+│  │ • createComment()             • replyToComment()                   │  │
+│  │ • updateComment()             • getCommentReplies()               │  │
+│  │ • deleteComment()             • mentionUsers()                    │  │
+│  │ • getWorkingPaperComments()   • notifyUser()                      │  │
+│  │                                                                      │  │
+│  │ Resolution & Status:          Evidence & Linking:                  │  │
+│  │ • resolveComment()            • linkEvidence()                    │  │
+│  │ • getCommentResolutions()     • getCommentEvidence()              │  │
+│  │ • updateCommentStatus()       • linkPriorYearWP()                 │  │
+│  │                                                                      │  │
+│  │ Templates & Suggestions:      WP & Stage Management:              │  │
+│  │ • getCommentTemplates()       • updateWPCommentSection()          │  │
+│  │ • getCommentSuggestions()     • signOffWorkingPaper()             │  │
+│  │ • generateSmartSuggestions()  • getStageComments()                │  │
+│  │                                                                      │  │
+│  │ Compliance & Analytics:       Audit Trail & Export:               │  │
+│  │ • runComplianceChecks()       • recordAuditTrail()                │  │
+│  │ • getCommentAnalytics()       • exportComments()                  │  │
+│  │ • checkCriticalItems()        • generateReport()                  │  │
+│  │                                                                      │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│                                  │                                          │
+│  ┌──────────────────────────────┼──────────────────────────────────────┐  │
+│  │              commentSystem.js - Data Models & Constants             │  │
+│  ├──────────────────────────────┼──────────────────────────────────────┤  │
+│  │                              │                                      │  │
+│  │ COMMENT_TYPES             TEMPLATES            COMPLIANCE_RULES    │  │
+│  │ ├─ preparer_notes         ├─ Sampling          ├─ Critical items   │  │
+│  │ ├─ reviewer_comment       ├─ Exceptions        ├─ Reviewer resp    │  │
+│  │ ├─ team_discussion        ├─ Conclusions       ├─ Exceptions       │  │
+│  │ ├─ mgmt_communication     ├─ Management        ├─ WP conclusions   │  │
+│  │ ├─ exception_found        ├─ Construction      ├─ Quantification   │  │
+│  │ ├─ follow_up_item         ├─ Manufacturing     └─ Follow-ups       │  │
+│  │ └─ evidence_reference     └─ Custom                                │  │
+│  │                                                                      │  │
+│  │ PRIORITY_LEVELS          RESOLUTION_STATUS    SUGGESTION_RULES     │  │
+│  │ ├─ Routine               ├─ Open              ├─ Testing results   │  │
+│  │ ├─ Important             ├─ In Progress       ├─ Risk level        │  │
+│  │ └─ Critical              ├─ Resolved          ├─ Procedure type    │  │
+│  │                          ├─ Acknowledged      ├─ Prior year        │  │
+│  │                          └─ Closed            └─ ISA requirements  │  │
+│  │                                                                      │  │
+│  │ WORKPAPER_COMMENT_SECTIONS    STAGE_COMMENT_SECTIONS               │  │
+│  │ ├─ Objective                  ├─ Planning                          │  │
+│  │ ├─ Scope                      ├─ Risk Assessment                   │  │
+│  │ ├─ Procedures                 ├─ Interim                          │  │
+│  │ ├─ Results                    ├─ Final Audit                       │  │
+│  │ ├─ Conclusion                 ├─ Completion                        │  │
+│  │ ├─ Reviewer Sign-off          └─ Reporting                         │  │
+│  │ └─ Additional Notes                                                │  │
+│  │                                                                      │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+└─────────────────────────────────────────┬───────────────────────────────────┘
+                                          │
+                                          ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       DATABASE ACCESS LAYER                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌────────────────────────────────────────────────────────────────────┐   │
+│  │                    Supabase Client                                 │   │
+│  │  (PostgreSQL Database + PostgREST API + RLS Policies)             │   │
+│  └────────────┬───────────────────────────────────────────────────────┘   │
+│               │                                                            │
+│    ┌──────────┴──────────┬─────────────────┬──────────────┬──────────┐   │
+│    │                     │                 │              │          │   │
+│    ▼                     ▼                 ▼              ▼          ▼   │
+│ ┌──────────┐  ┌──────────────────┐ ┌──────────┐ ┌──────────┐ ┌──────┐  │
+│ │Comments  │  │Comment Evidence  │ │Comment   │ │Stage     │ │Analyt│  │
+│ │Table     │  │Linking Table     │ │Mentions  │ │Comments  │ │Views │  │
+│ └──────────┘  └──────────────────┘ └──────────┘ └──────────┘ └──────┘  │
+│                                                                            │
+│ ┌──────────────┐ ┌────────────────┐ ┌──────────┐ ┌──────────────────┐  │
+│ │WP Comments   │ │Comment Edits   │ │Comment   │ │Compliance Check  │  │
+│ │(Framework)   │ │(Audit Trail)   │ │Templates │ │Results           │  │
+│ └──────────────┘ └────────────────┘ └──────────┘ └──────────────────┘  │
+│                                                                            │
+│ ┌──────────────┐ ┌────────────────┐ ┌──────────┐ ┌──────────────────┐  │
+│ │Comment       │ │Comment         │ │Comment   │ │Engagement        │  │
+│ │Resolutions   │ │Suggestions     │ │Exports   │ │Config            │  │
+│ └──────────────┘ └────────────────┘ └──────────┘ └──────────────────┘  │
+│                                                                            │
+│ ┌──────────────────────────────────────────────────────────────────────┐  │
+│ │              INDEXES & PERFORMANCE OPTIMIZATION                      │  │
+│ ├──────────────────────────────────────────────────────────────────────┤  │
+│ │ • engagement_id, working_paper_ref, comment_type indexes            │  │
+│ │ • status, priority, created_at descending indexes                   │  │
+│ │ • Composite indexes for common query patterns                       │  │
+│ │ • Full-text search on comment text (future)                         │  │
+│ │ • Materialized views for analytics refresh                          │  │
+│ │ • Row Level Security (RLS) for data isolation                       │  │
+│ └──────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═════════════════════════════════════════════════════════════════════════════════
+                              DATA FLOW EXAMPLES
+═════════════════════════════════════════════════════════════════════════════════
+
+FLOW 1: CREATING A COMMENT
+─────────────────────────────
+
+User fills comment form → CommentPanel.jsx
+                            │
+                            ▼
+                    validateInput()
+                            │
+                            ▼
+                    Calls commentService.createComment()
+                            │
+                            ▼
+                    INSERT into audit_comments table
+                            │
+                            ├─→ Record in audit_comment_edits (initial)
+                            │
+                            ├─→ Parse @mentions
+                            │   └─→ INSERT into audit_comment_mentions
+                            │       └─→ Call notifyUser() for each mention
+                            │
+                            └─→ generateSmartSuggestions()
+                                └─→ INSERT into comment_suggestions
+                                    └─→ Display suggestion in UI
+                                        │
+                                        ▼
+                                    User sees: "Exception found - use template?"
+                                        │
+                                        └─→ If accepted, prepopulate next comment
+
+
+FLOW 2: RESOLVING A COMMENT
+────────────────────────────
+
+User clicks "Resolve Comment" → CommentPanel.jsx
+                                    │
+                                    ▼
+                            Resolution form displayed
+                                    │
+                                    ▼
+                            User enters resolution notes
+                                    │
+                                    ▼
+                            Calls commentService.resolveComment()
+                                    │
+        ┌───────────────┬───────────┴────────────┬──────────────┐
+        ▼               ▼                        ▼              ▼
+    UPDATE       CREATE record in         Notify original    Check compliance
+    comment      comment_resolutions      commenter          rules
+    status       table
+                 │                            │                │
+                 │                            │                ▼
+                 └────────────┬───────────────┴──→ If CRITICAL: Flag if missed
+                              │
+                              ▼
+                         Update UI with resolved status
+                              │
+                              ▼
+                         Trigger analytics refresh
+
+
+FLOW 3: SMART SUGGESTIONS ENGINE
+─────────────────────────────────
+
+Working Paper loaded with results
+        │
+        ▼
+commentService.getCommentSuggestions(wpId, context)
+        │
+        ├─→ Check: Exceptions found?
+        │   └─→ YES: suggest exception_found template
+        │
+        ├─→ Check: Risk level?
+        │   └─→ HIGH: suggest detailed documentation
+        │
+        ├─→ Check: Prior year issues?
+        │   └─→ YES: flag for review
+        │
+        ├─→ Check: ISA requirements?
+        │   └─→ Suggest ISA-specific documentation
+        │
+        └─→ INSERT all suggestions into comment_suggestions table
+            │
+            ▼
+        UI displays: "💡 3 Smart Suggestions for this WP"
+            │
+            ├─→ [Use Template] [Dismiss]
+            │
+            └─→ User accepts → Prepopulate comment form
+
+
+FLOW 4: COMPLIANCE CHECKING
+───────────────────────────
+
+Manager initiates compliance check
+        │
+        ▼
+commentService.runComplianceChecks(engagementId)
+        │
+        ├─→ Rule: Critical comments addressed
+        │   SELECT * FROM audit_comments
+        │   WHERE priority='critical' AND status='open'
+        │   AND created_at < NOW() - 24 hours
+        │   └─→ Result: FAIL (2 unresolved)
+        │
+        ├─→ Rule: Exception quantification
+        │   SELECT * FROM audit_comments
+        │   WHERE comment_type='exception_found'
+        │   AND resolution_notes IS NULL
+        │   └─→ Result: PASS (all quantified)
+        │
+        ├─→ Rule: WP conclusions documented
+        │   SELECT wp, conclusion_section
+        │   FROM working_paper_comments
+        │   WHERE section_id='conclusion'
+        │   └─→ Result: PASS (all present)
+        │
+        └─→ INSERT results into comment_compliance_checks
+            │
+            ▼
+        Display Compliance Dashboard:
+        ├─ ✅ Exception quantification: PASS
+        ├─ ❌ Critical comments: FAIL (2 items)
+        ├─ ✅ WP conclusions: PASS
+        └─ Overall: 67% PASS
+            │
+            └─→ User cannot advance phase until FAIL items resolved
+
+═════════════════════════════════════════════════════════════════════════════════
+                          COMPONENT HIERARCHY
+═════════════════════════════════════════════════════════════════════════════════
+
+AuditEngine (Main App)
+├── PlanningPhase
+│   └── CommentPanel
+│       ├── CommentForm
+│       │   ├── TypeSelector (7 comment types)
+│       │   ├── TemplateSelector
+│       │   │   └── TemplateList
+│       │   └── PrioritySelector
+│       │
+│       └── CommentList
+│           └── CommentItem (repeating)
+│               ├── CommentHeader
+│               ├── CommentContent
+│               ├── ActionButtons
+│               │   ├── ResolveButton
+│               │   │   └── ResolutionForm
+│               │   └── ReplyButton
+│               │       └── ReplyForm
+│               └── EvidencePanel
+│                   └── EvidenceList
+│
+├── RiskAssessmentPhase
+│   └── CommentPanel (same structure)
+│
+├── InterimPhase
+│   └── CommentPanel (same structure)
+│       └── With stage-level comments display
+│
+├── FinalAuditPhase
+│   └── CommentPanel (same structure)
+│       └── With exception tracking
+│
+├── CompletionPhase
+│   └── CommentPanel (same structure)
+│
+└── ReportingPhase
+    ├── CommentPanel (same structure)
+    ├── ComplianceDashboard
+    └── AnalyticsDashboard
+
+═════════════════════════════════════════════════════════════════════════════════
+                          INTEGRATION POINTS
+═════════════════════════════════════════════════════════════════════════════════
+
+1. ENGAGEMENT STORE INTEGRATION
+   ├─ Store comment metrics
+   ├─ Track phase compliance
+   └─ Manage custom configurations
+
+2. WORKING PAPER INTEGRATION
+   ├─ WP sections (Objective, Scope, Procedures, Results, Conclusion)
+   ├─ Auto-save section comments
+   └─ Enforce required sections
+
+3. PHASE GATING INTEGRATION
+   ├─ Block phase advance if critical comments unresolved
+   ├─ Check compliance before allowing next phase
+   └─ Display compliance dashboard
+
+4. TESTING & RESULTS INTEGRATION
+   ├─ Trigger suggestions on exception findings
+   ├─ Link testing results to exception comments
+   └─ Auto-populate sample testing documentation
+
+5. NOTIFICATION SYSTEM INTEGRATION
+   ├─ Email on @mentions
+   ├─ Email on critical comments
+   ├─ Email on review deadlines
+   └─ In-app notification queue
+
+6. EXPORT INTEGRATION
+   ├─ Excel export with comment tabs
+   ├─ Word export with footnotes
+   ├─ PDF export with embedded comments
+   └─ Summary report generation
+
+═════════════════════════════════════════════════════════════════════════════════
+                          SECURITY & RLS POLICIES
+═════════════════════════════════════════════════════════════════════════════════
+
+Row Level Security enforces:
+
+1. ENGAGEMENT ISOLATION
+   Only see comments for engaged engagement_id
+
+2. ROLE-BASED ACCESS
+   Preparer: Read/write own + replies
+   Reviewer: Read/write all + resolve
+   Manager: Full access + compliance enforcement
+   Partner: Full access + restricted items
+
+3. CONFIDENTIALITY MARKING
+   Standard: All team members see
+   Restricted: Manager/Partner only
+   External: Client-facing only
+
+4. AUDIT TRAIL IMMUTABILITY
+   Records in audit_comment_edits cannot be deleted
+   All changes tracked with timestamps
+
+═════════════════════════════════════════════════════════════════════════════════
+                          NOTIFICATION WORKFLOW
+═════════════════════════════════════════════════════════════════════════════════
+
+EVENT TRIGGER                    → ACTION                  → NOTIFIED PARTY
+─────────────────────────────────────────────────────────────────────────────
+User @mentioned in comment       → Send email             → Mentioned user
+Reviewer adds comment            → Add to inbox           → Preparer + team
+Critical comment unresolved      → Escalation email       → Manager + partner
+Reply posted to thread           → Thread notification    → All participants
+Exception found                  → Suggest documentation  → Preparer
+Compliance check fails           → Compliance alert       → Manager
+Comment due for response         → Reminder email         → Assignee
+WP marked complete              → Notification           → Manager/Partner
+
+═════════════════════════════════════════════════════════════════════════════════
