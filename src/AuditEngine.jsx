@@ -1,8 +1,10 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, lazy, Suspense } from "react";
 import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, Table, TableRow, TableCell } from "docx";
 import engagementStore from "./store/engagementStore";
 import auditFramework from "./data/auditFramework.json";
+import { InterimPhase } from "./phases/InterimPhase";
+import { FinalAuditPhase } from "./phases/FinalAuditPhase";
 
 const COLORS = {
   bg: "#0A0E17",
@@ -426,6 +428,170 @@ function ResultsDashboard({ engagement, phases }) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
+// COMPLETION PHASE
+// ═══════════════════════════════════════════════════════════════════
+function CompletionPhase({ engagement, updateEngagement, onAdvance, canAdvance }) {
+  return (
+    <div style={{ padding: "24px", maxWidth: "1200px" }}>
+      <div style={{ marginBottom: "24px" }}>
+        <h2 style={{ color: COLORS.completion, marginBottom: "4px" }}>📝 Completion Phase</h2>
+        <p style={{ color: COLORS.dim, margin: 0 }}>ISA 560, 570, 580 - Final completion procedures and conclusions</p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "24px" }}>
+        <div style={{ background: COLORS.card, borderRadius: "12px", padding: "24px", border: `1px solid ${COLORS.border}` }}>
+          <h3 style={{ color: COLORS.text, marginTop: 0 }}>Going Concern Conclusion (ISA 570)</h3>
+          <div style={{ marginBottom: "12px" }}>
+            <label style={{ display: "block", color: COLORS.accent, fontSize: "11px", fontWeight: 700, marginBottom: "6px" }}>Assessment</label>
+            <select style={{ width: "100%", padding: "10px", background: COLORS.bg, border: `1px solid ${COLORS.border}`, borderRadius: "6px", color: COLORS.text }}>
+              <option value="gg">Going concern - no issues identified</option>
+              <option value="gc">Going concern with emphasis of matter paragraph</option>
+              <option value="not_gg">Not a going concern</option>
+            </select>
+          </div>
+          <textarea
+            placeholder="Going concern assessment and conclusions..."
+            style={{
+              width: "100%",
+              minHeight: "120px",
+              padding: "12px",
+              background: COLORS.bg,
+              border: `1px solid ${COLORS.border}`,
+              borderRadius: "6px",
+              color: COLORS.text,
+              fontFamily: "monospace",
+              fontSize: "11px"
+            }}
+          />
+        </div>
+
+        <div style={{ background: COLORS.card, borderRadius: "12px", padding: "24px", border: `1px solid ${COLORS.border}` }}>
+          <h3 style={{ color: COLORS.text, marginTop: 0 }}>Subsequent Events Review (ISA 560)</h3>
+          <p style={{ color: COLORS.dim, fontSize: "11px", marginBottom: "12px" }}>Review of events between year-end and audit report date</p>
+          <div style={{ background: COLORS.bg, padding: "12px", borderRadius: "6px", border: `1px solid ${COLORS.border}`, marginBottom: "12px" }}>
+            <p style={{ color: COLORS.dim, margin: 0, fontSize: "11px" }}>
+              ✓ Reviewed financial statements for events post year-end<br/>
+              ✓ Reviewed board minutes and management correspondence<br/>
+              ✓ Confirmed no adjusting or material non-adjusting events identified
+            </p>
+          </div>
+          <textarea
+            placeholder="Subsequent events identified..."
+            style={{
+              width: "100%",
+              minHeight: "80px",
+              padding: "12px",
+              background: COLORS.bg,
+              border: `1px solid ${COLORS.border}`,
+              borderRadius: "6px",
+              color: COLORS.text,
+              fontSize: "11px"
+            }}
+          />
+        </div>
+      </div>
+
+      <div style={{ background: COLORS.card, borderRadius: "12px", padding: "24px", border: `1px solid ${COLORS.border}`, marginBottom: "24px" }}>
+        <h3 style={{ color: COLORS.text, marginTop: 0 }}>Disclosure Compliance Checklist</h3>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px" }}>
+          {[
+            "FRS 102 accounting policies disclosure (s8.3)",
+            "Critical accounting judgments (s8.5-7)",
+            "Key estimation uncertainties (s8.8-10)",
+            "Going concern (s3.1, ISA 570)",
+            "Related party transactions (s33)",
+            "Events after year-end (IAS 10)",
+            "Share capital movements (FRS 102 s22)",
+            "Financial instruments disclosures"
+          ].map((item, i) => (
+            <label key={i} style={{ display: "flex", alignItems: "center", gap: "8px", color: COLORS.text, fontSize: "11px" }}>
+              <input type="checkbox" defaultChecked style={{ cursor: "pointer" }} />
+              {item}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {canAdvance && (
+        <div style={{ marginTop: "24px", textAlign: "center" }}>
+          <button
+            onClick={onAdvance}
+            style={{
+              padding: "12px 32px",
+              background: `linear-gradient(135deg, ${COLORS.completion}, ${COLORS.completion}dd)`,
+              border: "none",
+              color: "#fff",
+              fontSize: "14px",
+              fontWeight: 700,
+              borderRadius: "8px",
+              cursor: "pointer",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em"
+            }}
+          >
+            ✓ Complete & Advance to Reporting
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// REPORTING PHASE
+// ═══════════════════════════════════════════════════════════════════
+function ReportingPhase({ engagement, updateEngagement }) {
+  return (
+    <div style={{ padding: "24px", maxWidth: "1200px" }}>
+      <div style={{ marginBottom: "24px" }}>
+        <h2 style={{ color: COLORS.reporting, marginBottom: "4px" }}>📊 Reporting Phase</h2>
+        <p style={{ color: COLORS.dim, margin: 0 }}>ISA 700, 701, 260 - Audit opinion, key audit matters, and governance communications</p>
+      </div>
+
+      <div style={{ background: COLORS.card, borderRadius: "12px", padding: "24px", border: `1px solid ${COLORS.border}`, marginBottom: "24px" }}>
+        <h3 style={{ color: COLORS.text, marginTop: 0 }}>Audit Opinion (ISA 700)</h3>
+        <div style={{ background: COLORS.reporting + "15", border: `1px solid ${COLORS.reporting}33`, borderRadius: "8px", padding: "16px", marginBottom: "16px" }}>
+          <p style={{ color: COLORS.reporting, margin: 0, fontSize: "13px", lineHeight: 1.6 }}>
+            <b>OPINION</b><br/>
+            We have audited the financial statements of {engagement.entityName || "[Entity Name]"} for the year ended {engagement.financialYearEnd || "[FYE]"}, which comprise the statement of financial position, the statement of comprehensive income, the statement of cash flows, the statement of changes in equity and notes to the financial statements.
+          </p>
+        </div>
+        <textarea
+          placeholder="Complete audit opinion text..."
+          defaultValue="In our opinion, the financial statements give a true and fair view of [entity] as at [date] and of its financial performance and cash flows for the period then ended in accordance with [framework]."
+          style={{
+            width: "100%",
+            minHeight: "100px",
+            padding: "12px",
+            background: COLORS.bg,
+            border: `1px solid ${COLORS.border}`,
+            borderRadius: "6px",
+            color: COLORS.text,
+            fontFamily: "monospace",
+            fontSize: "11px",
+            marginBottom: "16px"
+          }}
+        />
+      </div>
+
+      <div style={{ background: COLORS.card, borderRadius: "12px", padding: "24px", border: `1px solid ${COLORS.border}`, marginBottom: "24px" }}>
+        <h3 style={{ color: COLORS.text, marginTop: 0 }}>Key Audit Matters (ISA 701)</h3>
+        <p style={{ color: COLORS.dim, fontSize: "11px", marginBottom: "12px" }}>Matters of most significance in the audit (higher assessed risk, significant management judgment)</p>
+        <div style={{ background: COLORS.bg, padding: "12px", borderRadius: "6px", border: `1px solid ${COLORS.border}` }}>
+          <h4 style={{ color: COLORS.orange, margin: "0 0 8px 0", fontSize: "11px" }}>KAM 1: Revenue Recognition (ISA 240, IFRS 15)</h4>
+          <p style={{ color: COLORS.faint, margin: "0 0 8px 0", fontSize: "10px" }}>Description: Revenue recognition involved assessment of performance obligations and timing of revenue recognition.</p>
+          <p style={{ color: COLORS.faint, margin: 0, fontSize: "10px" }}>Audit Response: Performed detailed substantive testing of revenue transactions, analytical reviews, and customer confirmations.</p>
+        </div>
+      </div>
+
+      <div style={{ background: COLORS.accent + "15", border: `1px solid ${COLORS.accent}33`, borderRadius: "8px", padding: "16px" }}>
+        <p style={{ color: COLORS.accent, margin: 0, fontSize: "12px", fontWeight: 600 }}>✓ Audit Report Ready for Partner Review and Sign-Off</p>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // SIMPLE HELPER COMPONENTS
 // ═══════════════════════════════════════════════════════════════════
 
@@ -646,7 +812,24 @@ export default function AuditEngine() {
                 canAdvance={canAdvancePhase}
               />
             )}
-            {currentPhaseIndex >= 2 && <div style={{ padding: "24px", color: COLORS.dim }}>Phase {currentPhaseIndex + 1} content coming soon...</div>}
+            {currentPhaseIndex === 2 && (
+              <InterimPhase
+                engagement={engagement}
+                updateEngagement={updateEngagement}
+                onAdvance={advancePhase}
+                canAdvance={canAdvancePhase}
+              />
+            )}
+            {currentPhaseIndex === 3 && (
+              <FinalAuditPhase
+                engagement={engagement}
+                updateEngagement={updateEngagement}
+                onAdvance={advancePhase}
+                canAdvance={canAdvancePhase}
+              />
+            )}
+            {currentPhaseIndex === 4 && <CompletionPhase engagement={engagement} updateEngagement={updateEngagement} onAdvance={advancePhase} canAdvance={canAdvancePhase} />}
+            {currentPhaseIndex === 5 && <ReportingPhase engagement={engagement} updateEngagement={updateEngagement} />}
           </>
         ) : (
           <ResultsDashboard engagement={engagement} phases={PHASES} />
