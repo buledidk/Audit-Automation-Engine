@@ -1,0 +1,426 @@
+{
+  "templates": {
+    "D3_Revenue": {
+      "accountCode": "D3",
+      "accountName": "Revenue and Accounts Receivable",
+      "description": "ISA 501, 505, 330 - Typically high-risk area requiring detailed testing",
+      "assertions": [
+        "assertion_existence",
+        "assertion_completeness",
+        "assertion_accuracy",
+        "assertion_cutoff",
+        "assertion_classification"
+      ],
+      "standardProcedures": [
+        "proc_ar_aging",
+        "proc_ar_confirmation",
+        "proc_revenue_cutoff",
+        "proc_revenue_detail",
+        "proc_allowance_evaluation",
+        "proc_revenue_analytical"
+      ],
+      "riskLevel": "High",
+      "suggestedSampleSize": {
+        "population": 5000,
+        "suggested": 125,
+        "percentage": 2.5,
+        "methodology": "Stratified"
+      },
+      "testingMethodology": [
+        "testing_substantive",
+        "testing_transaction",
+        "testing_analytical"
+      ],
+      "evidenceTypes": [
+        "evidence_external_confirmation",
+        "evidence_internal_documentation",
+        "evidence_recalculation",
+        "evidence_analytical_review"
+      ],
+      "commonExceptions": [
+        "exception_cutoff",
+        "exception_classification",
+        "exception_valuation"
+      ],
+      "keyControlAreas": [
+        "Revenue authorization",
+        "Sales order to invoice",
+        "Receivable collection",
+        "Allowance for doubtful debts"
+      ],
+      "disclosureChecks": [
+        "Revenue recognition policy (FRS 102 s15)",
+        "Allowance for doubtful debts adequacy",
+        "Revenue breakdown by type (if material)",
+        "Related party revenue transactions"
+      ],
+      "materialitySignificance": "Critical",
+      "frcReferences": ["ISA 240", "ISA 501", "ISA 505", "FRS 102 s15"]
+    },
+
+    "D4_Inventory": {
+      "accountCode": "D4",
+      "accountName": "Inventory",
+      "description": "ISA 501, 540 - Requires physical observation at year-end count",
+      "assertions": [
+        "assertion_existence",
+        "assertion_completeness",
+        "assertion_accuracy",
+        "assertion_cutoff",
+        "assertion_valuation"
+      ],
+      "standardProcedures": [
+        "proc_inv_count_attendance",
+        "proc_inv_nrv",
+        "proc_inv_costing",
+        "proc_inv_cutoff",
+        "proc_inv_count_reconcile"
+      ],
+      "riskLevel": "High",
+      "suggestedSampleSize": {
+        "population": 3000,
+        "suggested": 120,
+        "percentage": 4.0,
+        "methodology": "Stratified"
+      },
+      "testingMethodology": [
+        "testing_substantive",
+        "testing_balance",
+        "testing_analytical"
+      ],
+      "evidenceTypes": [
+        "evidence_physical_inspection",
+        "evidence_internal_documentation",
+        "evidence_recalculation",
+        "evidence_analytical_review"
+      ],
+      "commonExceptions": [
+        "exception_valuation",
+        "exception_completeness",
+        "exception_cutoff"
+      ],
+      "keyControlAreas": [
+        "Inventory count procedures",
+        "NRV assessment controls",
+        "Obsolescence review",
+        "Stock rotation (FIFO/WAC)"
+      ],
+      "disclosureChecks": [
+        "Inventory valuation method (FIFO/WAC) per FRS 102 s13",
+        "NRV adjustment process",
+        "Slow-moving/obsolete inventory",
+        "Pledged inventory or restrictions"
+      ],
+      "materialitySignificance": "Critical",
+      "frcReferences": ["ISA 501", "ISA 540", "FRS 102 s13"]
+    },
+
+    "D5_FixedAssets": {
+      "accountCode": "D5",
+      "accountName": "Property, Plant & Equipment",
+      "description": "ISA 501, 540 - Significant estimates for depreciation and impairment",
+      "assertions": [
+        "assertion_existence",
+        "assertion_completeness",
+        "assertion_accuracy",
+        "assertion_valuation",
+        "assertion_classification"
+      ],
+      "standardProcedures": [
+        "proc_fa_additions",
+        "proc_fa_depreciation",
+        "proc_fa_disposals",
+        "proc_fa_impairment",
+        "proc_fa_register"
+      ],
+      "riskLevel": "Medium",
+      "suggestedSampleSize": {
+        "population": 2000,
+        "suggested": 60,
+        "percentage": 3.0,
+        "methodology": "Stratified"
+      },
+      "testingMethodology": [
+        "testing_substantive",
+        "testing_balance",
+        "testing_analytical"
+      ],
+      "evidenceTypes": [
+        "evidence_internal_documentation",
+        "evidence_recalculation",
+        "evidence_physical_inspection",
+        "evidence_analytical_review"
+      ],
+      "commonExceptions": [
+        "exception_valuation",
+        "exception_classification",
+        "exception_completeness"
+      ],
+      "keyControlAreas": [
+        "Asset capitalization vs expense",
+        "Depreciation calculation",
+        "Asset disposal authorization",
+        "Impairment review process"
+      ],
+      "disclosureChecks": [
+        "Depreciation method and useful lives (FRS 102 s16)",
+        "Fixed asset movements (additions, disposals, depreciation)",
+        "Revaluation policy if applicable",
+        "Impairment testing disclosure",
+        "Lease disclosures (FRS 102 s20)"
+      ],
+      "materialitySignificance": "Significant",
+      "frcReferences": ["ISA 501", "ISA 540", "FRS 102 s16", "FRS 102 s20"]
+    },
+
+    "D6_Payables": {
+      "accountCode": "D6",
+      "accountName": "Accounts Payable and Accruals",
+      "description": "ISA 505 - Cut-off risk, completeness of accruals",
+      "assertions": [
+        "assertion_completeness",
+        "assertion_accuracy",
+        "assertion_cutoff",
+        "assertion_existence",
+        "assertion_classification"
+      ],
+      "standardProcedures": [
+        "proc_ap_reconciliation",
+        "proc_ap_confirmation",
+        "proc_accrual_testing",
+        "proc_expense_cutoff",
+        "proc_subsequent_liabilities"
+      ],
+      "riskLevel": "Medium",
+      "suggestedSampleSize": {
+        "population": 4000,
+        "suggested": 80,
+        "percentage": 2.0,
+        "methodology": "Stratified"
+      },
+      "testingMethodology": [
+        "testing_substantive",
+        "testing_transaction",
+        "testing_analytical"
+      ],
+      "evidenceTypes": [
+        "evidence_external_confirmation",
+        "evidence_internal_documentation",
+        "evidence_recalculation",
+        "evidence_analytical_review"
+      ],
+      "commonExceptions": [
+        "exception_cutoff",
+        "exception_completeness",
+        "exception_valuation"
+      ],
+      "keyControlAreas": [
+        "Invoice receipt and matching",
+        "Accrual process controls",
+        "Supplier statement reconciliation",
+        "Unusual/related party transactions"
+      ],
+      "disclosureChecks": [
+        "Accrued expenses completeness",
+        "Contingent liabilities assessment",
+        "Related party payables (FRS 102 s33)",
+        "Material commitments",
+        "Deferred income presentation"
+      ],
+      "materialitySignificance": "Significant",
+      "frcReferences": ["ISA 505", "ISA 540", "ISA 550", "FRS 102 s21", "FRS 102 s33"]
+    },
+
+    "D11_Cash": {
+      "accountCode": "D11",
+      "accountName": "Cash and Cash Equivalents",
+      "description": "ISA 505 - High inherent fraud risk, requires confirmations",
+      "assertions": [
+        "assertion_existence",
+        "assertion_accuracy",
+        "assertion_completeness",
+        "assertion_cutoff"
+      ],
+      "standardProcedures": [
+        "proc_cash_confirmation",
+        "proc_bank_reconciliation",
+        "proc_bank_statements",
+        "proc_cash_cutoff"
+      ],
+      "riskLevel": "High",
+      "suggestedSampleSize": {
+        "population": 15,
+        "suggested": 15,
+        "percentage": 100.0,
+        "methodology": "100% Testing"
+      },
+      "testingMethodology": [
+        "testing_substantive",
+        "testing_balance",
+        "testing_analytical"
+      ],
+      "evidenceTypes": [
+        "evidence_external_confirmation",
+        "evidence_internal_documentation",
+        "evidence_recalculation"
+      ],
+      "commonExceptions": [
+        "exception_completeness",
+        "exception_cutoff",
+        "exception_existence"
+      ],
+      "keyControlAreas": [
+        "Bank reconciliation",
+        "Cash receipt control",
+        "Cash payment authorization",
+        "Bank facility monitoring"
+      ],
+      "disclosureChecks": [
+        "Restricted cash disclosure",
+        "Foreign currency cash",
+        "Bank facilities and covenants",
+        "Related party cash balances"
+      ],
+      "materialitySignificance": "Critical",
+      "frcReferences": ["ISA 505", "ISA 240", "FRS 102 s2"]
+    },
+
+    "D9_Provisions": {
+      "accountCode": "D9",
+      "accountName": "Provisions and Contingencies",
+      "description": "ISA 540, 550 - Significant estimates, complex judgments required",
+      "assertions": [
+        "assertion_completeness",
+        "assertion_accuracy",
+        "assertion_valuation",
+        "assertion_disclosure"
+      ],
+      "standardProcedures": [
+        "proc_prov_identification",
+        "proc_prov_measurement",
+        "proc_prov_disclosure"
+      ],
+      "riskLevel": "High",
+      "suggestedSampleSize": {
+        "population": "N/A",
+        "suggested": "100% - All provisions",
+        "percentage": 100.0,
+        "methodology": "100% Testing"
+      },
+      "testingMethodology": [
+        "testing_substantive",
+        "testing_analytical"
+      ],
+      "evidenceTypes": [
+        "evidence_inquiry",
+        "evidence_internal_documentation",
+        "evidence_analytical_review",
+        "evidence_management_rep"
+      ],
+      "commonExceptions": [
+        "exception_completeness",
+        "exception_valuation",
+        "exception_disclosure"
+      ],
+      "keyControlAreas": [
+        "Provision identification (legal, warranty, restructuring)",
+        "Probability assessment",
+        "Measurement/estimation process",
+        "Disclosure review"
+      ],
+      "disclosureChecks": [
+        "Provision recognition criteria (FRS 102 s21)",
+        "Movement schedule (opening, additions, releases, utilization)",
+        "Contingent liabilities disclosure",
+        "Legal claim contingencies",
+        "Warranty obligations",
+        "Environmental/restructuring provisions"
+      ],
+      "materialitySignificance": "Significant",
+      "frcReferences": ["ISA 540", "ISA 550", "FRS 102 s21"]
+    },
+
+    "D7_Payroll": {
+      "accountCode": "D7",
+      "accountName": "Payroll and Personnel Costs",
+      "description": "ISA 330 - Systematic processing typically low inherent risk with good controls",
+      "assertions": [
+        "assertion_completeness",
+        "assertion_accuracy",
+        "assertion_cutoff",
+        "assertion_classification"
+      ],
+      "standardProcedures": [
+        "proc_payroll_completeness",
+        "proc_payroll_accuracy",
+        "proc_statutory_deductions"
+      ],
+      "riskLevel": "Medium",
+      "suggestedSampleSize": {
+        "population": 500,
+        "suggested": 40,
+        "percentage": 8.0,
+        "methodology": "Statistical"
+      },
+      "testingMethodology": [
+        "testing_substantive",
+        "testing_transaction",
+        "testing_analytical"
+      ],
+      "evidenceTypes": [
+        "evidence_internal_documentation",
+        "evidence_recalculation",
+        "evidence_analytical_review"
+      ],
+      "commonExceptions": [
+        "exception_accuracy",
+        "exception_completeness",
+        "exception_classification"
+      ],
+      "keyControlAreas": [
+        "Timekeeping controls",
+        "Payroll authorization",
+        "Statutory deductions calculation",
+        "Reconciliation procedures"
+      ],
+      "disclosureChecks": [
+        "Key management compensation (if required)",
+        "Pension scheme disclosures (FRS 102 s28)",
+        "Employee benefits disclosure",
+        "Related party employee compensation"
+      ],
+      "materialitySignificance": "Medium",
+      "frcReferences": ["ISA 330", "FRS 102 s28"]
+    }
+  },
+
+  "templateUsageGuide": {
+    "howToUse": "Select an account from the above templates to auto-populate:",
+    "fields": [
+      "Relevant audit assertions to test",
+      "Standard procedures from FSLI guidance",
+      "Suggested risk level",
+      "Sample size recommendations",
+      "Testing methodologies",
+      "Evidence types to obtain",
+      "Common exception patterns",
+      "Key control areas to test",
+      "Disclosure compliance checklist",
+      "Applicable ISA/FRS references"
+    ],
+    "customization": "All template values can be customized based on specific engagement risk assessment and controls evaluation"
+  },
+
+  "accountTypeMapping": {
+    "revenue": "D3_Revenue",
+    "receivables": "D3_Revenue",
+    "inventory": "D4_Inventory",
+    "fixedAssets": "D5_FixedAssets",
+    "payables": "D6_Payables",
+    "accruals": "D6_Payables",
+    "cash": "D11_Cash",
+    "provisions": "D9_Provisions",
+    "payroll": "D7_Payroll",
+    "expenseAccruals": "D6_Payables"
+  }
+}

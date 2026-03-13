@@ -1,0 +1,747 @@
+{
+  "assertions": {
+    "description": "Six fundamental audit assertions (ISA 315, 500, 330)",
+    "items": [
+      {
+        "id": "assertion_existence",
+        "code": "EX",
+        "name": "Existence or Occurrence",
+        "description": "Assets, liabilities and equity interests exist as at the balance sheet date; transactions and events have occurred during the period",
+        "applicableToAccounts": ["Assets", "Liabilities", "Revenue", "Expenses"],
+        "riskLevel": "High",
+        "testingApproach": ["Confirmation", "Inspection", "Recalculation"],
+        "keyProcedures": ["External confirmations", "Physical inspection", "Transaction testing"]
+      },
+      {
+        "id": "assertion_completeness",
+        "code": "CO",
+        "name": "Completeness",
+        "description": "All assets, liabilities, equity interests, transactions and events have been recorded",
+        "applicableToAccounts": ["Assets", "Liabilities", "Revenue", "Expenses"],
+        "riskLevel": "High",
+        "testingApproach": ["Analytical review", "Recalculation", "Inquiry"],
+        "keyProcedures": ["Cut-off testing", "Accrual testing", "Subsequent event review"]
+      },
+      {
+        "id": "assertion_accuracy",
+        "code": "AC",
+        "name": "Accuracy, Valuation and Allocation",
+        "description": "Amounts and other data relating to recorded assets, liabilities, equity, revenue and expenses have been recorded appropriately",
+        "applicableToAccounts": ["All accounts"],
+        "riskLevel": "High",
+        "testingApproach": ["Recalculation", "Inspection", "Analytical review"],
+        "keyProcedures": ["Depreciation recalculation", "Provision adequacy review", "NRV testing"]
+      },
+      {
+        "id": "assertion_cutoff",
+        "code": "CU",
+        "name": "Cut-off",
+        "description": "Transactions and events have been recorded in the correct accounting period",
+        "applicableToAccounts": ["Revenue", "Purchases", "Payroll", "Accruals"],
+        "riskLevel": "Medium",
+        "testingApproach": ["Analytical review", "Inspection", "Inquiry"],
+        "keyProcedures": ["Period-end transaction testing", "Accrual review", "Goods in transit testing"]
+      },
+      {
+        "id": "assertion_classification",
+        "code": "CL",
+        "name": "Classification and Presentation",
+        "description": "Assets, liabilities, equity, revenue and expenses have been recorded in the proper accounts",
+        "applicableToAccounts": ["All accounts"],
+        "riskLevel": "Medium",
+        "testingApproach": ["Inspection", "Inquiry", "Recalculation"],
+        "keyProcedures": ["Account coding review", "Journal entry testing", "Classification testing"]
+      },
+      {
+        "id": "assertion_disclosure",
+        "code": "DI",
+        "name": "Disclosure",
+        "description": "All required disclosures have been made and are appropriately presented in the financial statements",
+        "applicableToAccounts": ["Notes to financial statements"],
+        "riskLevel": "Medium",
+        "testingApproach": ["Inquiry", "Inspection", "Recalculation"],
+        "keyProcedures": ["Disclosure checklist", "FRS 102 compliance", "Related party disclosure review"]
+      }
+    ]
+  },
+
+  "riskLevels": [
+    {
+      "id": "risk_high",
+      "name": "High",
+      "score": 5,
+      "color": "#EF5350",
+      "description": "Significant risk requiring detailed substantive testing, specialist involvement, possibly 100% testing",
+      "auditResponse": "Detailed substantive testing with small detection risk"
+    },
+    {
+      "id": "risk_medium",
+      "name": "Medium",
+      "score": 3,
+      "color": "#FFA726",
+      "description": "Moderate risk requiring balanced control and substantive testing",
+      "auditResponse": "Combined control and substantive testing approach"
+    },
+    {
+      "id": "risk_low",
+      "name": "Low",
+      "score": 1,
+      "color": "#66BB6A",
+      "description": "Low risk allowing limited testing and primarily analytical procedures",
+      "auditResponse": "Substantive analytics and limited detailed testing"
+    }
+  ],
+
+  "materialityLevels": [
+    {
+      "id": "materiality_critical",
+      "name": "Critical",
+      "percentage": 5,
+      "description": "Clearly not trivial, requires evaluation and audit report impact consideration",
+      "threshold": "Overall Materiality × 100%"
+    },
+    {
+      "id": "materiality_significant",
+      "name": "Significant",
+      "percentage": 25,
+      "description": "Significant finding, requires evaluation and potential disclosure",
+      "threshold": "Overall Materiality × 25%"
+    },
+    {
+      "id": "materiality_performance",
+      "name": "Performance",
+      "percentage": 75,
+      "description": "Within performance materiality threshold",
+      "threshold": "Overall Materiality × 75%"
+    },
+    {
+      "id": "materiality_trivial",
+      "name": "Trivial",
+      "percentage": 5,
+      "description": "Clearly trivial, below clearly trivial amount",
+      "threshold": "Overall Materiality × 5%"
+    }
+  ],
+
+  "standardProcedures": {
+    "description": "100+ standard audit procedures per ISA framework, categorized by FSLI classifications",
+    "revenueAndReceivables": {
+      "category": "D3 - Revenue and Receivables (ISA 501, 505)",
+      "procedures": [
+        {
+          "id": "proc_ar_aging",
+          "name": "Accounts Receivable Aging Analysis",
+          "assertion": "Accuracy, Completeness",
+          "description": "Obtain aged AR listing, verify recalculation, discuss collectability with management",
+          "riskLevel": "High",
+          "estimatedTime": "4-8 hours",
+          "evidenceType": ["Recalculation", "Inquiry", "Analytical review"],
+          "linkedAssertion": ["assertion_accuracy", "assertion_completeness"]
+        },
+        {
+          "id": "proc_ar_confirmation",
+          "name": "Receivable Confirmations",
+          "assertion": "Existence, Accuracy",
+          "description": "Send positive confirmations to material customers, evaluate responses and follow-ups",
+          "riskLevel": "High",
+          "estimatedTime": "6-12 hours",
+          "evidenceType": ["External confirmation"],
+          "linkedAssertion": ["assertion_existence", "assertion_accuracy"],
+          "materialitySignificance": "Critical"
+        },
+        {
+          "id": "proc_revenue_cutoff",
+          "name": "Revenue Cut-off Testing",
+          "assertion": "Cut-off, Completeness",
+          "description": "Test period-end revenue transactions, verify timing of revenue recognition",
+          "riskLevel": "High",
+          "estimatedTime": "4-8 hours",
+          "evidenceType": ["Inspection", "Recalculation"],
+          "linkedAssertion": ["assertion_cutoff", "assertion_completeness"]
+        },
+        {
+          "id": "proc_revenue_detail",
+          "name": "Detailed Revenue Testing",
+          "assertion": "Existence, Accuracy, Classification",
+          "description": "Select sample of revenue transactions, test to supporting documentation",
+          "riskLevel": "High",
+          "estimatedTime": "8-12 hours",
+          "evidenceType": ["Inspection", "Recalculation"],
+          "linkedAssertion": ["assertion_existence", "assertion_accuracy", "assertion_classification"]
+        },
+        {
+          "id": "proc_allowance_evaluation",
+          "name": "Allowance for Doubtful Debts Evaluation",
+          "assertion": "Accuracy, Valuation",
+          "description": "Evaluate adequacy of allowance against customer credit quality and historical experience",
+          "riskLevel": "High",
+          "estimatedTime": "4-6 hours",
+          "evidenceType": ["Inquiry", "Analytical review"],
+          "linkedAssertion": ["assertion_accuracy"]
+        },
+        {
+          "id": "proc_bad_debts_review",
+          "name": "Bad Debts Written Off Review",
+          "assertion": "Completeness, Accuracy",
+          "description": "Review all bad debt write-offs for year, verify authorization and appropriateness",
+          "riskLevel": "Medium",
+          "estimatedTime": "2-4 hours",
+          "evidenceType": ["Inspection", "Inquiry"],
+          "linkedAssertion": ["assertion_completeness", "assertion_accuracy"]
+        },
+        {
+          "id": "proc_revenue_analytical",
+          "name": "Revenue Analytical Review",
+          "assertion": "Completeness, Reasonableness",
+          "description": "Perform trend analysis, compare to budget/prior period, investigate variances",
+          "riskLevel": "Medium",
+          "estimatedTime": "2-4 hours",
+          "evidenceType": ["Analytical review"],
+          "linkedAssertion": ["assertion_completeness"]
+        }
+      ]
+    },
+
+    "inventory": {
+      "category": "D4 - Inventory (ISA 501, 540)",
+      "procedures": [
+        {
+          "id": "proc_inv_count_attendance",
+          "name": "Inventory Count Observation",
+          "assertion": "Existence, Completeness",
+          "description": "Attend physical inventory count, observe procedures, test count accuracy",
+          "riskLevel": "High",
+          "estimatedTime": "8-12 hours",
+          "evidenceType": ["Physical inspection", "Observation"],
+          "linkedAssertion": ["assertion_existence", "assertion_completeness"],
+          "materialitySignificance": "Critical"
+        },
+        {
+          "id": "proc_inv_nrv",
+          "name": "Net Realizable Value Testing",
+          "assertion": "Accuracy, Valuation",
+          "description": "Test inventory valuation, identify obsolete/slow-moving items, verify NRV calculation",
+          "riskLevel": "High",
+          "estimatedTime": "6-10 hours",
+          "evidenceType": ["Inspection", "Recalculation", "Analytical review"],
+          "linkedAssertion": ["assertion_accuracy"]
+        },
+        {
+          "id": "proc_inv_costing",
+          "name": "Inventory Costing Method",
+          "assertion": "Accuracy, Valuation",
+          "description": "Verify costing method (FIFO/WAC), recalculate closing inventory",
+          "riskLevel": "Medium",
+          "estimatedTime": "4-8 hours",
+          "evidenceType": ["Recalculation", "Inspection"],
+          "linkedAssertion": ["assertion_accuracy"]
+        },
+        {
+          "id": "proc_inv_cutoff",
+          "name": "Inventory Cut-off Testing",
+          "assertion": "Cut-off, Completeness",
+          "description": "Test period-end purchases and sales cutoff, verify goods in transit treatment",
+          "riskLevel": "Medium",
+          "estimatedTime": "4-6 hours",
+          "evidenceType": ["Inspection", "Inquiry"],
+          "linkedAssertion": ["assertion_cutoff", "assertion_completeness"]
+        },
+        {
+          "id": "proc_inv_count_reconcile",
+          "name": "Count to Ledger Reconciliation",
+          "assertion": "Completeness, Accuracy",
+          "description": "Reconcile physical count to ledger, investigate variances and adjustments",
+          "riskLevel": "Medium",
+          "estimatedTime": "3-5 hours",
+          "evidenceType": ["Recalculation", "Inspection"],
+          "linkedAssertion": ["assertion_completeness", "assertion_accuracy"]
+        }
+      ]
+    },
+
+    "fixedAssets": {
+      "category": "D5 - Fixed Assets and Depreciation (ISA 501, 540)",
+      "procedures": [
+        {
+          "id": "proc_fa_additions",
+          "name": "Fixed Asset Additions Testing",
+          "assertion": "Existence, Accuracy",
+          "description": "Select sample of fixed asset additions, verify authorization, cost, useful life",
+          "riskLevel": "High",
+          "estimatedTime": "4-8 hours",
+          "evidenceType": ["Inspection", "Recalculation"],
+          "linkedAssertion": ["assertion_existence", "assertion_accuracy"]
+        },
+        {
+          "id": "proc_fa_depreciation",
+          "name": "Depreciation Recalculation",
+          "assertion": "Accuracy, Valuation",
+          "description": "Recalculate depreciation on sample of assets, verify useful life assumptions",
+          "riskLevel": "Medium",
+          "estimatedTime": "4-6 hours",
+          "evidenceType": ["Recalculation"],
+          "linkedAssertion": ["assertion_accuracy"]
+        },
+        {
+          "id": "proc_fa_disposals",
+          "name": "Fixed Asset Disposals",
+          "assertion": "Completeness, Accuracy",
+          "description": "Test all asset disposals, verify gain/loss calculation, authorization",
+          "riskLevel": "High",
+          "estimatedTime": "3-6 hours",
+          "evidenceType": ["Inspection", "Recalculation"],
+          "linkedAssertion": ["assertion_completeness", "assertion_accuracy"]
+        },
+        {
+          "id": "proc_fa_impairment",
+          "name": "Asset Impairment Review",
+          "assertion": "Accuracy, Valuation",
+          "description": "Identify indicators of impairment, evaluate management's impairment testing",
+          "riskLevel": "High",
+          "estimatedTime": "4-8 hours",
+          "evidenceType": ["Inquiry", "Recalculation", "Analytical review"],
+          "linkedAssertion": ["assertion_accuracy"],
+          "materialitySignificance": "Significant"
+        },
+        {
+          "id": "proc_fa_register",
+          "name": "Fixed Asset Register Verification",
+          "assertion": "Completeness, Accuracy",
+          "description": "Verify fixed asset register, recalculate net book value, identify unrecorded assets",
+          "riskLevel": "Medium",
+          "estimatedTime": "4-6 hours",
+          "evidenceType": ["Recalculation", "Inspection"],
+          "linkedAssertion": ["assertion_completeness", "assertion_accuracy"]
+        }
+      ]
+    },
+
+    "payables": {
+      "category": "D6 - Payables and Accruals (ISA 505)",
+      "procedures": [
+        {
+          "id": "proc_ap_reconciliation",
+          "name": "Accounts Payable Reconciliation",
+          "assertion": "Completeness, Accuracy",
+          "description": "Reconcile AP ledger to subledger, verify balance, identify old balances",
+          "riskLevel": "Medium",
+          "estimatedTime": "3-5 hours",
+          "evidenceType": ["Recalculation", "Inspection"],
+          "linkedAssertion": ["assertion_completeness", "assertion_accuracy"]
+        },
+        {
+          "id": "proc_ap_confirmation",
+          "name": "Payable Confirmations",
+          "assertion": "Existence, Accuracy",
+          "description": "Request confirmations from suppliers, evaluate responses and variances",
+          "riskLevel": "Medium",
+          "estimatedTime": "4-8 hours",
+          "evidenceType": ["External confirmation"],
+          "linkedAssertion": ["assertion_existence", "assertion_accuracy"]
+        },
+        {
+          "id": "proc_accrual_testing",
+          "name": "Accruals and Provisions Testing",
+          "assertion": "Completeness, Accuracy",
+          "description": "Test accruals for completeness, verify calculation and disclosure",
+          "riskLevel": "High",
+          "estimatedTime": "4-8 hours",
+          "evidenceType": ["Inspection", "Recalculation", "Inquiry"],
+          "linkedAssertion": ["assertion_completeness", "assertion_accuracy"]
+        },
+        {
+          "id": "proc_expense_cutoff",
+          "name": "Expense Cut-off Testing",
+          "assertion": "Cut-off, Completeness",
+          "description": "Test period-end purchases and expenses, verify cut-off accuracy",
+          "riskLevel": "High",
+          "estimatedTime": "4-8 hours",
+          "evidenceType": ["Inspection", "Recalculation"],
+          "linkedAssertion": ["assertion_cutoff", "assertion_completeness"]
+        },
+        {
+          "id": "proc_subsequent_liabilities",
+          "name": "Subsequent Event Liabilities",
+          "assertion": "Completeness, Cut-off",
+          "description": "Review invoices received post-year-end, determine if prior period liability exists",
+          "riskLevel": "Medium",
+          "estimatedTime": "2-4 hours",
+          "evidenceType": ["Inspection", "Inquiry"],
+          "linkedAssertion": ["assertion_completeness", "assertion_cutoff"]
+        }
+      ]
+    },
+
+    "cash": {
+      "category": "D11 - Cash and Bank (ISA 505)",
+      "procedures": [
+        {
+          "id": "proc_cash_confirmation",
+          "name": "Bank Confirmations",
+          "assertion": "Existence, Accuracy",
+          "description": "Request direct bank confirmations, verify balances and facilities",
+          "riskLevel": "High",
+          "estimatedTime": "2-4 hours",
+          "evidenceType": ["External confirmation"],
+          "linkedAssertion": ["assertion_existence", "assertion_accuracy"],
+          "materialitySignificance": "Critical"
+        },
+        {
+          "id": "proc_bank_reconciliation",
+          "name": "Bank Reconciliation Review",
+          "assertion": "Accuracy, Completeness",
+          "description": "Review bank reconciliations, clear reconciling items post year-end",
+          "riskLevel": "Medium",
+          "estimatedTime": "2-4 hours",
+          "evidenceType": ["Inspection", "Recalculation"],
+          "linkedAssertion": ["assertion_accuracy", "assertion_completeness"]
+        },
+        {
+          "id": "proc_bank_statements",
+          "name": "Bank Statement Review",
+          "assertion": "Completeness, Accuracy",
+          "description": "Obtain bank statements for period-end month, verify completeness",
+          "riskLevel": "Low",
+          "estimatedTime": "1-2 hours",
+          "evidenceType": ["Inspection"],
+          "linkedAssertion": ["assertion_completeness", "assertion_accuracy"]
+        },
+        {
+          "id": "proc_cash_cutoff",
+          "name": "Cash Receipts/Payments Cut-off",
+          "assertion": "Cut-off, Completeness",
+          "description": "Test period-end cash transactions, verify proper recording",
+          "riskLevel": "Medium",
+          "estimatedTime": "2-4 hours",
+          "evidenceType": ["Inspection", "Recalculation"],
+          "linkedAssertion": ["assertion_cutoff", "assertion_completeness"]
+        }
+      ]
+    },
+
+    "provisions": {
+      "category": "D9 - Provisions and Contingencies (ISA 540, 550)",
+      "procedures": [
+        {
+          "id": "proc_prov_identification",
+          "name": "Provision Identification",
+          "assertion": "Completeness",
+          "description": "Identify all provisions, verify FRS 102 s21 recognition criteria met",
+          "riskLevel": "High",
+          "estimatedTime": "4-6 hours",
+          "evidenceType": ["Inquiry", "Inspection"],
+          "linkedAssertion": ["assertion_completeness"]
+        },
+        {
+          "id": "proc_prov_measurement",
+          "name": "Provision Measurement",
+          "assertion": "Accuracy, Valuation",
+          "description": "Evaluate provision measurement, assess probability and best estimate",
+          "riskLevel": "High",
+          "estimatedTime": "4-8 hours",
+          "evidenceType": ["Inquiry", "Recalculation", "Analytical review"],
+          "linkedAssertion": ["assertion_accuracy"],
+          "materialitySignificance": "Significant"
+        },
+        {
+          "id": "proc_prov_disclosure",
+          "name": "Provision Disclosure Review",
+          "assertion": "Disclosure, Completeness",
+          "description": "Verify provision disclosures per FRS 102 s21",
+          "riskLevel": "Medium",
+          "estimatedTime": "2-3 hours",
+          "evidenceType": ["Inspection", "Inquiry"],
+          "linkedAssertion": ["assertion_disclosure", "assertion_completeness"]
+        }
+      ]
+    },
+
+    "payroll": {
+      "category": "D7 - Payroll and Personnel",
+      "procedures": [
+        {
+          "id": "proc_payroll_completeness",
+          "name": "Payroll Completeness Testing",
+          "assertion": "Completeness",
+          "description": "Verify all employees on payroll, identify any post-period additions",
+          "riskLevel": "Medium",
+          "estimatedTime": "3-5 hours",
+          "evidenceType": ["Inspection", "Inquiry"],
+          "linkedAssertion": ["assertion_completeness"]
+        },
+        {
+          "id": "proc_payroll_accuracy",
+          "name": "Payroll Accuracy Testing",
+          "assertion": "Accuracy",
+          "description": "Test sample of payroll transactions, verify rate, hours, deductions",
+          "riskLevel": "High",
+          "estimatedTime": "4-8 hours",
+          "evidenceType": ["Inspection", "Recalculation"],
+          "linkedAssertion": ["assertion_accuracy"]
+        },
+        {
+          "id": "proc_statutory_deductions",
+          "name": "Statutory Deductions Review",
+          "assertion": "Completeness, Accuracy",
+          "description": "Verify PAYE, NI, pension contributions properly calculated and remitted",
+          "riskLevel": "High",
+          "estimatedTime": "3-6 hours",
+          "evidenceType": ["Inspection", "Recalculation"],
+          "linkedAssertion": ["assertion_completeness", "assertion_accuracy"]
+        }
+      ]
+    }
+  },
+
+  "samplingMethodologies": [
+    {
+      "id": "sampling_statistical",
+      "name": "Statistical Sampling",
+      "description": "Random selection using statistical formulas to determine sample size",
+      "advantages": ["Defensible", "Quantifiable risk", "Efficient for large populations"],
+      "disadvantages": ["Complex calculation", "Requires technical knowledge"],
+      "applicableRisk": ["Low", "Medium"],
+      "formula": "n = (Z² × σ²) / (E²)"
+    },
+    {
+      "id": "sampling_stratified",
+      "name": "Stratified Sampling",
+      "description": "Population divided into strata, samples selected from each stratum",
+      "advantages": ["Focuses on high-value items", "Reduces sample size", "Better coverage"],
+      "disadvantages": ["Requires population segmentation", "Complex evaluation"],
+      "applicableRisk": ["Medium", "High"],
+      "usage": "Revenue >$10k, <$10k; Payables by vendor"
+    },
+    {
+      "id": "sampling_judgmental",
+      "name": "Judgmental Sampling",
+      "description": "Auditor's judgment used to select sample based on risk factors",
+      "advantages": ["Flexible", "Targets high-risk areas", "Simple implementation"],
+      "disadvantages": ["Bias risk", "Not defensible statistically"],
+      "applicableRisk": ["High"],
+      "usage": "Related party transactions, unusual items"
+    },
+    {
+      "id": "sampling_100",
+      "name": "100% Testing",
+      "description": "Examination of all items in population",
+      "advantages": ["Complete coverage", "No sampling risk"],
+      "disadvantages": ["Time-intensive", "Cost-prohibitive for large populations"],
+      "applicableRisk": ["High", "Critical"],
+      "usage": "Small populations, high-risk areas"
+    }
+  ],
+
+  "testingMethodologies": [
+    {
+      "id": "testing_analytical",
+      "name": "Analytical Procedures",
+      "description": "Analysis of relationships and trends in financial data (ISA 520)",
+      "procedures": ["Ratio analysis", "Trend analysis", "Reasonableness testing"],
+      "applicableAssertions": ["Completeness", "Accuracy"],
+      "riskLevel": ["Low", "Medium"],
+      "materialitySignificance": "Medium"
+    },
+    {
+      "id": "testing_substantive",
+      "name": "Substantive Procedures",
+      "description": "Detailed testing of account balances, transactions, and disclosures",
+      "procedures": ["Recalculation", "Inspection", "Confirmation"],
+      "applicableAssertions": ["All assertions"],
+      "riskLevel": ["High"],
+      "materialitySignificance": "High"
+    },
+    {
+      "id": "testing_transaction",
+      "name": "Transaction Testing",
+      "description": "Testing of individual transactions throughout the period",
+      "procedures": ["Inspection", "Recalculation"],
+      "applicableAssertions": ["Accuracy", "Completeness", "Classification"],
+      "riskLevel": ["Medium", "High"],
+      "applicableAccounts": ["Revenue", "Purchases", "Payroll"]
+    },
+    {
+      "id": "testing_balance",
+      "name": "Account Balance Testing",
+      "description": "Testing at year-end balance sheet date",
+      "procedures": ["Confirmation", "Inspection", "Recalculation"],
+      "applicableAssertions": ["Existence", "Accuracy", "Valuation"],
+      "riskLevel": ["High"],
+      "applicableAccounts": ["All balance sheet accounts"]
+    }
+  ],
+
+  "exceptionTypes": [
+    {
+      "id": "exception_classification",
+      "name": "Classification Error",
+      "description": "Transaction recorded in incorrect account or category",
+      "severity": "Significant",
+      "commonAreas": ["Fixed assets vs expense", "Revenue classification", "Intercompany elimination"],
+      "resolutionOptions": ["Adjust journal entry", "Disclose in notes"]
+    },
+    {
+      "id": "exception_timing",
+      "name": "Timing/Cut-off Error",
+      "description": "Transaction recorded in incorrect accounting period",
+      "severity": "Significant",
+      "commonAreas": ["Revenue cutoff", "Expense cutoff", "Goods in transit"],
+      "resolutionOptions": ["Reverse and re-record", "Adjust"]
+    },
+    {
+      "id": "exception_valuation",
+      "name": "Valuation Error",
+      "description": "Amount recorded incorrectly or not at fair value",
+      "severity": "Material",
+      "commonAreas": ["Inventory NRV", "Provisions", "Allowances", "Depreciation"],
+      "resolutionOptions": ["Adjust to correct amount", "Disclose"]
+    },
+    {
+      "id": "exception_completeness",
+      "name": "Completeness Error",
+      "description": "Transaction or event not recorded at all",
+      "severity": "Material",
+      "commonAreas": ["Accruals", "Contingencies", "Related parties"],
+      "resolutionOptions": ["Record omitted transaction", "Disclose"]
+    },
+    {
+      "id": "exception_existence",
+      "name": "Existence Error",
+      "description": "Transaction recorded that did not occur",
+      "severity": "Material",
+      "commonAreas": ["Revenue", "Purchases", "Disposals"],
+      "resolutionOptions": ["Reverse entry"]
+    },
+    {
+      "id": "exception_disclosure",
+      "name": "Disclosure Error",
+      "description": "Inadequate or missing disclosure in financial statement notes",
+      "severity": "Significant",
+      "commonAreas": ["Accounting policies", "Critical judgments", "Related parties"],
+      "resolutionOptions": ["Add disclosure", "Expand existing disclosure"]
+    }
+  ],
+
+  "severityLevels": [
+    {
+      "id": "severity_trivial",
+      "name": "Trivial",
+      "amount": "≤ 5% Overall Materiality",
+      "evaluation": "Not accumulated, clearly trivial",
+      "action": "No audit adjustment required"
+    },
+    {
+      "id": "severity_minor",
+      "name": "Minor",
+      "amount": "5% - 25% Overall Materiality",
+      "evaluation": "Evaluated individually and in aggregate",
+      "action": "May require adjustment or disclosure"
+    },
+    {
+      "id": "severity_significant",
+      "name": "Significant",
+      "amount": "25% - 75% Overall Materiality",
+      "evaluation": "Significant finding, audit report consideration",
+      "action": "Requires adjustment and possible disclosure"
+    },
+    {
+      "id": "severity_material",
+      "name": "Material",
+      "amount": "> Overall Materiality",
+      "evaluation": "Pervasive issue, audit opinion impact",
+      "action": "Requires immediate adjustment or significant disclosure"
+    }
+  ],
+
+  "resolutionOptions": [
+    {
+      "id": "resolution_adjust",
+      "name": "Adjust",
+      "description": "Request management to record journal entry to correct error",
+      "applicableToFinding": "All exceptions requiring correction"
+    },
+    {
+      "id": "resolution_disclose",
+      "name": "Disclose",
+      "description": "Add disclosure in financial statement notes",
+      "applicableToFinding": "Qualitative findings, contingencies, related parties"
+    },
+    {
+      "id": "resolution_waive",
+      "name": "Waive",
+      "description": "Accept error as immaterial and not requiring adjustment",
+      "applicableToFinding": "Trivial exceptions below clearly trivial amount"
+    },
+    {
+      "id": "resolution_investigate",
+      "name": "Investigate Further",
+      "description": "Perform additional procedures to understand root cause",
+      "applicableToFinding": "Systemic errors, control breakdowns"
+    },
+    {
+      "id": "resolution_specialist",
+      "name": "Specialist Involvement",
+      "description": "Engage valuation specialist or expert",
+      "applicableToFinding": "Valuation, technical accounting issues"
+    }
+  ],
+
+  "evidenceTypes": [
+    {
+      "id": "evidence_external_confirmation",
+      "name": "External Confirmations",
+      "description": "Direct response from third party (bank, customer, supplier)",
+      "reliability": "High",
+      "applicable": ["Receivables", "Payables", "Cash", "Investments"],
+      "strength": "Highly persuasive when positive response received"
+    },
+    {
+      "id": "evidence_internal_documentation",
+      "name": "Internal Documentation",
+      "description": "Entity's own records (invoices, contracts, minutes)",
+      "reliability": "Medium",
+      "applicable": ["All transactions"],
+      "strength": "Support for recorded transactions, subject to fraud risk"
+    },
+    {
+      "id": "evidence_physical_inspection",
+      "name": "Physical Inspection",
+      "description": "Direct observation and examination of assets",
+      "reliability": "High",
+      "applicable": ["Inventory", "Fixed assets", "Cash"],
+      "strength": "Direct evidence of existence"
+    },
+    {
+      "id": "evidence_recalculation",
+      "name": "Recalculation",
+      "description": "Re-performing calculations and formulas",
+      "reliability": "High",
+      "applicable": ["Depreciation", "Provisions", "Accruals"],
+      "strength": "Objective evidence of accuracy"
+    },
+    {
+      "id": "evidence_analytical_review",
+      "name": "Analytical Review",
+      "description": "Analysis of financial relationships and trends",
+      "reliability": "Medium",
+      "applicable": ["All accounts"],
+      "strength": "Identifies unusual items, supports detail testing"
+    },
+    {
+      "id": "evidence_inquiry",
+      "name": "Inquiry",
+      "description": "Discussion with management or other individuals",
+      "reliability": "Low",
+      "applicable": ["All areas"],
+      "strength": "Starting point, requires corroboration"
+    },
+    {
+      "id": "evidence_management_rep",
+      "name": "Management Representation",
+      "description": "Written representation from management (ISA 580)",
+      "reliability": "Low",
+      "applicable": ["All areas"],
+      "strength": "Confirms position, not sufficient alone"
+    }
+  ]
+}
