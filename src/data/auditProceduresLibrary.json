@@ -1,0 +1,1861 @@
+{
+  "auditProceduresLibrary": {
+    "version": "1.0.0",
+    "lastUpdated": "2026-03-13",
+    "purpose": "Comprehensive audit procedures for all 13 FSLI with assertion mapping, detailed procedures, sample testing guidance, working paper templates, and risk indicators",
+
+    "C1_TrialBalanceLeadSchedules": {
+      "fsliRef": "C1",
+      "label": "Trial Balance & Lead Schedules",
+      "isaReferences": ["ISA 500", "ISA 320"],
+      "description": "Reconciliation of trial balance to financial statements, accuracy of lead schedules, mathematical accuracy",
+      "riskLevel": "Medium",
+
+      "assertionMapping": {
+        "existence": {
+          "definition": "Balances included in TB actually exist and are properly recorded",
+          "testableStatement": "All accounts in TB relate to actual assets, liabilities, and equity at year-end"
+        },
+        "completeness": {
+          "definition": "All financial statement accounts are included in TB",
+          "testableStatement": "No accounts have been omitted from TB; reconciliation captures all GL accounts"
+        },
+        "accuracy": {
+          "definition": "Amounts are accurately recorded and arithmetically correct",
+          "testableStatement": "TB totals match GL totals; lead schedules tie to TB without error"
+        },
+        "cutoff": {
+          "definition": "Transactions are recorded in correct period",
+          "testableStatement": "GL cutoff transactions are properly classified between periods"
+        },
+        "classification": {
+          "definition": "Accounts are properly classified within financial statements",
+          "testableStatement": "All TB accounts are correctly mapped to financial statement line items"
+        },
+        "rights_obligations": {
+          "definition": "Entity has rights to assets recorded; obligations are entity's responsibility",
+          "testableStatement": "All liability accounts represent actual obligations; asset accounts represent entity rights"
+        }
+      },
+
+      "analyticalProcedures": {
+        "procedures": [
+          {
+            "procedure": "Recalculate trial balance totals and verify mathematical accuracy",
+            "riskLevel": "Low",
+            "nature": "Recalculation of debit/credit balances",
+            "timing": "Final audit phase",
+            "extent": "100% - all accounts"
+          },
+          {
+            "procedure": "Compare current year TB to prior year TB for unusual changes in account balances",
+            "riskLevel": "Medium",
+            "nature": "Trend analysis - calculate variance % and investigate items >15% change",
+            "timing": "Final audit phase",
+            "extent": "All material accounts (>5% of performance materiality)"
+          },
+          {
+            "procedure": "Analyze TB structure for duplicate accounts, suspense balances, or unusual account codes",
+            "riskLevel": "Medium",
+            "nature": "Analytical review of account naming and structure",
+            "timing": "Planning and interim phase",
+            "extent": "All accounts"
+          }
+        ]
+      },
+
+      "substantiveProcedures": {
+        "procedures": [
+          {
+            "procedure": "Reconcile trial balance to general ledger master list",
+            "assertion": "Completeness, Accuracy",
+            "nature": "Account-by-account reconciliation",
+            "timing": "Final audit phase",
+            "extent": "100% - all accounts",
+            "sampleTesting": "N/A (100% procedure)",
+            "steps": [
+              "Obtain TB and GL export from ERP system",
+              "Create mapping of TB accounts to GL accounts",
+              "Compare debit/credit balances and reconcile differences",
+              "Investigate reconciling items (reclassifications, consolidation entries)",
+              "Obtain and review sign-off on TB reconciliation"
+            ]
+          },
+          {
+            "procedure": "Reconcile TB totals to financial statements",
+            "assertion": "Completeness, Accuracy, Classification",
+            "nature": "Link/tie testing between TB and FS",
+            "timing": "Final audit phase",
+            "extent": "All line items on TB",
+            "steps": [
+              "Identify TB accounts mapping to each FS line item",
+              "Sum TB balances for each FS line",
+              "Compare to amounts shown in draft FS",
+              "Investigate all variances (must be zero after adjustments)",
+              "Document bridge schedule showing TB to FS flow"
+            ]
+          },
+          {
+            "procedure": "Test lead schedule accuracy and completeness",
+            "assertion": "Accuracy, Completeness",
+            "nature": "Arithmetic testing and analytical review",
+            "timing": "Final audit phase",
+            "extent": "All material lead schedules",
+            "steps": [
+              "For each material account (>5% PM): obtain lead schedule",
+              "Recalculate sub-ledger totals and verify mathematical accuracy",
+              "Trace major opening balances to prior year FS/WP",
+              "Trace all material posted transactions to source documents",
+              "Verify closing balances agree to TB",
+              "Review for any reconciling items or unusual entries"
+            ]
+          },
+          {
+            "procedure": "Review for completeness of adjusting and reclassification entries",
+            "assertion": "Completeness",
+            "nature": "Inquiry and analytical review",
+            "timing": "Final audit phase",
+            "extent": "All adjusting entries",
+            "steps": [
+              "Obtain list of all adjusting entries made (manual JEs, consolidation entries)",
+              "Trace each entry to supporting documentation (audit schedule, management approval)",
+              "Verify each entry has appropriate business justification",
+              "Review for proper authorization and accounting treatment",
+              "Verify adjustments tie to audit findings and are properly reflected in TB"
+            ]
+          }
+        ]
+      },
+
+      "controlTestingProcedures": {
+        "procedures": [
+          {
+            "control": "Segregation of duties in GL posting and account reconciliation",
+            "objective": "Prevent unauthorized or inaccurate posting to GL",
+            "designTest": [
+              "Review GL posting responsibilities - confirm separate from invoice/receipt approval",
+              "Verify account reconciliation performed by different person than GL posting"
+            ],
+            "operatingEffectivenessTest": [
+              "Sample 10 GL posting entries and verify authorized by appropriate person",
+              "Review reconciliation evidence (sign-off, date, evidence of review)"
+            ]
+          },
+          {
+            "control": "Automated reconciliation controls in ERP system (if applicable)",
+            "objective": "Ensure GL is reconciled to sub-ledgers automatically and exceptions flagged",
+            "designTest": [
+              "Review ERP configuration - confirm reconciliation module set up correctly",
+              "Verify exception reports are generated and reviewed",
+              "Confirm approval workflow for reconciling items"
+            ],
+            "operatingEffectivenessTest": [
+              "Observe reconciliation running in system",
+              "Review exception reports for a sample month - verify all items reviewed and approved",
+              "Test manual override capability - confirm log of any manual adjustments"
+            ]
+          },
+          {
+            "control": "TB and FS sign-off process with technical review",
+            "objective": "Ensure TB and FS reviewed and approved by appropriate management before audit",
+            "designTest": [
+              "Obtain evidence of TB sign-off (document showing approver and date)",
+              "Verify FS reviewed by CFO/Finance Director before submission to auditor"
+            ],
+            "operatingEffectivenessTest": [
+              "Confirm sign-off occurred before audit fieldwork",
+              "Review for evidence of technical review and approval (initials, date, comments)"
+            ]
+          }
+        ]
+      },
+
+      "sampleTestingApproach": {
+        "populationDefinition": "All accounts in trial balance with balances > 1% of total assets or liabilities",
+        "sampleSizeGuidance": {
+          "highRisk": "50-60 accounts or 100% if <50 accounts total",
+          "mediumRisk": "30-40 accounts",
+          "lowRisk": "15-20 accounts"
+        },
+        "samplingMethodology": "Stratified sampling based on account balance size - test larger accounts with higher certainty",
+        "exceptionHandling": {
+          "materiality": "Any variance >5% of performance materiality requires investigation and adjustment",
+          "qualitativeFactors": "Duplicate accounts, suspense balances, or unusual codes require full explanation",
+          "furtherAction": "Exceptions rolling up >2% in sample indicate possible control weakness; recommend 100% testing for next period"
+        }
+      },
+
+      "workingPaperTemplate": {
+        "header": {
+          "engagement": "[Client Name & Year]",
+          "auditArea": "C1 - Trial Balance & Lead Schedules",
+          "isaReferences": "ISA 500, 320",
+          "preparedBy": "[Auditor Name]",
+          "date": "[Date]",
+          "reviewedBy": "[Review Partner]",
+          "reviewDate": "[Date]",
+          "workPaperRef": "C1.1, C1.2, C1.3"
+        },
+        "objective": [
+          "Verify accuracy and completeness of trial balance",
+          "Confirm trial balance ties to general ledger and financial statements",
+          "Test mathematical accuracy of significant accounts and lead schedules",
+          "Evaluate completeness of adjusting entries and reclassifications"
+        ],
+        "scope": {
+          "populationSize": "GL contains 247 accounts; TB includes 215 accounts (accounts with balances)",
+          "sampleSize": "35 material accounts tested (>1% of total assets = $XXX,XXX)",
+          "samplingMethod": "Stratified by account balance - largest 15 tested 100%, remaining 20 selected randomly from remaining population",
+          "materiality": "Overall materiality: $50,000; Performance materiality: $37,500; Trivial threshold: $2,500"
+        },
+        "proceduresPerformed": [
+          {
+            "step": 1,
+            "procedure": "Obtained trial balance as of 31/12/2024 from finance system",
+            "results": "TB shows total debits/credits of $X,XXX,XXX; confirmed through system export"
+          },
+          {
+            "step": 2,
+            "procedure": "Recalculated TB totals and verified mathematical accuracy",
+            "results": "TB totals verified - no mathematical errors identified"
+          },
+          {
+            "step": 3,
+            "procedure": "Reconciled TB to GL master; traced all accounts in GL to TB",
+            "results": "15 GL accounts not in TB identified - all are accounts with zero balances (no impact); confirmed by inquiry"
+          },
+          {
+            "step": 4,
+            "procedure": "Tested reconciliation of TB to draft financial statements",
+            "results": "Successfully traced all FS line items to TB accounts - complete bridge schedule created"
+          },
+          {
+            "step": 5,
+            "procedure": "Reviewed all adjusting/reclassification entries; traced to audit schedules",
+            "results": "18 adjusting entries identified; all properly supported and approved; entries traced to audit findings"
+          }
+        ],
+        "resultsExceptions": {
+          "exceptions": 0,
+          "details": "No errors or exceptions identified in TB reconciliation process",
+          "materiality": "N/A - no exceptions",
+          "adjustmentsRequired": "None"
+        },
+        "conclusion": "Based on audit procedures performed, we are satisfied that the trial balance is accurate, complete, and properly reconciled to the general ledger and financial statements. All accounts have been tested and reconciled without exception. The TB provides an appropriate basis for the final financial statements."
+      },
+
+      "riskIndicators": {
+        "highRiskCharacteristics": [
+          "High turnover of accounting staff without documented knowledge transfer",
+          "Manual TB created outside of ERP system (prone to error)",
+          "History of TB errors in prior years requiring restatement",
+          "Weak review and approval process for TB",
+          "Large number of adjusting/reclassification entries (>50) suggesting control issues",
+          "Significant accounts (>10% of assets) with unusual account codes or names",
+          "Inconsistent GL account structure period-to-period"
+        ],
+        "redFlagsDuringFieldwork": [
+          "Management unable to quickly locate or explain TB reconciliation",
+          "TB doesn't tie to financial statements; large unexplained variances",
+          "Duplicate accounts or suspense balances (catch-all accounts)",
+          "Evidence of post-close entries made after initial TB provided to auditor",
+          "GL export doesn't match TB - missing or additional accounts",
+          "Evidence of override of automated reconciliation controls",
+          "Adjusting entries without supporting documentation"
+        ],
+        "goingConcernImplications": [
+          "If TB shows significant unusual balances (e.g., large prepaid amounts for services no longer provided)",
+          "If adjusting entries relate to write-downs of assets due to impairment",
+          "If provision for losses materially impacts profitability shown in TB"
+        ],
+        "fraudRiskConsiderations": [
+          "Test for phantom accounts created to hide misappropriation",
+          "Review for unusual journal entries by CFO or other high-level staff (management override)",
+          "Evaluate if TB has been altered after initial submission (timestamp/version control)",
+          "Test for cut-off errors that may manipulate period-end results",
+          "Review for round-dollar amounts or suspicious patterns in TB balances"
+        ]
+      }
+    },
+
+    "D3_RevenueReceivables": {
+      "fsliRef": "D3",
+      "label": "Revenue & Receivables",
+      "isaReferences": ["ISA 240", "ISA 500", "ISA 501", "ISA 505"],
+      "description": "Revenue recognition, trade receivables, allowance for doubtful debts, AR aging analysis, confirmations",
+      "riskLevel": "High",
+      "rationale": "Revenue is often a fraud risk area (channel stuffing, side agreements); significant estimation in allowance for doubtful debts",
+
+      "assertionMapping": {
+        "existence": {
+          "definition": "Recorded revenues are for transactions that actually occurred; receivables represent valid customer obligations",
+          "testableStatement": "Revenue transactions are supported by customer orders/shipping documents; AR balances represent valid debts owed"
+        },
+        "completeness": {
+          "definition": "All revenues earned and receivables due are recorded",
+          "testableStatement": "No revenue has been omitted; all customer invoices are included in AR ledger"
+        },
+        "accuracy": {
+          "definition": "Revenue amounts and AR are correctly stated at transaction date and year-end",
+          "testableStatement": "Invoices accurately reflect price, quantity, and customer details; AR aging is mathematically correct"
+        },
+        "cutoff": {
+          "definition": "Revenues and receivables are recorded in the correct accounting period",
+          "testableStatement": "Revenue recorded when performance obligation satisfied (IFRS 15); AR includes only amounts due as of year-end"
+        },
+        "classification": {
+          "definition": "Revenues and receivables are properly classified in FS",
+          "testableStatement": "Revenue classified by product/service line per FS presentation; AR classified as current vs non-current"
+        },
+        "rights_obligations": {
+          "definition": "Entity has right to revenue; receivables are entity's enforceable claims",
+          "testableStatement": "Revenue relates to goods/services provided by entity; AR represents entity's enforceable claims (no factoring/sale)"
+        }
+      },
+
+      "analyticalProcedures": {
+        "procedures": [
+          {
+            "procedure": "Revenue trend analysis by product line, customer, and geographic region",
+            "riskLevel": "High",
+            "nature": "Calculate YoY growth rate for each revenue category; compare to budget/forecast and industry benchmarks",
+            "timing": "Planning and interim phase",
+            "extent": "All revenue categories",
+            "specifics": {
+              "ratios": [
+                "Revenue growth rate (calculate as: (Current Year Rev - Prior Year Rev) / Prior Year Rev)",
+                "Revenue as % of assets (efficiency metric)",
+                "Customer concentration (top 10 customers as % of revenue)",
+                "Quarterly revenue trend (identify any unusual patterns)"
+              ],
+              "comparisons": [
+                "Compare to prior year actual results",
+                "Compare to management's budget/forecast",
+                "Compare to industry benchmarks if available",
+                "Investigate variations >15% or unusual patterns"
+              ]
+            }
+          },
+          {
+            "procedure": "Gross profit margin analysis - identify significant changes period-to-period",
+            "riskLevel": "High",
+            "nature": "Calculate gross margin (%) and analyze by product/customer; identify drivers of margin changes",
+            "timing": "Planning and interim phase",
+            "extent": "All material revenue lines",
+            "specifics": {
+              "calculation": "Gross Profit % = (Revenue - COGS) / Revenue * 100; compare current year to prior year",
+              "investigation": "Changes >5% require explanation and evidence (e.g., pricing changes, product mix, cost increases)"
+            }
+          },
+          {
+            "procedure": "Days Sales Outstanding (DSO) analysis - assess receivables collection trend",
+            "riskLevel": "Medium",
+            "nature": "Calculate DSO and compare to credit terms and prior year",
+            "timing": "Interim and final audit phase",
+            "extent": "All revenue categories",
+            "specifics": {
+              "calculation": "DSO = (Average AR / Revenue) * 365 days",
+              "benchmark": "Should approximate credit terms offered (e.g., if 30-day terms, DSO should be 30-40 days)",
+              "investigation": "DSO materially higher than credit terms suggests possible aging AR or fictitious sales"
+            }
+          },
+          {
+            "procedure": "AR aging analysis - evaluate collectibility of outstanding receivables",
+            "riskLevel": "Medium",
+            "nature": "Analyze AR by age (current, 30, 60, 90+ days); compare to prior year",
+            "timing": "Final audit phase",
+            "extent": "All significant customers (>5% of AR)",
+            "specifics": {
+              "buckets": ["Current", "31-60 days", "61-90 days", "90+ days"],
+              "investigation": "AR aging >90 days requires assessment of collectibility and potential doubtful debt provision",
+              "redFlag": "Significant aging beyond credit terms indicates collection issues"
+            }
+          }
+        ]
+      },
+
+      "substantiveProcedures": {
+        "procedures": [
+          {
+            "procedure": "Test revenue recognition policy and compliance with IFRS 15 / FRS 102 s23",
+            "assertion": "Completeness, Accuracy, Cutoff",
+            "nature": "Inquiry and policy review",
+            "timing": "Planning and interim phase",
+            "extent": "Complete review of policy; test application on sample of transactions",
+            "steps": [
+              "Obtain documented revenue recognition policy",
+              "Verify policy is consistent with IFRS 15 (performance obligations met)",
+              "Identify different revenue streams and performance obligation satisfaction",
+              "For each revenue stream: confirm policy clearly defines recognition point",
+              "Assess policy for any unusual provisions (e.g., returns, warranties) that could indicate management override",
+              "Sample 15 revenue transactions and verify recorded per policy",
+              "Test complex revenue arrangements for side agreements or contingent terms"
+            ],
+            "examplePolicy": "Revenue recognized when performance obligation satisfied (goods shipped or service provided). Sales returns allowed within 30 days of receipt."
+          },
+          {
+            "procedure": "Sample testing of revenue transactions ±10 days around year-end (cutoff testing)",
+            "assertion": "Cutoff, Existence, Accuracy",
+            "nature": "Transaction testing - invoice to shipping/delivery documentation",
+            "timing": "Final audit phase",
+            "extent": "Sample size per risk level (see below)",
+            "samplingApproach": {
+              "highRisk": "40-50 transactions (test high-value items 100%)",
+              "mediumRisk": "25-30 transactions",
+              "lowRisk": "15-20 transactions"
+            },
+            "steps": [
+              "Identify all revenue recorded in final 10 days of year and first 10 days of next period",
+              "Select sample of transactions (stratified: largest items 100%, remainder random)",
+              "For each sample item:",
+              "  - Obtain sales invoice",
+              "  - Trace to bill of lading or shipping document (confirm goods shipped)",
+              "  - Verify shipping date matches revenue recognition date",
+              "  - Confirm customer acceptance documented (for performance obligation satisfaction)",
+              "  - Review for any unusual terms (extended payment, returns, contingencies)",
+              "  - Investigate any transactions where shipment date differs from invoice date by >3 days",
+              "Document findings - any cutoff errors indicate systematic revenue manipulation risk"
+            ]
+          },
+          {
+            "procedure": "Test accuracy of invoice amounts against sales orders, price lists, and contracts",
+            "assertion": "Accuracy",
+            "nature": "Detailed testing - sample of invoices verified against source documents",
+            "timing": "Final audit phase",
+            "extent": "Sample of invoices (see sample testing approach below)",
+            "steps": [
+              "Select sample of 20-30 invoices (stratified by value and customer)",
+              "For each sample invoice:",
+              "  - Obtain supporting sales order and contract/price agreement",
+              "  - Verify invoice price matches contract/price list",
+              "  - Verify invoice quantity matches sales order",
+              "  - Recalculate extended amount and verify arithmetic accuracy",
+              "  - Verify correct customer identified and billing address",
+              "  - Review for any manual overrides or adjustments to standard pricing",
+              "Document any discrepancies - review with sales/finance management"
+            ]
+          },
+          {
+            "procedure": "Analytical procedure: Test revenue reasonableness by product line",
+            "assertion": "Existence, Completeness, Accuracy",
+            "nature": "Calculation-based analytical procedure",
+            "timing": "Final audit phase",
+            "extent": "All material revenue categories",
+            "steps": [
+              "For each material revenue line (>5% of total revenue):",
+              "  - Estimate expected revenue based on prior year plus growth rate",
+              "  - Compare estimated to actual revenue; investigate variances >10%",
+              "  - Review for unusual transactions that explain variance",
+              "  - Consider customer feedback, production capacity, market conditions",
+              "Example: If prior year Product A revenue was $500k and company reports $600k, verify business justification",
+              "Flag significant variances for potential misstatement or fraud risk"
+            ]
+          },
+          {
+            "procedure": "Test AR aging analysis and evaluate allowance for doubtful debts (ISA 540)",
+            "assertion": "Valuation, Accuracy",
+            "nature": "Analytical and substantive - test allowance adequacy",
+            "timing": "Final audit phase",
+            "extent": "100% of AR balance; sample test of specific items",
+            "steps": [
+              "Obtain AR aged trial balance as of year-end",
+              "Recalculate AR aging (bucket by date)",
+              "Verify totals agree to AR balance in TB",
+              "Test management's allowance for doubtful debts calculation:",
+              "  - Obtain historical bad debt rate analysis",
+              "  - Test specific reserves against documentation (correspondence, legal advice)",
+              "  - For aged AR (90+ days): evaluate evidence of collection, customer communication, or write-off",
+              "  - Calculate implied allowance rate and compare to prior year; investigate changes",
+              "  - For customers with large balances in aged categories, obtain confirmation or evidence of subsequent payment",
+              "Review allowance adequacy - compare to typical industry standards (usually 1-3% of AR)"
+            ]
+          },
+          {
+            "procedure": "Perform AR confirmations (positive and/or negative per ISA 505)",
+            "assertion": "Existence, Accuracy",
+            "nature": "External confirmation - customer verification",
+            "timing": "Final audit phase",
+            "extent": "Confirm material AR balances (typically >5% of AR individually)",
+            "sampleSize": {
+              "highRisk": "50+ confirmations covering 80% of AR balance",
+              "mediumRisk": "30-40 confirmations covering 70% of AR balance",
+              "lowRisk": "15-20 confirmations covering 60% of AR balance"
+            },
+            "steps": [
+              "Obtain customer listing from AR subsidiary ledger",
+              "Select sample based on balance and risk",
+              "Prepare confirmation request in writing",
+              "Send confirmation directly to customer (auditor control)",
+              "Follow-up non-responses (minimum 2 follow-up attempts)",
+              "Investigate differences between confirm confirmation and our records",
+              "For non-responses: perform alternative procedures (examine subsequent cash receipts, review correspondence)"
+            ],
+            "confirmationTemplate": {
+              "header": "ACCOUNTS RECEIVABLE CONFIRMATION REQUEST",
+              "body": [
+                "Dear [Customer Name],",
+                "",
+                "As part of our audit of [Client Company] financial statements, we request you confirm the balance of your account with the Company as of [Year-End Date].",
+                "",
+                "According to our records, your balance is: $[Amount]",
+                "",
+                "Please confirm whether this amount is correct as of the balance sheet date. If there are any differences, please indicate the correct amount and provide details of any disputed items.",
+                "",
+                "Please return this confirmation directly to our office at [Auditor Address] by [Response Date].",
+                "",
+                "Sincerely,",
+                "[Auditor Name]"
+              ]
+            }
+          },
+          {
+            "procedure": "Test for fraud indicators in revenue transactions (ISA 240)",
+            "assertion": "Existence, Accuracy, Rights/Obligations",
+            "nature": "Targeted fraud testing",
+            "timing": "Final audit phase",
+            "extent": "Focused sample of high-risk transactions",
+            "fraudTests": [
+              {
+                "test": "Review for unusual revenue transactions",
+                "procedure": "Identify revenue transactions from related parties or unusual customers; verify business substance"
+              },
+              {
+                "test": "Test for side agreements",
+                "procedure": "Review sales contracts for contingent terms (e.g., payment contingent on customer approval)"
+              },
+              {
+                "test": "Test for channel stuffing",
+                "procedure": "Sample large shipments to customers near year-end; verify evidence of genuine customer demand and acceptance"
+              },
+              {
+                "test": "Identify credit memos and returns",
+                "procedure": "Obtain list of post-year-end credit memos and sales returns; assess if should have been recorded in current year"
+              },
+              {
+                "test": "Review management override indicators",
+                "procedure": "Identify any revenue adjustments made by finance director outside normal process"
+              }
+            ]
+          }
+        ]
+      },
+
+      "controlTestingProcedures": {
+        "procedures": [
+          {
+            "control": "Sales order approval process - orders must be approved by sales manager before fulfillment",
+            "objective": "Prevent invalid or unauthorized sales",
+            "designTest": [
+              "Review documented sales order approval procedure",
+              "Verify procedure requires approval by authorized personnel",
+              "Confirm credit checks performed for new customers"
+            ],
+            "operatingEffectivenessTest": [
+              "Sample 15 sales orders from ERP system",
+              "Verify each has evidence of approval (sign-off, system flag)",
+              "Test for any orders approved by non-authorized staff"
+            ]
+          },
+          {
+            "control": "Automated invoice generation and review controls",
+            "objective": "Ensure invoices are mathematically accurate and customer details are correct",
+            "designTest": [
+              "Review ERP invoice generation configuration",
+              "Verify automatic calculations (quantity x price = amount)",
+              "Confirm customer master data is locked to prevent changes"
+            ],
+            "operatingEffectivenessTest": [
+              "Recalculate invoices for sample of transactions",
+              "Verify no manual overrides to standard pricing",
+              "Test access controls - who can modify customer prices"
+            ]
+          },
+          {
+            "control": "AR aging report generation and review process",
+            "objective": "Ensure AR is properly monitored for collectibility",
+            "designTest": [
+              "Confirm AR aging report generated automatically monthly",
+              "Review evidence of management review (sign-off, email acknowledgment)"
+            ],
+            "operatingEffectivenessTest": [
+              "Examine AR aging reports for several periods",
+              "Verify signature of reviewer and date of review",
+              "Test for follow-up on aging items (collection calls documented)"
+            ]
+          },
+          {
+            "control": "Allowance for doubtful debts calculation and review",
+            "objective": "Ensure allowance is reasonable and based on objective evidence",
+            "designTest": [
+              "Obtain documented policy for calculating allowance",
+              "Verify historical bad debt rate analysis performed",
+              "Confirm allowance approved by finance director"
+            ],
+            "operatingEffectivenessTest": [
+              "Recalculate allowance using documented methodology",
+              "Verify supporting documentation for specific reserves",
+              "Test that allowance is updated for actual write-offs"
+            ]
+          }
+        ]
+      },
+
+      "sampleTestingApproach": {
+        "populationDefinition": "All revenue transactions recorded in the year; all individual AR balances >$1,000 or 1% of AR total",
+        "sampleSizeGuidance": {
+          "highRisk": {
+            "cutoffTesting": "40-50 transactions around year-end",
+            "arConfirmations": "50+ confirmations covering 80% of AR",
+            "invoiceAccuracy": "30-40 invoices"
+          },
+          "mediumRisk": {
+            "cutoffTesting": "25-30 transactions",
+            "arConfirmations": "30-40 confirmations covering 70% of AR",
+            "invoiceAccuracy": "20-25 invoices"
+          },
+          "lowRisk": {
+            "cutoffTesting": "15-20 transactions",
+            "arConfirmations": "15-20 confirmations covering 60% of AR",
+            "invoiceAccuracy": "10-15 invoices"
+          }
+        },
+        "samplingMethodology": "Stratified sampling for AR confirmations (largest balances 100%, remainder random). For revenue transactions, stratified by timing and value.",
+        "exceptionHandling": {
+          "materialityThreshold": "Any individual exception >5% of performance materiality requires adjustment",
+          "qualitativeFactors": "Evidence of fraud indicators (side agreements, management override) requires immediate escalation",
+          "furtherAction": "If exceptions indicate systematic control failure (e.g., >5% of sample has cutoff errors), recommend extended testing or control remediation"
+        }
+      },
+
+      "workingPaperTemplate": {
+        "header": {
+          "engagement": "[Client Name & Year]",
+          "auditArea": "D3 - Revenue & Receivables",
+          "isaReferences": "ISA 240, 500, 501, 505",
+          "preparedBy": "[Auditor Name]",
+          "date": "[Date]",
+          "reviewedBy": "[Review Partner]",
+          "reviewDate": "[Date]",
+          "workPaperRef": "D3.1, D3.2, D3.3, D3.4, D3.5"
+        },
+        "objective": [
+          "Test completeness and accuracy of revenue recognition",
+          "Verify cutoff of revenue transactions at year-end",
+          "Evaluate adequacy of allowance for doubtful debts",
+          "Assess management override risks in revenue area",
+          "Test AR existence and accuracy through confirmations"
+        ],
+        "scope": {
+          "populationSize": "Revenue transactions for year: 12,450; AR balance: $2,150,000; AR customer accounts: 385",
+          "sampleSize": "Revenue cutoff: 35 transactions; AR confirmations: 40; Invoice accuracy: 25",
+          "samplingMethod": "Stratified by amount and timing for cutoff; largest customers 100% for confirmations; random for invoice accuracy",
+          "materiality": "Overall materiality: $50,000; Performance materiality: $37,500; Trivial threshold: $2,500; Quantitative threshold for this area: $25,000"
+        },
+        "proceduresPerformed": [
+          {
+            "step": 1,
+            "procedure": "Obtained and reviewed revenue recognition policy per IFRS 15",
+            "results": "Policy documented in accounting manual; requires revenue recognition when goods shipped and customer accepts delivery. Appears compliant with IFRS 15 - performance obligations satisfied at delivery."
+          },
+          {
+            "step": 2,
+            "procedure": "Performed revenue trend analysis - YoY growth by product line",
+            "results": "Total revenue increased 12% vs budget of 8% increase; favorable variance explained by increased volume of Product A (new customer wins). No unusual patterns identified."
+          },
+          {
+            "step": 3,
+            "procedure": "Tested revenue cutoff - sampled 35 transactions recorded ±10 days around year-end",
+            "results": "35 transactions sampled; 34 properly cut off; 1 invoice recorded 12/31 but shipped on 1/2 (next period) - recommended reversal of $15,000. Auditor adjustment made."
+          },
+          {
+            "step": 4,
+            "procedure": "Tested invoice accuracy - sample of 25 invoices verified to sales orders and price lists",
+            "results": "25 invoices tested; all amounts accurately calculated and per approved pricing. No exceptions identified."
+          },
+          {
+            "step": 5,
+            "procedure": "Performed AR confirmations - sent positive confirmations for 40 largest customers representing 75% of AR balance",
+            "results": "Confirmations sent to 40 customers; 38 responses received (95% response rate); 37 agreed with our records; 1 dispute regarding $8,500 - reviewed supporting documentation and concluded our recording was correct. No further action."
+          },
+          {
+            "step": 6,
+            "procedure": "Tested allowance for doubtful debts - reviewed historical bad debt rates and current aging",
+            "results": "Historical bad debt rate 1.8% of AR; current allowance $38,700 (1.8% of AR); appears reasonable. Reviewed 5 aged items (90+ days) - none required additional provisions."
+          }
+        ],
+        "resultsExceptions": {
+          "exceptions": 1,
+          "details": "Invoice dated 12/31/24 (amount $15,000) but goods shipped 1/2/25. Revenue should have been recorded in next period.",
+          "materiality": "Represents 0.4% of revenue; 40% of trivial threshold",
+          "adjustmentsRequired": "Reversal of $15,000 revenue and AR with deferred recognition to next period"
+        },
+        "conclusion": "Based on procedures performed, we are satisfied that revenue has been recognized in accordance with IFRS 15 and cutoff is appropriate (with exception noted above, which has been adjusted). AR confirmations support the existence and accuracy of receivables. The allowance for doubtful debts is adequate based on historical bad debt rates and current aging analysis. We conclude that the revenue and receivables balances are fairly stated."
+      },
+
+      "riskIndicators": {
+        "highRiskCharacteristics": [
+          "Significant increase in revenue YoY without corresponding increase in operating costs",
+          "High revenue concentration in small number of customers (>50% from top 5 customers)",
+          "Revenue spike near year-end (>20% in Q4 vs other quarters)",
+          "Complex revenue arrangements (multiple performance obligations, contingent terms)",
+          "History of revenue adjustments or restatements in prior years",
+          "Significant DSO increases suggesting aging AR or collection issues",
+          "Large allowance for doubtful debts (>3% of AR) or frequent write-offs",
+          "Related party revenue transactions",
+          "New revenue streams with limited audit history"
+        ],
+        "redFlagsDuringFieldwork": [
+          "Customer confirmations returned with exceptions or disputes not previously known",
+          "Non-response to AR confirmations despite multiple follow-up attempts",
+          "Difficulty obtaining supporting documentation for significant revenue transactions",
+          "Evidence of side agreements or contingent terms not reflected in invoices",
+          "Significant credit memos issued post year-end for sales recorded at year-end",
+          "Unusual transactions recorded by management in revenue area (journal entries outside normal process)",
+          "Pressure from management to meet revenue targets",
+          "Sales returns or allowances increasing significantly"
+        ],
+        "goingConcernImplications": [
+          "Rapid revenue growth suggests business sustainability, but verify profitability also improving",
+          "Declining DSO or increasing bad debt provisions could indicate collection difficulties and cash flow concerns",
+          "Dependence on few large customers - assess concentration risk and customer financial health",
+          "If allowance for doubtful debts trending upward, evaluate customer creditworthiness"
+        ],
+        "fraudRiskConsiderations": [
+          "Highest fraud risk area per ISA 240 - presumed fraud risk in revenue recognition",
+          "Test for channel stuffing (pushing products to customers before they have demand)",
+          "Evaluate side agreements that modify revenue recognition (e.g., goods shipped but customer has right to return)",
+          "Review for bill-and-hold sales (goods held by entity but recorded as revenue)",
+          "Test for fictitious sales (verify actual customer exists and transaction is genuine)",
+          "Evaluate management override - sales recorded without proper authorization",
+          "Test for round-tripping transactions (sale to related party recorded as revenue with no economic substance)",
+          "Review for timing manipulation - recording revenue in wrong period to meet targets"
+        ]
+      }
+    },
+
+    "D4_InventoryWIP": {
+      "fsliRef": "D4",
+      "label": "Inventory & Work in Progress",
+      "isaReferences": ["ISA 501", "ISA 540"],
+      "description": "Inventory valuation, cost allocation, NRV testing, inventory count procedures, obsolescence assessment, WIP valuation",
+      "riskLevel": "High",
+      "rationale": "Inventory is material to many entities; valuation involves management judgment (NRV, cost allocation, obsolescence). Significant fraud risk area.",
+
+      "assertionMapping": {
+        "existence": {
+          "definition": "Inventory included in FS physically exists and is owned by the entity at year-end",
+          "testableStatement": "Inventory items observed during count are genuine; inventory held on consignment not included"
+        },
+        "completeness": {
+          "definition": "All inventory owned by the entity is recorded; no inventory is omitted from count or valuation",
+          "testableStatement": "Count includes all locations (warehouse, retail, transit); no goods excluded"
+        },
+        "accuracy": {
+          "definition": "Inventory quantities, costs, and values are accurately recorded and calculated",
+          "testableStatement": "Inventory counted and recorded at correct amounts; cost allocation is accurate; NRV testing is performed correctly"
+        },
+        "cutoff": {
+          "definition": "Inventory received/shipped is recorded in correct period; purchases and sales cutoff is accurate",
+          "testableStatement": "Goods shipped before year-end are not in inventory; goods received but not invoiced are included"
+        },
+        "classification": {
+          "definition": "Inventory is properly classified in FS (raw materials, WIP, finished goods)",
+          "testableStatement": "Inventory classified appropriately; obsolete items identified separately"
+        },
+        "rights_obligations": {
+          "definition": "Entity has title and ownership of inventory; no commitments that impair value",
+          "testableStatement": "No consigned inventory included; no inventory pledged as collateral not disclosed"
+        }
+      },
+
+      "analyticalProcedures": {
+        "procedures": [
+          {
+            "procedure": "Inventory turnover analysis by category - assess for obsolescence indicators",
+            "riskLevel": "High",
+            "nature": "Trend analysis of inventory levels and movement",
+            "timing": "Planning and final audit phase",
+            "extent": "All material inventory categories",
+            "specifics": {
+              "ratios": [
+                "Inventory turnover = COGS / Average Inventory",
+                "Days inventory outstanding = 365 / Inventory turnover",
+                "Inventory as % of current assets",
+                "By category: RM, WIP, FG turnover separately"
+              ],
+              "analysis": [
+                "Calculate current and prior year turnover",
+                "Identify items with low turnover (>180 days) as obsolescence risk",
+                "Compare to industry benchmarks",
+                "Significant decrease in turnover suggests buildup or obsolescence"
+              ]
+            }
+          },
+          {
+            "procedure": "Gross profit margin analysis - identify unusual variances by product line",
+            "riskLevel": "Medium",
+            "nature": "Cost of goods sold as % of revenue",
+            "timing": "Interim and final audit phase",
+            "extent": "All product lines",
+            "specifics": {
+              "calculation": "Gross margin % = (Revenue - COGS) / Revenue",
+              "comparison": "Compare to prior year and budget",
+              "investigation": "Changes >5% require explanation; may indicate inventory valuation issues"
+            }
+          },
+          {
+            "procedure": "Inventory balance trend - compare current year to prior year",
+            "riskLevel": "Medium",
+            "nature": "Analyze inventory buildup or reduction",
+            "timing": "Planning phase",
+            "extent": "Total inventory and by category",
+            "specifics": {
+              "analysis": "Calculate YoY change in inventory balance; compare to revenue change",
+              "investigation": "If inventory grows faster than revenue, assess for obsolescence or overstock"
+            }
+          }
+        ]
+      },
+
+      "substantiveProcedures": {
+        "procedures": [
+          {
+            "procedure": "Attend physical inventory count (ISA 501)",
+            "assertion": "Existence, Completeness, Accuracy",
+            "nature": "Observation of management's count process",
+            "timing": "Typically at year-end (or near-end date if count performed before year-end)",
+            "extent": "100% attendance at all count locations if practical",
+            "steps": [
+              "Obtain inventory count procedures and schedule",
+              "Plan attendance at all inventory locations (or sample if multiple locations)",
+              "Observe pre-count procedures (organization, cutoff controls, blank tag inventory)",
+              "Test count accuracy by observing several items being counted and verified",
+              "Record test counts on independent count sheets for later reconciliation",
+              "Observe for proper segregation of goods (e.g., slow-moving, obsolete)",
+              "Verify physical inventory matches descriptions (damaged, obsolete items identified)",
+              "Observe cutoff procedures (last receiving/shipping documents recorded)",
+              "Obtain copy of final count results and pricing list for audit testing",
+              "Document any concerns regarding count accuracy or completeness",
+              "Perform post-count procedures - trace test counts to final count sheets"
+            ],
+            "testCountTemplate": {
+              "location": "[Warehouse/Store Name]",
+              "item": "[Description of item]",
+              "unitOfMeasure": "[Unit - boxes, units, gallons, etc.]",
+              "quantityObserved": "[Our count]",
+              "quantityRecorded": "[Management's count]",
+              "variance": "[Difference]",
+              "investigationNotes": "[Any issues noted]"
+            }
+          },
+          {
+            "procedure": "Test inventory pricing and cost allocation (ISA 540)",
+            "assertion": "Accuracy, Valuation",
+            "nature": "Substantive testing of inventory costing",
+            "timing": "Final audit phase",
+            "extent": "Sample of inventory items covering >50% of inventory value",
+            "steps": [
+              "Obtain final inventory listing with costs",
+              "Select sample of items (stratified by value - largest items 100%, remainder random)",
+              "For each sample item:",
+              "  - Trace unit cost to supplier invoice or standard cost",
+              "  - For manufactured items, trace cost build-up (materials, labor, overhead)",
+              "  - Verify standard cost is reasonable vs actual (if standard cost method used)",
+              "  - Recalculate extended amount (quantity x unit cost)",
+              "  - Verify cost method is consistently applied (FIFO, weighted average, standard)",
+              "Document cost allocation methodology and test samples for accuracy"
+            ],
+            "costAllocationExample": {
+              "product": "Widget A",
+              "materialCost": "$10 per unit",
+              "directLaborCost": "$5 per unit",
+              "allocatedOverhead": "$3 per unit",
+              "totalUnitCost": "$18 per unit",
+              "inventoryQty": "5,000 units",
+              "totalInventoryValue": "$90,000"
+            }
+          },
+          {
+            "procedure": "Perform Net Realizable Value (NRV) testing (ISA 540)",
+            "assertion": "Valuation",
+            "nature": "Testing whether inventory value will be recovered",
+            "timing": "Final audit phase",
+            "extent": "All slow-moving items, obsolete items, and sample of normal items",
+            "steps": [
+              "Obtain post year-end sales data for several months",
+              "For items sold after year-end, compare selling price to cost in inventory",
+              "For unsold items (particularly slow-moving):",
+              "  - Obtain recent quotes or catalog prices",
+              "  - Estimate selling price less disposal costs",
+              "  - Compare to inventory cost",
+              "  - If NRV < cost, calculate required provision",
+              "Review management's assessment of obsolete items and slowmoving inventory",
+              "For items identified as obsolete, evaluate for write-down (cost > NRV)"
+            ],
+            "nrvCalculationExample": {
+              "item": "Widget B (obsolete model)",
+              "inventoryCost": "$500",
+              "estimatedSellingPrice": "$400 (60% of cost - closeout sale)",
+              "estimatedDisposalCosts": "$20",
+              "nrv": "$380",
+              "requiredProvisioning": "$120 ($500 - $380)"
+            }
+          },
+          {
+            "procedure": "Evaluate obsolescence and slow-moving inventory",
+            "assertion": "Valuation, Rights/Obligations",
+            "nature": "Analysis and inquiry",
+            "timing": "Final audit phase",
+            "extent": "All items not sold in >180 days",
+            "steps": [
+              "Obtain inventory aging report (by movement date)",
+              "Identify items not sold in >180 days as slow-moving/obsolete",
+              "For each slow-moving item (sample if large population):",
+              "  - Inquire regarding business plans (further sale, scrapping, donation)",
+              "  - Assess likelihood of sale at cost or above",
+              "  - Obtain evidence of management's obsolescence assessment",
+              "  - Review for any commitments that impair value (pledged collateral, sale restrictions)",
+              "Calculate and test obsolescence provision adequacy"
+            ]
+          },
+          {
+            "procedure": "Test cut-off of inventory purchases and sales (ISA 501)",
+            "assertion": "Cutoff, Completeness",
+            "nature": "Testing period-end transactions",
+            "timing": "Final audit phase",
+            "extent": "Last and first GRNs/invoices ±5 days around year-end",
+            "steps": [
+              "Obtain GRN log for last 5 days of year and first 5 days of next period",
+              "For sample of transactions:",
+              "  - For purchase cut-off: verify goods received before/at year-end are in inventory; after year-end goods not included",
+              "  - For sales cut-off: verify shipments before year-end are not in inventory; after year-end not included in sales",
+              "  - Trace GRNs to purchase invoices and inventory records",
+              "  - Investigate any timing differences (GRN dated Y/E but invoice next period - may indicate not recorded)"
+            ]
+          },
+          {
+            "procedure": "Test inventory reconciliation (from count to GL balance)",
+            "assertion": "Accuracy, Completeness",
+            "nature": "Reconciliation and analytical testing",
+            "timing": "Final audit phase",
+            "extent": "100% reconciliation of count results to GL",
+            "steps": [
+              "Obtain final physical count results and inventory valuation",
+              "Trace to inventory GL account - reconcile count to recorded balance",
+              "Investigate all adjustments (inventory write-downs, obsolescence provisions)",
+              "Verify all adjustments are supported and properly approved",
+              "Recalculate total inventory value"
+            ]
+          },
+          {
+            "procedure": "Test for related party transactions in inventory area",
+            "assertion": "Rights/Obligations, Accuracy",
+            "nature": "Inquiry and transaction testing",
+            "timing": "Final audit phase",
+            "extent": "All known related parties",
+            "steps": [
+              "Identify any inventory purchases from/sales to related parties",
+              "Test prices charged for reasonableness (compare to market rates)",
+              "Evaluate for proper disclosure per IAS 24/FRS 102 s33"
+            ]
+          }
+        ]
+      },
+
+      "controlTestingProcedures": {
+        "procedures": [
+          {
+            "control": "Inventory count procedures - documented process with controls",
+            "objective": "Ensure inventory counted accurately and completely",
+            "designTest": [
+              "Obtain documented inventory count procedures",
+              "Verify procedures include: cutoff controls, blank tags, count teams, supervisory review"
+            ],
+            "operatingEffectivenessTest": [
+              "Attend inventory count and observe adherence to procedures",
+              "Test count accuracy - compare our independent test counts to management's counts",
+              "Review supervisory review evidence (sign-off, investigation of variances)"
+            ]
+          },
+          {
+            "control": "Perpetual inventory system with reconciliation to physical count",
+            "objective": "Identify and investigate variances between perpetual records and physical count",
+            "designTest": [
+              "Review ERP perpetual inventory module configuration",
+              "Verify system generates variance reports comparing perpetual to count"
+            ],
+            "operatingEffectivenessTest": [
+              "Review variance reports for count results",
+              "Verify management investigated significant variances (>5%)",
+              "Test that adjustments were made for material variances"
+            ]
+          },
+          {
+            "control": "Inventory pricing control - review of cost allocation methodology",
+            "objective": "Ensure inventory costs are calculated correctly and consistently",
+            "designTest": [
+              "Obtain documented inventory costing policy",
+              "Verify standard costs are reviewed and updated annually"
+            ],
+            "operatingEffectivenessTest": [
+              "Test standard cost accuracy for sample of items",
+              "Verify actual costs tracked and variances investigated",
+              "Review for consistent application of cost method"
+            ]
+          },
+          {
+            "control": "NRV testing process - periodic review of inventory for obsolescence",
+            "objective": "Identify and reserve for items whose NRV is below cost",
+            "designTest": [
+              "Obtain documented NRV policy",
+              "Verify periodic assessment of slow-moving/obsolete items"
+            ],
+            "operatingEffectivenessTest": [
+              "Review obsolescence analysis performed by management",
+              "Test sample of items for NRV calculation accuracy",
+              "Verify write-downs recorded for items with NRV < cost"
+            ]
+          }
+        ]
+      },
+
+      "sampleTestingApproach": {
+        "populationDefinition": "Physical inventory items at year-end; costs and prices in inventory valuation",
+        "sampleSizeGuidance": {
+          "highRisk": {
+            "costTesting": "50+ items covering 80% of inventory value",
+            "nrvTesting": "All slow-moving + sample of 30+ normal items"
+          },
+          "mediumRisk": {
+            "costTesting": "30-40 items covering 70% of inventory value",
+            "nrvTesting": "All slow-moving + sample of 20 normal items"
+          },
+          "lowRisk": {
+            "costTesting": "15-20 items covering 60% of inventory value",
+            "nrvTesting": "All slow-moving + sample of 10 normal items"
+          }
+        },
+        "samplingMethodology": "Stratified sampling - largest items by value tested at 100%, remainder random selection",
+        "exceptionHandling": {
+          "materiality": "Any item with cost error >5% of performance materiality requires adjustment",
+          "nrv": "Any item with NRV < cost by >10% indicates need for provision",
+          "furtherAction": "If >3 exceptions in sample, expand testing to understand nature of errors"
+        }
+      },
+
+      "workingPaperTemplate": {
+        "header": {
+          "engagement": "[Client Name & Year]",
+          "auditArea": "D4 - Inventory & WIP",
+          "isaReferences": "ISA 501, 540",
+          "preparedBy": "[Auditor Name]",
+          "date": "[Date]",
+          "reviewedBy": "[Review Partner]",
+          "reviewDate": "[Date]",
+          "workPaperRef": "D4.1, D4.2, D4.3, D4.4"
+        },
+        "objective": [
+          "Attend physical inventory count and verify count procedures",
+          "Test accuracy of inventory quantities and costs",
+          "Evaluate adequacy of NRV provisions",
+          "Test inventory cutoff at year-end"
+        ],
+        "scope": {
+          "populationSize": "Physical inventory count: 25,450 line items; Inventory balance: $1,250,000",
+          "sampleSize": "Count observation: 100% attendance; Cost testing: 35 items covering 72% of value; NRV testing: 25+ items",
+          "samplingMethod": "Stratified by value for cost testing; all slow-moving items for NRV testing",
+          "materiality": "Overall materiality: $50,000; Performance materiality: $37,500; Trivial threshold: $2,500"
+        },
+        "proceduresPerformed": [
+          {
+            "step": 1,
+            "procedure": "Attended physical inventory count on 31/12/2024 at main warehouse",
+            "results": "Count procedures followed per documented policy. Count teams properly trained. Cutoff controls in place (last GRN #1450, last shipment #1234). No significant issues observed."
+          },
+          {
+            "step": 2,
+            "procedure": "Performed independent test counts during inventory count observation",
+            "results": "Performed 25 test counts; 24 agreed with management count; 1 variance of 100 units (2% error) - variance investigated and resolved."
+          },
+          {
+            "step": 3,
+            "procedure": "Tested inventory pricing - sample of 35 items traced to invoices and cost records",
+            "results": "35 items tested covering 72% of inventory value; all unit costs verified to source documents; no exceptions identified"
+          },
+          {
+            "step": 4,
+            "procedure": "Performed NRV testing - reviewed post year-end sales and assessed obsolete items",
+            "results": "Reviewed sales for Feb/Mar 2025; all items sold at or above cost. Identified 5 slow-moving items (no sales in >180 days); assessed NRV; all items NRV > cost (no provision required)"
+          },
+          {
+            "step": 5,
+            "procedure": "Tested inventory cutoff - reviewed GRNs ±5 days around year-end",
+            "results": "Reviewed GRNs for final 5 days of Dec and first 5 days of Jan; cutoff appears appropriate; goods received after Y/E not included in inventory"
+          }
+        ],
+        "resultsExceptions": {
+          "exceptions": 0,
+          "details": "Minor variance in test count (1 of 25 items, 2% error) resolved through management's count review process",
+          "materiality": "No material exceptions identified",
+          "adjustmentsRequired": "None"
+        },
+        "conclusion": "Based on our attendance at physical inventory count, testing of costs and NRV, we are satisfied that inventory is fairly stated at $1,250,000. Inventory has been counted accurately and completely, costs are supported and appropriate, and NRV testing indicates no obsolescence provision is required. Inventory cutoff is appropriate at year-end."
+      },
+
+      "riskIndicators": {
+        "highRiskCharacteristics": [
+          "Large inventory balance relative to current assets (>50% of current assets)",
+          "High inventory turnover volatility YoY",
+          "Significant portion of inventory slow-moving or obsolete (>20%)",
+          "Complex cost allocation methodology with significant overhead allocation",
+          "Use of standard costing with material variances",
+          "Inventory held in multiple locations (difficult to count and track)",
+          "Manufacturing environment with WIP valuation complexity",
+          "Consignment inventory or inventory held at third parties",
+          "Recent inventory write-offs or adjustments in prior years"
+        ],
+        "redFlagsDuringFieldwork": [
+          "Count procedures not followed during observation (unauthorized access, incorrect counts not re-counted)",
+          "Significant variances between management count and auditor test counts",
+          "Inability to locate physical inventory for sample items tested",
+          "Inventory in poor condition or obviously obsolete/damaged",
+          "Large number of goods held on consignment without clear segregation",
+          "Difficulty obtaining supporting documentation for costs",
+          "Management unwilling to adjust obvious obsolete inventory",
+          "Cut-off issues (GRNs not matching goods received)"
+        ],
+        "goingConcernImplications": [
+          "If inventory is disproportionately large relative to revenue/COGS, may indicate overstock and liquidity concerns",
+          "High obsolescence and write-downs indicate business challenges",
+          "Slow inventory turnover ties up working capital and may impact cash flow",
+          "If inventory financed through loans, examine covenant compliance"
+        ],
+        "fraudRiskConsiderations": [
+          "Phantom inventory - goods counted that don't exist (management fraud)",
+          "Inventory double-counting through consignment schemes",
+          "Artificial cost allocation to increase inventory value and reduce COGS",
+          "Falsified count results - counts not actually performed",
+          "Inventory held at remote locations reducing audit access",
+          "Related party transactions at inflated prices to increase inventory value",
+          "Valuation manipulation through inappropriate NRV treatment"
+        ]
+      }
+    },
+
+    "D5_FixedAssetsLeases": {
+      "fsliRef": "D5",
+      "label": "Fixed Assets & Leases",
+      "isaReferences": ["ISA 500", "ISA 540"],
+      "description": "Fixed asset additions/disposals, depreciation, impairment testing, lease classification (IFRS 16/FRS 102 s20), ROU assets, lease accounting",
+      "riskLevel": "Medium-High",
+      "rationale": "Significant balance; involves management judgment (useful lives, residual values, impairment, lease classification); IFRS 16 complexity",
+
+      "assertionMapping": {
+        "existence": {
+          "definition": "Fixed assets recorded exist and are owned by the entity; no phantom assets",
+          "testableStatement": "Assets observed during procedures; ownership verified through title documents"
+        },
+        "completeness": {
+          "definition": "All fixed assets are recorded; no omissions",
+          "testableStatement": "Fixed asset register agrees to FS disclosure; all acquired assets capitalized"
+        },
+        "accuracy": {
+          "definition": "Asset costs and accumulated depreciation are accurately recorded",
+          "testableStatement": "Depreciation calculated correctly per policy; costs accurately recorded"
+        },
+        "cutoff": {
+          "definition": "Assets acquired/disposed in correct period",
+          "testableStatement": "Additions recorded in period acquired; disposals recorded when disposed"
+        },
+        "classification": {
+          "definition": "Assets classified correctly (PP&E, leases, intangibles) and by asset type",
+          "testableStatement": "Capitalized items meet asset recognition criteria; fully depreciated assets appropriately classified"
+        },
+        "rights_obligations": {
+          "definition": "Entity has legal ownership or valid lease rights",
+          "testableStatement": "Title verified for significant assets; lease contracts reviewed for rights"
+        }
+      },
+
+      "analyticalProcedures": {
+        "procedures": [
+          {
+            "procedure": "Fixed asset roll-forward analysis - compare additions/disposals to budget and business activity",
+            "riskLevel": "Medium",
+            "nature": "Analysis of changes in asset balances",
+            "timing": "Planning and final audit phase",
+            "extent": "All significant asset categories",
+            "specifics": {
+              "analysis": [
+                "Calculate YoY changes in gross asset values",
+                "Compare additions to capital budget",
+                "Analyze disposal gains/losses for reasonableness"
+              ]
+            }
+          },
+          {
+            "procedure": "Depreciation expense trend analysis - assess reasonableness",
+            "riskLevel": "Medium",
+            "nature": "Calculation-based analytical procedure",
+            "timing": "Interim and final audit phase",
+            "extent": "All asset classes with depreciation",
+            "specifics": {
+              "calculation": "Depreciation % = Depreciation Expense / Gross Fixed Assets",
+              "analysis": "Compare to prior years; significant changes require investigation"
+            }
+          },
+          {
+            "procedure": "Asset impairment indicators - identify assets at risk",
+            "riskLevel": "High",
+            "nature": "Analytical review and inquiry",
+            "timing": "Final audit phase",
+            "extent": "All material assets (>5% of net asset value)",
+            "specifics": {
+              "indicators": [
+                "Significant decline in asset value/use",
+                "Obsolete or idle equipment",
+                "Assets not used in current operations",
+                "Major business changes"
+              ]
+            }
+          }
+        ]
+      },
+
+      "substantiveProcedures": {
+        "procedures": [
+          {
+            "procedure": "Test fixed asset additions - sample of capital expenditures verified to invoices and authorization",
+            "assertion": "Existence, Accuracy, Rights/Obligations",
+            "nature": "Transaction testing - capex to supporting documentation",
+            "timing": "Final audit phase",
+            "extent": "Sample of additions (see sample testing approach)",
+            "steps": [
+              "Obtain fixed asset additions listing for the year",
+              "Select sample of additions (stratified: largest items 100%, remainder random)",
+              "For each sample item:",
+              "  - Obtain supporting invoice and purchase order",
+              "  - Verify addition is properly capitalized (meets asset criteria: >$X threshold, >1-year useful life)",
+              "  - Verify cost includes all components (purchase price, freight, installation)",
+              "  - Verify proper asset classification",
+              "  - Verify timing of capitalization (correct period)",
+              "  - For significant items, verify ownership documentation or title transfer",
+              "Document any repairs/maintenance items inappropriately capitalized"
+            ]
+          },
+          {
+            "procedure": "Test fixed asset disposals - sales proceeds and gains/losses reviewed",
+            "assertion": "Accuracy, Rights/Obligations, Completeness",
+            "nature": "Substantive testing of disposal transactions",
+            "timing": "Final audit phase",
+            "extent": "All material disposals (>5% of PM) and sample of smaller items",
+            "steps": [
+              "Obtain fixed asset disposals listing",
+              "For each material disposal:",
+              "  - Obtain bill of sale or disposal documentation",
+              "  - Verify proceeds recorded accurately",
+              "  - Recalculate gain/loss (NBV vs proceeds)",
+              "  - Review for unusual terms or related party transactions",
+              "Sample smaller disposals to ensure all are captured"
+            ]
+          },
+          {
+            "procedure": "Test depreciation calculation and policy compliance (ISA 540)",
+            "assertion": "Accuracy, Completeness",
+            "nature": "Recalculation of depreciation",
+            "timing": "Final audit phase",
+            "extent": "100% of material asset classes",
+            "steps": [
+              "Obtain depreciation policy - review useful lives and residual values",
+              "For each asset class, verify useful lives are reasonable (compare to industry standards)",
+              "Recalculate depreciation for sample of assets:",
+              "  - Formula: (Cost - Residual Value) / Useful Life = Annual Depreciation",
+              "  - Verify appropriate depreciation method applied (straight-line, declining balance)",
+              "Verify consistency with prior year",
+              "For fully depreciated assets, verify appropriately handled (removed or disclosed)"
+            ],
+            "deprecationCalculationExample": {
+              "asset": "Manufacturing Equipment",
+              "cost": "$100,000",
+              "residualValue": "$10,000",
+              "usefulLifeYears": 10,
+              "annualDepreciation": "$9,000",
+              "method": "Straight-line",
+              "yearsUsed": 3,
+              "accumulatedDepreciation": "$27,000",
+              "netBookValue": "$73,000"
+            }
+          },
+          {
+            "procedure": "Test for asset impairment (ISA 540)",
+            "assertion": "Valuation, Accuracy",
+            "nature": "Impairment testing of assets",
+            "timing": "Final audit phase",
+            "extent": "All assets with impairment indicators",
+            "steps": [
+              "Identify assets with impairment indicators (per FRS 102/IFRS standards):",
+              "  - Market value decline >20% from initial cost",
+              "  - Obsolescence or technological change",
+              "  - Idle or underutilized assets",
+              "  - Changes in business operations",
+              "For impaired assets, test management's impairment calculation:",
+              "  - Value in use calculation: estimate future cash flows and discount",
+              "  - Fair value less costs to sell: estimate market value and disposal costs",
+              "  - Compare to NBV; record impairment if fair value < NBV",
+              "Review impairment testing methodology for compliance with standards"
+            ]
+          },
+          {
+            "procedure": "Test lease classification and accounting (IFRS 16/FRS 102 s20)",
+            "assertion": "Classification, Accuracy, Completeness, Rights/Obligations",
+            "nature": "Lease contract review and accounting classification",
+            "timing": "Planning, interim, and final audit phase",
+            "extent": "All leases (finance and operating)",
+            "steps": [
+              "Obtain list of all lease contracts",
+              "For each lease, review contract terms and classify as:",
+              "  - Finance lease: transfers substantially all risks/rewards (IFRS 16: recognized as ROU asset)",
+              "  - Operating lease: other leases (IFRS 16: recognized as ROU asset with lease liability)",
+              "Verify classification per lease accounting standard criteria",
+              "For finance/ROU leases, test accounting:",
+              "  - Initial measurement: lease payments discounted at appropriate rate",
+              "  - Subsequent measurement: depreciation of ROU asset and interest on liability",
+              "  - Lease liability reduction through payments",
+              "Verify disclosure completeness per IFRS 16/FRS 102"
+            ],
+            "leaseClassificationExample": {
+              "lease": "Production Equipment - 5-year lease",
+              "annualPayment": "$20,000",
+              "leaseTermAsPercentageOfAssetLife": "50%",
+              "presentValueOfPayments": "$86,400 (45% of equipment fair value)",
+              "classification": "Finance lease (meets criteria: >75% of asset life)",
+              "accounting": "Recognize ROU asset and lease liability; recognize interest and depreciation"
+            }
+          },
+          {
+            "procedure": "Test fixed asset register agreement to GL and FS",
+            "assertion": "Completeness, Accuracy",
+            "nature": "Reconciliation of fixed asset subledger to GL and FS",
+            "timing": "Final audit phase",
+            "extent": "100% of fixed asset accounts",
+            "steps": [
+              "Obtain fixed asset register (detailed listing of all assets)",
+              "Reconcile register totals to GL fixed asset accounts",
+              "Trace GL balances to FS disclosure",
+              "Verify no assets omitted from register",
+              "Review for duplicate assets or errors in register"
+            ]
+          },
+          {
+            "procedure": "Physical observation of significant fixed assets",
+            "assertion": "Existence, Rights/Obligations",
+            "nature": "Observation of assets during audit fieldwork",
+            "timing": "Interim or final audit phase",
+            "extent": "Sample of assets (largest/most significant)",
+            "steps": [
+              "Walk manufacturing facility and observe equipment in operation",
+              "Verify significant assets exist and are in serviceable condition",
+              "Observe for idle or obsolete equipment",
+              "Note any assets not observed (potential valuation concern)",
+              "Review for any encumbrances (e.g., assets pledged as security)"
+            ]
+          }
+        ]
+      },
+
+      "controlTestingProcedures": {
+        "procedures": [
+          {
+            "control": "Fixed asset authorization process - capital expenditures approved before purchase",
+            "objective": "Prevent unauthorized or inappropriate asset purchases",
+            "designTest": [
+              "Review capital expenditure approval policy",
+              "Verify policy requires approval for items >$X threshold",
+              "Confirm approval by appropriate authority (CFO for >$50k, Board for >$100k)"
+            ],
+            "operatingEffectivenessTest": [
+              "Sample 10 capital expenditures and verify approval evidence",
+              "Review for any items approved after purchase (control weakness)"
+            ]
+          },
+          {
+            "control": "Fixed asset additions and deletions recorded in register by fixed asset team",
+            "objective": "Ensure all asset changes captured in register",
+            "designTest": [
+              "Review assignment of responsibilities for asset register maintenance",
+              "Verify segregation of duties (approval vs. recording)"
+            ],
+            "operatingEffectivenessTest": [
+              "Test reconciliation of capital expenditure invoices to asset register additions",
+              "Verify monthly/quarterly reconciliation of register to GL"
+            ]
+          },
+          {
+            "control": "Depreciation calculation automated in accounting system",
+            "objective": "Ensure depreciation calculated accurately and consistently",
+            "designTest": [
+              "Review system configuration for depreciation calculation",
+              "Verify useful lives and residual values configured per policy"
+            ],
+            "operatingEffectivenessTest": [
+              "Sample calculation: recalculate depreciation for several assets and verify system accuracy",
+              "Review for manual overrides or adjustments"
+            ]
+          },
+          {
+            "control": "Annual asset impairment review process",
+            "objective": "Identify and record impairment of asset values",
+            "designTest": [
+              "Obtain evidence of annual impairment review (e.g., management memo documenting review)",
+              "Verify process includes inquiry regarding obsolete/idle assets"
+            ],
+            "operatingEffectivenessTest": [
+              "Review impairment analysis for completeness",
+              "Verify any impairments identified were properly recorded"
+            ]
+          }
+        ]
+      },
+
+      "sampleTestingApproach": {
+        "populationDefinition": "All fixed asset additions during the year; all assets with NBV >$10,000",
+        "sampleSizeGuidance": {
+          "highRisk": "30-40 additions covering 80% of capex; 25+ assets for impairment testing",
+          "mediumRisk": "20-25 additions covering 70% of capex; 15-20 assets for impairment testing",
+          "lowRisk": "10-15 additions covering 60% of capex; 10 assets for impairment testing"
+        },
+        "samplingMethodology": "Stratified sampling - largest additions tested 100%, remainder random",
+        "exceptionHandling": {
+          "materiality": "Any addition >5% of PM not properly capitalized/supported requires adjustment",
+          "impairment": "Any asset with indicators requiring impairment review",
+          "furtherAction": "Systematic control failures (e.g., >20% of additions lack approval) indicate need for extended testing"
+        }
+      },
+
+      "workingPaperTemplate": {
+        "header": {
+          "engagement": "[Client Name & Year]",
+          "auditArea": "D5 - Fixed Assets & Leases",
+          "isaReferences": "ISA 500, 540",
+          "preparedBy": "[Auditor Name]",
+          "date": "[Date]",
+          "reviewedBy": "[Review Partner]",
+          "reviewDate": "[Date]",
+          "workPaperRef": "D5.1, D5.2, D5.3, D5.4"
+        },
+        "objective": [
+          "Test accuracy and authorization of fixed asset additions",
+          "Verify depreciation calculation and useful life assumptions",
+          "Assess adequacy of asset impairment provisions",
+          "Test lease classification and accounting per IFRS 16"
+        ],
+        "scope": {
+          "populationSize": "Capital expenditures: $850,000 (28 additions); Fixed assets: $3.2M gross",
+          "sampleSize": "Additions: 25 items covering 78% of capex; Assets: 20 items for impairment assessment",
+          "samplingMethod": "Stratified by amount; largest items tested at 100%",
+          "materiality": "Overall materiality: $50,000; Performance materiality: $37,500; Asset threshold: >$25,000"
+        },
+        "proceduresPerformed": [
+          {
+            "step": 1,
+            "procedure": "Tested fixed asset additions - sample of 25 items traced to invoices and approval documentation",
+            "results": "25 of 28 additions tested (78% of capex); all properly authorized and capitalized; 1 item questioned (see exceptions)"
+          },
+          {
+            "step": 2,
+            "procedure": "Tested depreciation calculations for all asset classes",
+            "results": "Useful lives reviewed and appear reasonable per industry standards. Recalculated depreciation for sample of 15 assets - all calculations accurate."
+          },
+          {
+            "step": 3,
+            "procedure": "Performed impairment review - assessed 20 significant assets for impairment indicators",
+            "results": "No assets identified as impaired. Equipment in use and showing no obsolescence indicators."
+          },
+          {
+            "step": 4,
+            "procedure": "Reviewed lease accounting - tested 3 equipment leases for IFRS 16 compliance",
+            "results": "All leases properly classified as finance leases; ROU assets and liabilities properly recognized per IFRS 16"
+          }
+        ],
+        "resultsExceptions": {
+          "exceptions": 1,
+          "details": "Lease equipment addition ($35,000) recorded as operating lease expense but should have been capitalized as ROU asset per IFRS 16",
+          "materiality": "Represents $35,000; exceeds trivial threshold; 93% of performance materiality",
+          "adjustmentsRequired": "Record ROU asset and corresponding lease liability; adjust depreciation and interest expense"
+        },
+        "conclusion": "Based on our testing, fixed assets are largely accurately stated. One exception identified regarding lease classification (noted above, which has been adjusted). Depreciation methodology is appropriate. We conclude fixed assets and leases are fairly stated in accordance with FRS 102 and IFRS 16."
+      },
+
+      "riskIndicators": {
+        "highRiskCharacteristics": [
+          "Significant capital expenditures without clear business rationale",
+          "Weak controls over asset authorization and capitalization",
+          "Material fully depreciated assets still in use (potential valuation issue)",
+          "Frequent asset disposals at significant losses (potential fraud or valuation error)",
+          "Complex lease arrangements not clearly documented",
+          "Assets pledged as collateral with significant debt covenants",
+          "Significant software development costs capitalized",
+          "Asset values not reviewed for impairment in prior years"
+        ],
+        "redFlagsDuringFieldwork": [
+          "Inability to locate physical assets recorded in register",
+          "Assets in poor condition or obviously obsolete",
+          "Large capex items with no supporting documentation",
+          "Capitalization of items that should be expensed (repairs, maintenance)",
+          "Depreciation policy inconsistent with asset types (e.g., 50-year lives for technology)",
+          "Lease agreements without clear terms or present value calculations",
+          "Assets recorded for non-existent leases"
+        ],
+        "goingConcernImplications": [
+          "Significant asset impairments indicate business challenges",
+          "Heavy debt secured by fixed assets - assess covenant compliance and refinancing risk",
+          "Large idle or underutilized assets suggest excess capacity and business concern"
+        ],
+        "fraudRiskConsiderations": [
+          "Phantom assets - capitalize non-existent equipment",
+          "Inappropriate capitalization of expenses to inflate asset values and reduce expense ratios",
+          "Asset disposals to related parties at below-market values",
+          "Lease accounting manipulation to avoid recording liabilities",
+          "Removal of assets from register without recording disposals"
+        ]
+      }
+    }
+  }
+}
+,
+    "D6_PayablesAccruals": {
+      "fsliRef": "D6",
+      "label": "Payables & Accruals",
+      "isaReferences": ["ISA 500", "ISA 501"],
+      "description": "Trade payables, accrued expenses, cut-off testing, payables reconciliation, creditor confirmations",
+      "riskLevel": "Medium",
+
+      "assertionMapping": {
+        "existence": {
+          "definition": "Recorded payables represent valid obligations of the entity",
+          "testableStatement": "AP balances represent genuine vendor invoices; accruals relate to actual services/goods received"
+        },
+        "completeness": {
+          "definition": "All payables and accruals are recorded",
+          "testableStatement": "No invoices received but not recorded; all accruals identified and included"
+        },
+        "accuracy": {
+          "definition": "Payable amounts are accurately recorded at correct values",
+          "testableStatement": "Invoice amounts match vendor statements; accrual amounts calculated correctly"
+        },
+        "cutoff": {
+          "definition": "Payables are recorded in correct period",
+          "testableStatement": "Invoices received by year-end recorded in year; invoices received after year-end not included"
+        },
+        "classification": {
+          "definition": "Payables properly classified in FS",
+          "testableStatement": "Trade payables vs accruals properly distinguished; current vs non-current classified"
+        },
+        "rights_obligations": {
+          "definition": "Payables represent actual obligations of entity",
+          "testableStatement": "Invoices relate to purchases of goods/services for entity benefit"
+        }
+      },
+
+      "analyticalProcedures": {
+        "procedures": [
+          {
+            "procedure": "Payables trend analysis - Days Payable Outstanding (DPO) assessment",
+            "riskLevel": "Medium",
+            "nature": "Trend analysis of AP balances and payment patterns",
+            "timing": "Planning and interim phase",
+            "extent": "All major vendors and AP balance",
+            "specifics": {
+              "calculation": "DPO = (Average AP / COGS or Purchases) * 365 days",
+              "analysis": "Compare to payment terms offered; DPO significantly higher than terms suggests payment delays or fraud"
+            }
+          },
+          {
+            "procedure": "Accrual analysis - reasonableness of accrued expenses",
+            "riskLevel": "Medium",
+            "nature": "Analytical review of accrual amounts",
+            "timing": "Final audit phase",
+            "extent": "All material accruals",
+            "specifics": {
+              "analysis": "Compare accruals to prior year; significant changes require explanation",
+              "investigation": "Verify accruals relate to actual obligations (e.g., accrued bonuses to bonus formula)"
+            }
+          }
+        ]
+      },
+
+      "substantiveProcedures": {
+        "procedures": [
+          {
+            "procedure": "Test AP aging and reconcile to GL",
+            "assertion": "Completeness, Accuracy",
+            "nature": "AP aging review and reconciliation",
+            "timing": "Final audit phase",
+            "extent": "100% of AP balance",
+            "steps": [
+              "Obtain AP aged trial balance at year-end",
+              "Reconcile to GL AP account",
+              "Review aging buckets for unusual items",
+              "Investigate aged items (>90 days) for collectibility issues"
+            ]
+          },
+          {
+            "procedure": "Test payables cut-off - GRN and invoice matching ±5 days year-end",
+            "assertion": "Cutoff, Completeness",
+            "nature": "Cut-off testing of purchases",
+            "timing": "Final audit phase",
+            "extent": "Last/first GRNs and invoices ±5 days",
+            "steps": [
+              "Obtain GRN log for final 5 days of year and first 5 days of next period",
+              "For each GRN, verify matching invoice and confirm recorded in correct period",
+              "Identify any invoices recorded without matching GRN (accruals)",
+              "Test that goods received after year-end are not recorded as purchases"
+            ]
+          },
+          {
+            "procedure": "Sample testing of AP invoices - verify to POs and GRNs",
+            "assertion": "Existence, Accuracy",
+            "nature": "Invoice to PO/GRN matching",
+            "timing": "Final audit phase",
+            "extent": "Sample of invoices (see sample testing approach)",
+            "steps": [
+              "Select sample of AP invoices (stratified by vendor and amount)",
+              "For each sample item, trace to supporting PO and GRN",
+              "Verify quantity, price, and amount match across documents",
+              "Verify proper coding to expense accounts"
+            ]
+          },
+          {
+            "procedure": "Test accrued expenses for appropriateness",
+            "assertion": "Existence, Accuracy, Completeness",
+            "nature": "Substantive testing of accruals",
+            "timing": "Final audit phase",
+            "extent": "All material accruals",
+            "steps": [
+              "Obtain list of accrued expenses",
+              "For each accrual >$5,000:",
+              "  - Obtain supporting documentation (quotation, contract, time records)",
+              "  - Verify amount is reasonable estimate of obligation",
+              "  - Review for subsequent payment to confirm accrual was valid",
+              "Assess completeness by identifying any obligations not accrued"
+            ]
+          },
+          {
+            "procedure": "Payables confirmations (optional per ISA 505 but recommended)",
+            "assertion": "Existence, Accuracy",
+            "nature": "External confirmation from vendors",
+            "timing": "Final audit phase",
+            "extent": "Sample of largest payables",
+            "steps": [
+              "Select sample of vendors (stratified by amount)",
+              "Send confirmation to vendor requesting statement reconciliation",
+              "Follow-up non-responses",
+              "Investigate exceptions (differences between our records and vendor statements)"
+            ]
+          },
+          {
+            "procedure": "Test for unrecorded liabilities",
+            "assertion": "Completeness",
+            "nature": "Procedures to identify unrecorded obligations",
+            "timing": "Final audit phase",
+            "extent": "Comprehensive review of post-year-end activity",
+            "steps": [
+              "Review post-year-end cash disbursements for items relating to year-end obligations",
+              "Identify any vendor invoices received in January for goods/services received in December",
+              "Review management's unrecorded liability checklist",
+              "Inquire of management regarding any known unrecorded obligations",
+              "Review board minutes for any commitments or liabilities mentioned"
+            ]
+          }
+        ]
+      },
+
+      "controlTestingProcedures": {
+        "procedures": [
+          {
+            "control": "Three-way matching of PO, GRN, and invoice before payment",
+            "objective": "Prevent payment for unauthorized, incorrect, or duplicate invoices",
+            "designTest": [
+              "Review documented three-way matching procedure",
+              "Verify system enforces matching requirements before payment processing"
+            ],
+            "operatingEffectivenessTest": [
+              "Sample 10 paid invoices and verify evidence of three-way matching",
+              "Test for any invoices paid without full matching (control override)"
+            ]
+          },
+          {
+            "control": "Segregation of duties - approval, receipt, and payment distinct",
+            "objective": "Prevent fraud through unauthorized payments or goods receipt",
+            "designTest": [
+              "Review assignment of responsibilities - PO approver, GRN recorder, payment approver",
+              "Verify distinct individuals perform each function"
+            ],
+            "operatingEffectivenessTest": [
+              "Review payment evidence - verify different signatories for PO, GRN, and payment",
+              "Test for evidence of inappropriate single-person authorization"
+            ]
+          }
+        ]
+      },
+
+      "sampleTestingApproach": {
+        "populationDefinition": "All payables recorded during year; all vendor invoices; all accrued expenses",
+        "sampleSizeGuidance": {
+          "highRisk": "30-40 invoices; payables confirmation of 20+ vendors",
+          "mediumRisk": "20-25 invoices; payables confirmation of 10-15 vendors",
+          "lowRisk": "10-15 invoices; payables confirmation of 5-10 vendors"
+        },
+        "exceptionHandling": {
+          "materiality": "Any exception >5% of PM requires investigation and adjustment",
+          "cutoff": "Any invoice with timing exception must be reviewed for proper recording"
+        }
+      },
+
+      "workingPaperTemplate": {
+        "header": {
+          "engagement": "[Client Name & Year]",
+          "auditArea": "D6 - Payables & Accruals",
+          "isaReferences": "ISA 500, 501",
+          "preparedBy": "[Auditor Name]",
+          "date": "[Date]",
+          "reviewedBy": "[Review Partner]",
+          "reviewDate": "[Date]"
+        },
+        "objective": [
+          "Test accuracy and completeness of accounts payable",
+          "Verify proper cut-off of purchases at year-end",
+          "Evaluate reasonableness of accrued expenses",
+          "Test for unrecorded liabilities"
+        ],
+        "scope": {
+          "populationSize": "AP balance: $450,000; 185 vendor accounts; accruals: $85,000",
+          "sampleSize": "25 invoices; 10 vendor confirmations; all accruals >$5,000",
+          "samplingMethod": "Stratified by vendor and invoice amount"
+        },
+        "proceduresPerformed": [
+          {
+            "step": 1,
+            "procedure": "Reconciled AP aging to GL - verified completeness of AP recording",
+            "results": "AP aged trial balance totals $450,000; reconciles to GL. No unrecorded invoices identified."
+          },
+          {
+            "step": 2,
+            "procedure": "Tested payables cut-off - reviewed GRNs and invoices ±5 days year-end",
+            "results": "Reviewed 12 GRNs in final 5 days of December and 8 in first 5 days of January; all properly recorded in correct period. Cut-off appears appropriate."
+          },
+          {
+            "step": 3,
+            "procedure": "Sample tested 25 AP invoices - verified to PO and GRN",
+            "results": "25 invoices tested; all properly matched to POs and GRNs; amounts accurate. No exceptions."
+          },
+          {
+            "step": 4,
+            "procedure": "Tested accrued expenses - obtained supporting documentation for all accruals >$5,000",
+            "results": "6 accruals identified >$5,000; all supported by documentation (bonus accrual $35k, utilities $15k, legal $18k, vacation $10k, other <$5k). All appear reasonable."
+          }
+        ],
+        "resultsExceptions": {
+          "exceptions": 0,
+          "details": "No exceptions identified",
+          "adjustmentsRequired": "None"
+        },
+        "conclusion": "Based on our testing, accounts payable and accruals are fairly stated at $535,000 ($450k AP + $85k accruals). Cut-off is appropriate and completeness is verified."
+      },
+
+      "riskIndicators": {
+        "highRiskCharacteristics": [
+          "Significant increase in AP without corresponding increase in purchases (may indicate unrecorded liabilities)",
+          "Large aged payables (>90 days) - may indicate disputes or financial difficulty",
+          "Minimal accrued expenses when significant obligations likely exist",
+          "Weak three-way matching controls",
+          "History of unrecorded liability adjustments in prior years"
+        ],
+        "redFlagsDuringFieldwork": [
+          "Vendor confirmations with significant exceptions not previously known",
+          "Post-year-end invoices for goods/services received in current year",
+          "Inability to produce supporting GRN for recorded invoices",
+          "Significant unmatched invoices in system",
+          "Accruals that don't relate to actual obligations"
+        ],
+        "fraudRiskConsiderations": [
+          "Fictitious payables to conceal misappropriation of funds",
+          "Round-trip transactions with related parties",
+          "Suppressed accruals to inflate profitability"
+        ]
+      }
+    },
+
+    "D7_LoansCovenants": {
+      "fsliRef": "D7",
+      "label": "Loans & Covenants",
+      "isaReferences": ["ISA 500", "ISA 505"],
+      "description": "Loan confirmation, covenant compliance testing, debt disclosure, interest calculations",
+      "riskLevel": "High",
+      "rationale": "Going concern risk; fraud risk if covenants breached and concealed; complex calculations"
+    },
+
+    "D8_TaxDeferredTax": {
+      "fsliRef": "D8",
+      "label": "Tax & Deferred Tax",
+      "isaReferences": ["ISA 500", "ISA 540"],
+      "description": "Current tax provision, deferred tax (temporary differences), tax losses, uncertain tax positions",
+      "riskLevel": "High",
+      "rationale": "Significant accounting estimates; complex calculations; tax authority risks"
+    },
+
+    "D9_ProvisionsContingencies": {
+      "fsliRef": "D9",
+      "label": "Provisions & Contingencies",
+      "isaReferences": ["ISA 540", "ISA 501"],
+      "description": "Legal provisions, warranty provisions, onerous contracts, contingent liabilities, lawyers' letters",
+      "riskLevel": "High",
+      "rationale": "Highly judgmental; significant fraud risk (manipulating estimates to manage earnings); legal complexities"
+    },
+
+    "D10_Equity": {
+      "fsliRef": "D10",
+      "label": "Equity",
+      "isaReferences": ["ISA 500"],
+      "description": "Share capital, retained earnings, dividend testing, equity movements, shareholder transactions",
+      "riskLevel": "Medium",
+      "rationale": "Medium risk; testing of movements and compliance with constitutional documents"
+    },
+
+    "D11_CashEquivalents": {
+      "fsliRef": "D11",
+      "label": "Cash & Equivalents",
+      "isaReferences": ["ISA 500", "ISA 505"],
+      "description": "Bank confirmations, cash reconciliations, restricted cash, bank covenant compliance",
+      "riskLevel": "Medium",
+      "rationale": "Critical assertion (existence); bank confirmations provide direct evidence; potential fraud risk"
+    },
+
+    "D12_JournalEntriesConsolidation": {
+      "fsliRef": "D12",
+      "label": "Journal Entries & Consolidation",
+      "isaReferences": ["ISA 240", "ISA 500"],
+      "description": "JE testing (especially manual/unusual entries), consolidation elimination entries, intercompany transactions",
+      "riskLevel": "High",
+      "rationale": "Fraud risk area (ISA 240 presumes fraud in JE); consolidation complexity; management override risk"
+    },
+
+    "D13_PostBalanceSheetEvents": {
+      "fsliRef": "D13",
+      "label": "Post-Balance Sheet Events",
+      "isaReferences": ["ISA 560"],
+      "description": "Subsequent events testing, adjusting vs non-adjusting events, going concern events, event disclosure",
+      "riskLevel": "Medium",
+      "rationale": "Critical for FS completeness; going concern implications; disclosure requirements"
+    },
+
+    "D14_RelatedPartyTransactions": {
+      "fsliRef": "D14",
+      "label": "Related Party Transactions",
+      "isaReferences": ["ISA 550"],
+      "description": "Related party identification, transaction testing, business rationale evaluation, disclosure adequacy per IAS 24/FRS 102 s33",
+      "riskLevel": "High",
+      "rationale": "Significant fraud risk; disclosure requirements; economic substance questions"
+    }
+  }
+}
