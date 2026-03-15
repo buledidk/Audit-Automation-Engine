@@ -4,15 +4,18 @@
  * Production-ready Express server
  */
 
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const compression = require("compression");
-const helmet = require("helmet");
-const jwt = require("jsonwebtoken");
-const morgan = require("morgan");
-const multer = require("multer");
-const path = require("path");
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import compression from "compression";
+import helmet from "helmet";
+import jwt from "jsonwebtoken";
+import morgan from "morgan";
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Initialize app
 const app = express();
@@ -698,4 +701,4 @@ app.use((req, res) => {
   });
 });
 
-module.exports = app;
+export default app;
