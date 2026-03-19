@@ -6,7 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "progress": "node scripts/progress-tracker.js report",
+    "progress:init": "node scripts/progress-tracker.js init",
+    "progress:add": "node scripts/progress-tracker.js add",
+    "progress:start": "node scripts/progress-tracker.js start",
+    "progress:complete": "node scripts/progress-tracker.js complete",
+    "progress:reset": "node scripts/progress-tracker.js reset",
+    "build:track": "node scripts/progress-tracker.js build"
   },
   "dependencies": {
     "react": "^18.2.0",
