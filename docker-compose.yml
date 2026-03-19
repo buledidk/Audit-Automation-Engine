@@ -1,102 +1,95 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database - Perfect for audit schemas
+  # ═══════════════════════════════════════════════════════════════════════════
+  # AUDIT ENGINE - Main Application
+  # ═══════════════════════════════════════════════════════════════════════════
+  audit-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: audit-engine
+    ports:
+      - '3001:3001'
+      - '5173:5173'
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      FRONTEND_PORT: 5173
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/audit_engine
+      REDIS_URL: redis://redis:6379
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OLLAMA_URL: http://ollama:11434
+      SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
+      SLACK_SIGNING_SECRET: ${SLACK_SIGNING_SECRET}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+    depends_on:
+      - postgres
+      - redis
+      - ollama
+    volumes:
+      - ./uploads:/app/uploads
+      - ./generated-reports:/app/generated-reports
+      - ./logs:/app/logs
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - audit-network
+
   postgres:
     image: postgres:15-alpine
-    container_name: audit_postgres
+    container_name: audit-engine-postgres
     environment:
-      POSTGRES_USER: audit_user
-      POSTGRES_PASSWORD: audit_password_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: audit_engine
-      POSTGRES_INITDB_ARGS: "-c max_connections=100"
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./server/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U audit_user -d audit_engine"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
+    restart: unless-stopped
     networks:
-      - audit_network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+      - audit-network
 
-  # Redis Cache - For worker queue and caching
   redis:
     image: redis:7-alpine
-    container_name: audit_redis
+    container_name: audit-engine-redis
     ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes
+      - '6379:6379'
     volumes:
       - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
+    restart: unless-stopped
     networks:
-      - audit_network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+      - audit-network
 
-  # Optional: Redis Commander - Web UI for Redis
-  redis-commander:
-    image: rediscommander/redis-commander:latest
-    container_name: audit_redis_commander
-    environment:
-      REDIS_HOSTS: local:redis:6379
+  ollama:
+    image: ollama/ollama:latest
+    container_name: audit-engine-ollama
     ports:
-      - "8081:8081"
-    depends_on:
-      redis:
-        condition: service_healthy
-    networks:
-      - audit_network
-    profiles:
-      - debug  # Run with: docker-compose --profile debug up
-
-  # Optional: PgAdmin - Web UI for PostgreSQL
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: audit_pgadmin
+      - '11434:11434'
+    volumes:
+      - ollama_data:/root/.ollama
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@audit.local
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
-    depends_on:
-      postgres:
-        condition: service_healthy
+      OLLAMA_HOST: 0.0.0.0:11434
+    restart: unless-stopped
     networks:
-      - audit_network
-    profiles:
-      - debug  # Run with: docker-compose --profile debug up
+      - audit-network
 
 volumes:
   postgres_data:
-    driver: local
   redis_data:
-    driver: local
+  ollama_data:
 
 networks:
-  audit_network:
+  audit-network:
     driver: bridge
-
-# Start with: docker-compose up -d
-# Start with debug tools: docker-compose --profile debug up -d
-# View logs: docker-compose logs -f
-# Stop: docker-compose down
-# Full cleanup: docker-compose down -v
