@@ -13,7 +13,15 @@
     "test:ui": "vitest --ui",
     "lint": "eslint src --ext .js,.jsx",
     "type-check": "tsc --noEmit",
-    "check:all": "npm run lint && npm run type-check && npm run test:coverage"
+    "check:all": "npm run lint && npm run type-check && npm run test:coverage",
+    "agents": "node src/agents/cli-tool.js",
+    "agents:plan": "node src/agents/cli-tool.js plan",
+    "agents:review": "node src/agents/cli-tool.js review",
+    "agents:security": "node src/agents/cli-tool.js security-audit",
+    "agents:compliance": "node src/agents/cli-tool.js compliance-audit",
+    "agents:docs": "node src/agents/cli-tool.js docs",
+    "agents:test": "node src/agents/cli-tool.js test-analysis",
+    "agents:report": "node src/agents/cli-tool.js report"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.16.0",
