@@ -1,11 +1,23 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "framework": "vite",
   "env": {
     "VITE_SUPABASE_URL": "@supabase_url",
     "VITE_SUPABASE_ANON_KEY": "@supabase_anon_key"
   },
   "github": {
-    "enabled": false
-  }
+    "enabled": true,
+    "autoAlias": true
+  },
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }
