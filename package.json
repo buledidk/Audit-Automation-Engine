@@ -21,11 +21,13 @@
     "agents:compliance": "node src/agents/cli-tool.js compliance-audit",
     "agents:docs": "node src/agents/cli-tool.js docs",
     "agents:test": "node src/agents/cli-tool.js test-analysis",
-    "agents:report": "node src/agents/cli-tool.js report"
+    "agents:report": "node src/agents/cli-tool.js report",
+    "watchdog": "node scripts/start-watchdog.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.16.0",
     "@supabase/supabase-js": "^2.38.0",
+    "@vercel/speed-insights": "^2.0.0",
     "body-parser": "^2.2.2",
     "compression": "^1.8.1",
     "cors": "^2.8.6",

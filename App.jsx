@@ -1,4 +1,5 @@
 import { Suspense, lazy } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 // New comprehensive AuditEngine component
 const AuditEngine = lazy(() => import("./src/AuditEngine"));
@@ -28,6 +29,7 @@ export default function App() {
   return (
     <Suspense fallback={<LoadingScreen />}>
       <AuditEngine />
+      <SpeedInsights />
     </Suspense>
   );
 }
