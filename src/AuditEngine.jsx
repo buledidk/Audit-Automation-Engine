@@ -26,6 +26,8 @@ import useIntegrations from "./hooks/useIntegrations";
 import EnhancedVisualInterface from "./components/EnhancedVisualInterface";
 // Modern Design System: Latest UI/UX trends and patterns
 import ModernDesignShowcase from "./components/ModernDesignShowcase";
+// AI-Powered Document Extraction: Tokenization, extraction, auto-population, and framework reporting
+import DocumentUploadAndExtractionPanel from "./components/DocumentUploadAndExtractionPanel";
 
 const COLORS = {
   bg: "#0A0E17",
@@ -692,7 +694,7 @@ function KPIBox({ label, value, color }) {
 // ═══════════════════════════════════════════════════════════════════
 export default function AuditEngine() {
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
-  const [viewMode, setViewMode] = useState("phase"); // phase | results | procedures | agents | documentation | dashboard | collaboration | forms | offline | integrations | activity | visual | design
+  const [viewMode, setViewMode] = useState("phase"); // phase | results | procedures | agents | documentation | extraction | dashboard | collaboration | forms | offline | integrations | activity | visual | design
   const [engagement, setEngagement] = useState(engagementStore.engagement);
 
   // Phase A-B: New System Hooks
@@ -863,6 +865,21 @@ export default function AuditEngine() {
               }}
             >
               📄 Docs
+            </button>
+            <button
+              onClick={() => setViewMode("extraction")}
+              style={{
+                padding: "8px",
+                background: viewMode === "extraction" ? "#9C27B0" + "30" : "transparent",
+                border: `1px solid ${viewMode === "extraction" ? "#9C27B0" : COLORS.border}`,
+                color: viewMode === "extraction" ? "#9C27B0" : COLORS.dim,
+                borderRadius: "4px",
+                fontSize: "10px",
+                fontWeight: 600,
+                cursor: "pointer"
+              }}
+            >
+              🤖 Extract
             </button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "6px", marginTop: "8px" }}>
@@ -1090,6 +1107,10 @@ export default function AuditEngine() {
         ) : viewMode === "visual" ? (
           <div style={{ maxWidth: "1400px" }}>
             <EnhancedVisualInterface />
+          </div>
+        ) : viewMode === "extraction" ? (
+          <div style={{ maxWidth: "1400px" }}>
+            <DocumentUploadAndExtractionPanel engagement={engagement} />
           </div>
         ) : viewMode === "design" ? (
           <ModernDesignShowcase />
