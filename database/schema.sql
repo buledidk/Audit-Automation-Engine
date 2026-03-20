@@ -441,3 +441,52 @@ ORDER BY f.severity DESC, f.created_at ASC;
 -- ============================================================================
 
 COMMIT;
+
+-- ============================================================================
+-- ROW LEVEL SECURITY POLICIES
+-- ============================================================================
+
+-- Enable RLS on all tables
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_organizations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE entities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE entity_contacts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE engagements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE procedures ENABLE ROW LEVEL SECURITY;
+ALTER TABLE evidence ENABLE ROW LEVEL SECURITY;
+ALTER TABLE findings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE risk_assessments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
+
+-- Organization-level access for users
+CREATE POLICY "Users can access their organizations"
+  ON user_organizations FOR SELECT
+  USING (user_id = current_user_id());
+
+-- Entities accessible within organization
+CREATE POLICY "Entities accessible within organization"
+  ON entities FOR SELECT
+  USING (organization_id IN (
+    SELECT organization_id FROM user_organizations
+    WHERE user_id = current_user_id()
+  ));
+
+-- Engagements accessible within organization
+CREATE POLICY "Engagements accessible within organization"
+  ON engagements FOR SELECT
+  USING (organization_id IN (
+    SELECT organization_id FROM user_organizations
+    WHERE user_id = current_user_id()
+  ));
+
+-- Audit log accessible within organization
+CREATE POLICY "Audit log accessible within organization"
+  ON audit_log FOR SELECT
+  USING (organization_id IN (
+    SELECT organization_id FROM user_organizations
+    WHERE user_id = current_user_id()
+  ));
+
