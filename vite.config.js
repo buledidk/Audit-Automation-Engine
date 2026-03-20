@@ -10,3 +10,4 @@ export default defineConfig({
     },
   },
 })
+// Vercel deployment sync - Fri Mar 20 15:02:13 UTC 2026
