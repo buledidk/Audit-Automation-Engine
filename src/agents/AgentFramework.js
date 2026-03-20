@@ -2,11 +2,13 @@
  * Agent Framework
  * Provides core infrastructure for multi-agent orchestration
  * with compliance, transparency, and performance monitoring
+ * Integrated with ModelSelectionService for multi-model support
  */
 
 import Anthropic from '@anthropic-ai/sdk';
 import { v4 as uuidv4 } from 'crypto';
 import { EventEmitter } from 'events';
+import { modelSelectionService } from '../services/modelSelectionService.js';
 
 export class AgentFramework extends EventEmitter {
   constructor(config = {}) {
@@ -65,7 +67,7 @@ export class AgentFramework extends EventEmitter {
   }
 
   /**
-   * Execute an agent task with compliance checks
+   * Execute an agent task with compliance checks and model selection
    */
   async executeAgentTask(agentName, task, context = {}) {
     const agent = this.agents.get(agentName);
@@ -83,18 +85,36 @@ export class AgentFramework extends EventEmitter {
       this.emit('task:started', { taskId, agentName, task });
       this.logAction('TASK_STARTED', { taskId, agentName, task });
 
-      // Prepare the message for Claude
+      // Select best model for this agent using ModelSelectionService
+      const modelSelection = await modelSelectionService.selectModel(agentName);
+      this.logAction('MODEL_SELECTED', { taskId, agentName, modelSelected: modelSelection.key });
+
+      // Prepare the message
       const systemPrompt = this.buildSystemPrompt(agent, context);
       const userMessage = this.buildUserMessage(task, context);
 
-      // Execute with retries
+      // Execute with selected model and retries
       const response = await this.executeWithRetry(
-        () => this.client.messages.create({
-          model: this.config.model,
-          max_tokens: this.config.maxTokens,
-          system: systemPrompt,
-          messages: [{ role: 'user', content: userMessage }]
-        })
+        () => {
+          if (modelSelection.key === 'primary' && modelSelection.client) {
+            // Use selected model client
+            return modelSelection.client.messages.create({
+              model: modelSelection.config.model,
+              max_tokens: modelSelection.config.maxTokens,
+              temperature: modelSelection.config.temperature,
+              system: systemPrompt,
+              messages: [{ role: 'user', content: userMessage }]
+            });
+          } else {
+            // Fallback to primary client
+            return this.client.messages.create({
+              model: this.config.model,
+              max_tokens: this.config.maxTokens,
+              system: systemPrompt,
+              messages: [{ role: 'user', content: userMessage }]
+            });
+          }
+        }
       );
 
       const executionTime = Date.now() - startTime;
@@ -106,7 +126,8 @@ export class AgentFramework extends EventEmitter {
         status: 'completed',
         output: response.content[0].text,
         executionTime,
-        tokenUsage: response.usage
+        tokenUsage: response.usage,
+        modelUsed: modelSelection.key
       };
 
       this.emit('task:completed', result);
