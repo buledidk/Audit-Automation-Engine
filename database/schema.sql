@@ -428,6 +428,201 @@ WHERE f.status != 'closed'
 ORDER BY f.severity DESC, f.created_at ASC;
 
 -- ============================================================================
+-- AGENT QUALITY ASSESSMENT SYSTEM
+-- ============================================================================
+
+-- Agent Quality Assessments
+CREATE TABLE agent_quality_assessments (
+  id SERIAL PRIMARY KEY,
+  agent_name VARCHAR(100) NOT NULL,
+  assessment_period VARCHAR(50),
+  accuracy_score NUMERIC(5,2),
+  compliance_adherence_score NUMERIC(5,2),
+  recommendation_quality_score NUMERIC(5,2),
+  speed_score NUMERIC(5,2),
+  cost_effectiveness_score NUMERIC(5,2),
+  composite_score NUMERIC(5,2),
+  total_executions INTEGER DEFAULT 0,
+  successful_executions INTEGER DEFAULT 0,
+  failed_executions INTEGER DEFAULT 0,
+  average_latency_ms INTEGER,
+  total_tokens_used BIGINT DEFAULT 0,
+  total_cost_usd NUMERIC(12,4) DEFAULT 0,
+  notes TEXT,
+  reviewed_by INTEGER REFERENCES users(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_agent_name (agent_name),
+  INDEX idx_period (assessment_period),
+  INDEX idx_created_at (created_at)
+);
+
+-- Agent Execution History
+CREATE TABLE agent_execution_history (
+  id SERIAL PRIMARY KEY,
+  engagement_id INTEGER REFERENCES engagements(id) ON DELETE CASCADE,
+  agent_name VARCHAR(100) NOT NULL,
+  execution_id VARCHAR(100) UNIQUE NOT NULL,
+  request_type VARCHAR(100),
+  request_params JSONB,
+  response_data JSONB,
+  duration_ms INTEGER,
+  tokens_used INTEGER,
+  cost_usd NUMERIC(10,4),
+  accuracy_rating INTEGER CHECK (accuracy_rating >= 1 AND accuracy_rating <= 5),
+  compliance_violations TEXT,
+  recommendation_quality_rating INTEGER CHECK (recommendation_quality_rating >= 1 AND recommendation_quality_rating <= 5),
+  status VARCHAR(50), -- success, partial, failed
+  error_details TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_agent_time (agent_name, created_at),
+  INDEX idx_engagement (engagement_id),
+  INDEX idx_request_type (request_type),
+  INDEX idx_execution_id (execution_id)
+);
+
+-- Agent Performance Benchmarks
+CREATE TABLE agent_performance_benchmarks (
+  id SERIAL PRIMARY KEY,
+  agent_name VARCHAR(100) NOT NULL,
+  metric_type VARCHAR(100), -- accuracy, speed, cost, compliance
+  baseline_value NUMERIC(12,4),
+  current_value NUMERIC(12,4),
+  alert_threshold NUMERIC(12,4),
+  trend_direction VARCHAR(20), -- improving, declining, stable
+  trend_percentage NUMERIC(5,2),
+  measurement_count INTEGER,
+  last_measured_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_agent_metric (agent_name, metric_type)
+);
+
+-- Agent Compliance Violations
+CREATE TABLE agent_compliance_violations (
+  id SERIAL PRIMARY KEY,
+  engagement_id INTEGER REFERENCES engagements(id) ON DELETE CASCADE,
+  agent_name VARCHAR(100) NOT NULL,
+  violation_type VARCHAR(100), -- isa_non_adherence, guideline_breach, quality_issue
+  phase_name VARCHAR(50),
+  severity VARCHAR(20), -- low, medium, high, critical
+  description TEXT,
+  isa_standards_violated TEXT,
+  resolution_status VARCHAR(50), -- open, in_progress, resolved
+  resolution_notes TEXT,
+  resolved_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_agent (agent_name),
+  INDEX idx_phase (phase_name),
+  INDEX idx_severity (severity),
+  INDEX idx_engagement (engagement_id)
+);
+
+-- ============================================================================
+-- KPI TRACKING SYSTEM
+-- ============================================================================
+
+-- KPI Definitions
+CREATE TABLE kpi_definitions (
+  id SERIAL PRIMARY KEY,
+  kpi_code VARCHAR(50) UNIQUE NOT NULL,
+  kpi_name VARCHAR(255) NOT NULL,
+  formula TEXT,
+  unit VARCHAR(50),
+  target_value NUMERIC(12,4),
+  warning_threshold NUMERIC(12,4),
+  critical_threshold NUMERIC(12,4),
+  frequency VARCHAR(50), -- real_time, hourly, daily, weekly
+  calculation_method TEXT,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_by INTEGER REFERENCES users(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_active (is_active),
+  INDEX idx_code (kpi_code)
+);
+
+-- KPI Measurements
+CREATE TABLE kpi_measurements (
+  id SERIAL PRIMARY KEY,
+  kpi_id INTEGER REFERENCES kpi_definitions(id) ON DELETE CASCADE,
+  engagement_id INTEGER REFERENCES engagements(id) ON DELETE CASCADE,
+  measurement_value NUMERIC(15,6),
+  variance_from_target NUMERIC(10,4),
+  alert_status VARCHAR(20), -- ok, warning, critical
+  raw_data JSONB,
+  calculation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  measurement_timestamp TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_engagement_time (engagement_id, measurement_timestamp),
+  INDEX idx_kpi_time (kpi_id, measurement_timestamp),
+  INDEX idx_alert_status (alert_status)
+);
+
+-- KPI Snapshots (for historical tracking)
+CREATE TABLE kpi_snapshots (
+  id SERIAL PRIMARY KEY,
+  engagement_id INTEGER REFERENCES engagements(id) ON DELETE CASCADE,
+  snapshot_date DATE,
+  kpi_code VARCHAR(50),
+  kpi_value NUMERIC(15,6),
+  target_value NUMERIC(15,6),
+  variance_percent NUMERIC(10,4),
+  status VARCHAR(20),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_engagement_date (engagement_id, snapshot_date),
+  INDEX idx_kpi_code (kpi_code)
+);
+
+-- ============================================================================
+-- INTEGRATION SECURITY AUDIT
+-- ============================================================================
+
+-- Integration Security Audits
+CREATE TABLE integration_security_audits (
+  id SERIAL PRIMARY KEY,
+  connector_name VARCHAR(100) NOT NULL,
+  connector_type VARCHAR(100), -- slack, github, aws, email, supabase
+  audit_status VARCHAR(20), -- secure, warning, failing
+  credentials_valid BOOLEAN,
+  connection_test_passed BOOLEAN,
+  ssl_certificate_valid BOOLEAN,
+  rate_limiting_compliant BOOLEAN,
+  auth_mechanism_secure BOOLEAN,
+  data_encrypted BOOLEAN,
+  audit_logging_enabled BOOLEAN,
+  last_key_rotation TIMESTAMP,
+  key_rotation_due TIMESTAMP,
+  findings TEXT,
+  recommendations TEXT,
+  severity_level VARCHAR(20), -- low, medium, high, critical
+  overall_status VARCHAR(20),
+  next_audit_scheduled TIMESTAMP,
+  audited_by INTEGER REFERENCES users(id),
+  audit_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_connector (connector_name),
+  INDEX idx_status (overall_status),
+  INDEX idx_audit_timestamp (audit_timestamp)
+);
+
+-- Connector Health Metrics
+CREATE TABLE connector_health_metrics (
+  id SERIAL PRIMARY KEY,
+  connector_name VARCHAR(100) NOT NULL,
+  uptime_percentage NUMERIC(5,2),
+  average_response_time_ms INTEGER,
+  error_rate NUMERIC(5,2),
+  last_successful_connection TIMESTAMP,
+  consecutive_failures INTEGER DEFAULT 0,
+  max_consecutive_failures INTEGER DEFAULT 5,
+  health_status VARCHAR(20), -- healthy, degraded, critical, down
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_connector (connector_name),
+  INDEX idx_health_status (health_status)
+);
+
+-- ============================================================================
 -- GRANTS & SECURITY
 -- ============================================================================
 

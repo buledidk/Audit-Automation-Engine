@@ -5,6 +5,8 @@
  * Status: ✅ PRODUCTION READY
  * Agents: 9 total (4 engines + 5 agents)
  * Coordination: Full orchestration with caching and fallback
+ * Quality Control: ISA 220 compliance with quality assessment
+ * Real-time KPIs: Live metrics collection and broadcasting
  */
 
 // Import all agents and engines
@@ -17,6 +19,8 @@ import { RiskAssessmentAgent } from "./riskAssessmentAgent.js";
 import { ComplianceAgent } from "./complianceAgent.js";
 import { EvidenceAnalysisAgent } from "./evidenceAnalysisAgent.js";
 import { WorkflowAssistantAgent } from "./workflowAssistantAgent.js";
+import { agentQualityAssessmentService } from "./agentQualityAssessmentService.js";
+import { realtimeKPIService } from "./realtimeKPIService.js";
 
 class AIAgentOrchestrator {
   constructor() {
@@ -144,6 +148,22 @@ class AIAgentOrchestrator {
 
       // 4. Update metrics
       this._updateMetrics(requestId, true, latency);
+
+      // 5. QUALITY ASSESSMENT - Record execution (ISA 220)
+      const agentName = this._getAgentNameForRequestType(request.type);
+      if (agentName) {
+        agentQualityAssessmentService.recordExecution({
+          agentName,
+          engagementId: request.engagementId,
+          requestType: request.type,
+          requestParams: request.params,
+          responseData: result,
+          duration: latency,
+          tokensUsed: result.tokensUsed || 0,
+          costUsd: result.costUsd || 0,
+          success: true
+        }).catch(err => console.warn('⚠️ Quality assessment error:', err));
+      }
 
       console.log(`   ✅ Success (${latency}ms)`);
       return result;
@@ -357,6 +377,25 @@ class AIAgentOrchestrator {
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
     }
+  }
+
+  /**
+   * MAP REQUEST TYPE TO AGENT NAME
+   * Helper for quality assessment tracking
+   */
+  _getAgentNameForRequestType(requestType) {
+    const mapping = {
+      'SUGGEST_PROCEDURES': 'AIProcedureEngine',
+      'PREDICT_EXCEPTIONS': 'ExceptionPredictionEngine',
+      'PLAN_JURISDICTION': 'JurisdictionEngine',
+      'CALCULATE_MATERIALITY': 'MaterialityEngine',
+      'GENERATE_REPORT': 'ReportGenerationAgent',
+      'ASSESS_RISK': 'RiskAssessmentAgent',
+      'CHECK_COMPLIANCE': 'ComplianceAgent',
+      'ANALYZE_EVIDENCE': 'EvidenceAnalysisAgent',
+      'GET_WORKFLOW_GUIDANCE': 'WorkflowAssistantAgent'
+    };
+    return mapping[requestType] || null;
   }
 }
 
