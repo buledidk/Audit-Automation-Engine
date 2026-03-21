@@ -39,6 +39,7 @@ export const agentConfig = {
 
   // Agent-to-Model Mapping
   agentModels: {
+    // Original Agents
     SupervisorAgent: 'primary',           // Use Claude for supervision
     CodeAnalystAgent: 'primary',          // Use Claude for code analysis
     SecurityAgent: 'secondary',           // Use OpenAI for security (better at security)
@@ -53,7 +54,13 @@ export const agentConfig = {
     RiskAssessmentAgent: 'primary',       // Use Claude
     EvidenceAnalysisAgent: 'primary',     // Use Claude
     WorkflowAssistantAgent: 'fallback',   // Use Ollama (fast, local)
-    ComplianceAgent_Audit: 'primary'      // Use Claude
+    ComplianceAgent_Audit: 'primary',     // Use Claude
+
+    // NEW: Professional Audit Specialist Agents
+    'technical-accounting-lead': 'primary',     // Claude - accounting technical expertise
+    'controls-governance-assessor': 'primary',  // Claude - control testing and governance
+    'compliance-advisor': 'primary',            // Claude - UK regulatory/Companies House
+    'transactional-testing-agent': 'primary'    // Claude - detailed transaction testing
   },
 
   // Fallback chain: try in order
@@ -108,6 +115,157 @@ export const agentConfig = {
       capabilities: ['test-strategy', 'test-design', 'coverage-analysis'],
       minCoverageTarget: 80,
       includeSecurityTests: true
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // NEW: PROFESSIONAL AUDIT SPECIALIST AGENTS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    'technical-accounting-lead': {
+      model: 'claude-opus-4-6',
+      capabilities: [
+        'ifrs-16-leases',
+        'ifrs-15-revenue',
+        'ifrs-17-insurance',
+        'frs-102-gaap',
+        'fair-value-accounting',
+        'goodwill-impairment',
+        'consolidations',
+        'related-party-transactions',
+        'going-concern',
+        'significant-accounting-judgments',
+        'disclosure-requirements',
+        'technical-memo-preparation',
+        'assertion-mapping',
+        'financial-reporting-standards'
+      ],
+      focusAreas: [
+        'IFRS 16 - Leases',
+        'IFRS 15 - Revenue Recognition',
+        'IFRS 17 - Insurance Contracts',
+        'FRS 102 - Accounting Treatment',
+        'Fair Value Accounting',
+        'Going Concern Assessment',
+        'Significant Accounting Judgments',
+        'Financial Statement Assertions'
+      ],
+      requiresApproval: true,
+      auditTrailRequired: true,
+      maxTokens: 8000,
+      temperature: 0.3
+    },
+
+    'controls-governance-assessor': {
+      model: 'claude-opus-4-6',
+      capabilities: [
+        'coso-internal-control-framework',
+        'control-environment-assessment',
+        'control-design-evaluation',
+        'control-testing',
+        'segregation-of-duties',
+        'reconciliation-controls',
+        'authorization-controls',
+        'preventive-detective-controls',
+        'process-mapping',
+        'risk-of-misstatement',
+        'transaction-cycle-controls',
+        'service-organization-controls',
+        'audit-committee-assessment',
+        'control-deviation-analysis',
+        'isa-330-assessment',
+        'isa-402-service-orgs'
+      ],
+      focusAreas: [
+        'COSO Internal Control Framework',
+        'Control Environment Evaluation',
+        'Control Design & Documentation',
+        'Control Testing Procedures',
+        'Transaction Cycle Controls',
+        'Segregation of Duties',
+        'Risk Assessment & Remediation',
+        'Service Organization Controls'
+      ],
+      requiresApproval: true,
+      auditTrailRequired: true,
+      maxTokens: 8000,
+      temperature: 0.3
+    },
+
+    'compliance-advisor': {
+      model: 'claude-opus-4-6',
+      capabilities: [
+        'companies-house-2006-act',
+        'schedule-1-presentation',
+        'schedule-3-small-company',
+        'schedule-4-micro-entity',
+        'directors-report-requirements',
+        'strategic-report-requirements',
+        'fca-regulation',
+        'isa-compliance-requirements',
+        'frs-102-disclosure',
+        'frs-105-micro-entity',
+        'related-party-transactions',
+        'going-concern-disclosure',
+        'filing-requirements',
+        'disclosure-checklists',
+        'regulatory-guidance',
+        'independence-verification',
+        'audit-documentation-compliance',
+        'post-balance-sheet-events'
+      ],
+      focusAreas: [
+        'Companies House 2006 Act Compliance',
+        'Schedule 1/3/4 Requirements',
+        'Directors\' Report & Strategic Report',
+        'FCA Regulatory Requirements',
+        'ISA Compliance & Standards',
+        'Disclosure Requirements',
+        'Filing Deadlines & Requirements',
+        'Regulatory Guidance & Interpretation'
+      ],
+      requiresApproval: true,
+      auditTrailRequired: true,
+      regutatoryReferenceRequired: true,
+      maxTokens: 8000,
+      temperature: 0.2
+    },
+
+    'transactional-testing-agent': {
+      model: 'claude-opus-4-6',
+      capabilities: [
+        'substantive-procedures',
+        'transaction-testing',
+        'assertion-testing',
+        'occurrence-assertion',
+        'completeness-assertion',
+        'accuracy-assertion',
+        'cutoff-assertion',
+        'classification-assertion',
+        'valuation-assertion',
+        'sampling-methodologies',
+        'statistical-sampling',
+        'non-statistical-sampling',
+        'evidence-collection',
+        'evidence-evaluation',
+        'control-testing-coordination',
+        'finding-documentation',
+        'audit-procedures',
+        'reconciliation-testing'
+      ],
+      focusAreas: [
+        'Transaction Testing Procedures',
+        'Financial Statement Assertions',
+        'Sampling Methodologies',
+        'Evidence Collection & Evaluation',
+        'Finding Documentation',
+        'Control Testing Coordination',
+        'Audit Procedures Design',
+        'Reconciliation Testing'
+      ],
+      requiresApproval: false,
+      auditTrailRequired: true,
+      maxTokens: 8000,
+      temperature: 0.3
     }
   },
 

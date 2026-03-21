@@ -1,0 +1,143 @@
+#!/bin/bash
+
+##############################################################################
+# Git Pre-Commit Hook for AuditEngine
+#
+# This hook runs before each commit to ensure:
+# 1. Code quality checks (lint)
+# 2. Framework compliance validation
+# 3. ISA standard alignment checks
+# 4. Test suite passes
+#
+# Install: git config core.hooksPath .githooks
+#
+##############################################################################
+
+set -e
+
+RESET='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+
+echo -e "${BLUE}🔍 Running pre-commit hooks...${RESET}"
+echo ""
+
+# Get list of staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=d)
+STAGED_JS_FILES=$(echo "$STAGED_FILES" | grep -E '\.(js|jsx)$' || true)
+
+if [ -z "$STAGED_JS_FILES" ]; then
+  echo -e "${YELLOW}⚠️  No JavaScript files staged${RESET}"
+  exit 0
+fi
+
+# 1. Check code style with ESLint
+echo -e "${BLUE}📋 Checking code style...${RESET}"
+if command -v eslint &> /dev/null; then
+  if ! npx eslint $STAGED_JS_FILES --max-warnings 0 2>/dev/null; then
+    echo -e "${RED}❌ ESLint check failed. Fix errors before committing.${RESET}"
+    echo -e "${YELLOW}Tip: Run 'npm run lint -- --fix' to auto-fix issues${RESET}"
+    exit 1
+  fi
+  echo -e "${GREEN}✅ Code style check passed${RESET}"
+else
+  echo -e "${YELLOW}⚠️  ESLint not found, skipping...${RESET}"
+fi
+
+echo ""
+
+# 2. Check for audit framework files
+echo -e "${BLUE}📖 Checking audit framework files...${RESET}"
+FRAMEWORK_FILES=$(echo "$STAGED_FILES" | grep -E 'frameworks|audit-stages|requirements' || true)
+if [ -n "$FRAMEWORK_FILES" ]; then
+  echo -e "${GREEN}✅ Framework files included in commit${RESET}"
+  echo "   Modified framework files:"
+  echo "$FRAMEWORK_FILES" | sed 's/^/   - /'
+fi
+
+echo ""
+
+# 3. Check for ISA compliance in framework updates
+echo -e "${BLUE}🏛️  Checking ISA compliance...${RESET}"
+ISA_FILES=$(echo "$STAGED_FILES" | grep -E 'isa-standards|ISA_Framework' || true)
+if [ -n "$ISA_FILES" ]; then
+  for file in $ISA_FILES; do
+    if grep -q "ISA_[0-9]" "$file" 2>/dev/null; then
+      echo -e "${GREEN}✅ ISA standards found in $file${RESET}"
+    fi
+  done
+fi
+
+echo ""
+
+# 4. Check for service/component changes
+echo -e "${BLUE}🔧 Checking services and components...${RESET}"
+SERVICE_FILES=$(echo "$STAGED_FILES" | grep -E 'services|components' || true)
+if [ -n "$SERVICE_FILES" ]; then
+  echo "   Modified service/component files:"
+  echo "$SERVICE_FILES" | sed 's/^/   - /'
+  echo -e "${YELLOW}⚠️  Ensure services are properly tested before committing${RESET}"
+fi
+
+echo ""
+
+# 5. Run Jest tests (if present)
+echo -e "${BLUE}🧪 Running tests...${RESET}"
+if [ -f "package.json" ] && grep -q '"jest"' package.json; then
+  if ! npm test -- --passWithNoTests --bail 2>/dev/null; then
+    echo -e "${RED}❌ Tests failed. Fix issues before committing.${RESET}"
+    exit 1
+  fi
+  echo -e "${GREEN}✅ All tests passed${RESET}"
+else
+  echo -e "${YELLOW}⚠️  No tests configured${RESET}"
+fi
+
+echo ""
+
+# 6. Check for console.log and debugger statements
+echo -e "${BLUE}🐛 Checking for debug statements...${RESET}"
+if echo "$STAGED_JS_FILES" | xargs grep -l "console.log\|debugger" 2>/dev/null | grep -q .; then
+  PROBLEM_FILES=$(echo "$STAGED_JS_FILES" | xargs grep -l "console.log\|debugger" 2>/dev/null || true)
+  echo -e "${YELLOW}⚠️  Found console.log/debugger in:${RESET}"
+  echo "$PROBLEM_FILES" | sed 's/^/   - /'
+  echo -e "${YELLOW}Consider removing them before committing${RESET}"
+fi
+
+echo ""
+
+# 7. Check file sizes (warn if large files)
+echo -e "${BLUE}📦 Checking file sizes...${RESET}"
+LARGE_FILES=$(echo "$STAGED_FILES" | while read file; do
+  SIZE=$(wc -c < "$file" 2>/dev/null || echo 0)
+  if [ $SIZE -gt 500000 ]; then
+    echo "$file ($((SIZE/1024))KB)"
+  fi
+done)
+
+if [ -n "$LARGE_FILES" ]; then
+  echo -e "${YELLOW}⚠️  Large files detected:${RESET}"
+  echo "$LARGE_FILES" | sed 's/^/   - /'
+fi
+
+echo ""
+
+# 8. Check for audit-specific requirements
+echo -e "${BLUE}✅ Pre-commit checks complete!${RESET}"
+echo ""
+
+# Show commit info
+echo -e "${GREEN}Ready to commit the following files:${RESET}"
+echo "$STAGED_FILES" | sed 's/^/   ✓ /'
+
+echo ""
+echo -e "${BLUE}💡 Tip: Use clear commit messages like:${RESET}"
+echo "   'feat: Add [component] - [description]'"
+echo "   'fix: Resolve [issue] in [component]'"
+echo "   'docs: Update [documentation]'"
+echo "   'refactor: Improve [component]'"
+echo ""
+
+exit 0

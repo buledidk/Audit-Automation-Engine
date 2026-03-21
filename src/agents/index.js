@@ -4,6 +4,8 @@
  */
 
 export { AgentFramework } from './AgentFramework.js';
+
+// Original Specialized Agents
 export {
   SupervisorAgent,
   CodeAnalystAgent,
@@ -13,6 +15,16 @@ export {
   TestingAgent,
   AgentRegistry
 } from './SpecializedAgents.js';
+
+// NEW: Professional Audit Specialist Agents
+export {
+  TechnicalAccountingLead,
+  ControlsAndGovernanceAssessor,
+  ComplianceAdvisor,
+  TransactionalTestingAgent,
+  AuditSpecialistRegistry
+} from './AuditSpecializedAgents.js';
+
 export { AgentCLI } from './AgentCLI.js';
 
 // Default export

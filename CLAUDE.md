@@ -11,13 +11,36 @@ AuditEngine is a professional audit automation platform built with React + Vite.
 - CI/CD: GitHub Actions (Node 20.x, @v4 actions)
 
 ## Architecture
+
+### Core Application
 - src/AuditEngine.jsx — Main monolith (all 6 audit phases)
-- src/services/ — 9 AI agents coordinated via aiAgentOrchestrator
+- src/services/ — 9+ AI agents coordinated via aiAgentOrchestrator
 - src/components/ — UI components (MaterialityCalculator, CommentPanel, etc.)
-- src/data/ — Audit frameworks, procedures, dropdown libraries
 - src/lib/supabaseClient.js — Database client with graceful degradation
 - database/schema.sql — Production PostgreSQL schema (18 tables)
 - server/ — Express backend
+
+### Comprehensive Audit Framework (NEW)
+- **src/frameworks/** — ISA and regional standards definitions
+  - isa-standards/ISA_Framework.js — ISA 200-599 standards alignment
+  - regional-standards/Regional_Standards.js — UK, EU, US, Pakistan requirements
+  - AuditFrameworkIndex.js — Central framework registry with orchestration
+- **src/audit-stages/** — Detailed phase documentation (6 phases)
+  - planning/ — Phase 1: Planning (ISA 200, 210, 220, 320, 330)
+  - risk-assessment/ — Phase 2: Risk Assessment (ISA 315, 330, 402)
+  - interim/ — Phase 3: Interim Audit (ISA 330, 500, 501, 505, 510)
+  - final-audit/ — Phase 4: Final Audit (ISA 500, 501, 560, 570, 580, 600)
+  - completion/ — Phase 5: Completion (ISA 560, 570, 580, 620, 700)
+  - reporting/ — Phase 6: Reporting (ISA 700, 705, 706, 710, 720)
+- **src/requirements/** — Audit requirements and expectations
+  - AuditRequirementsFramework.js — Cross-phasing requirements
+  - compliance/ — Compliance checklists
+  - expectations/ — Role-based expectations
+  - controls/ — Control design requirements
+- **docs/AUDIT_FRAMEWORK/** — Comprehensive documentation
+  - AUDIT_FRAMEWORK_COMPLETE_GUIDE.md — Full framework guide
+  - QUICK_REFERENCE.md — Phase checklists and quick lookup
+- src/data/ — Audit procedures, dropdown libraries
 
 ## Environment Variables (Vercel)
 - VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY — Supabase connection
