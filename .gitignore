@@ -1,3 +1,6 @@
+node_modules/
+dist/
+.progress.json
 # Dependencies
 node_modules/
 npm-debug.log*
