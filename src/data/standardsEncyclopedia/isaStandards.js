@@ -158,7 +158,7 @@ export const ISA_GENERAL_PRINCIPLES = {
       'Presumed risks: revenue recognition fraud (rebuttable), management override of controls (not rebuttable)',
       'Engagement team discussion: brainstorm fraud risks, opportunities, management incentives (para 15)',
       'Inquiries of management: awareness of actual/suspected fraud, process for identifying and responding, communication to TCWG',
-      'Inquiries of TCWG: oversight of management's anti-fraud processes',
+      `Inquiries of TCWG: oversight of management's anti-fraud processes`,
       'Evaluate fraud risk factors throughout the audit',
       'Responses to assessed risks: overall (unpredictability), specific procedures for identified risks',
       'Management override procedures (MANDATORY): test journal entries and other adjustments, review accounting estimates for bias, evaluate business rationale of unusual transactions (para 32-34)',
@@ -426,7 +426,7 @@ export const ISA_AUDIT_EVIDENCE = {
       'Sufficient (quantity) and appropriate (quality: relevance and reliability)',
       'Audit procedures to obtain evidence: inspection, observation, external confirmation, recalculation, reperformance, analytical procedures, inquiry',
       'Reliability: external > internal, internal controls effective > weak, directly obtained > indirectly, documentary > oral, originals > copies',
-      'Information from management's expert: evaluate competence, capabilities, objectivity',
+      `Information from management's expert: evaluate competence, capabilities, objectivity`,
       'If information inconsistent with other evidence: investigate',
       'Consider cost vs benefit (but difficulty/expense not valid reason to omit necessary procedure)'
     ],
@@ -542,11 +542,11 @@ export const ISA_AUDIT_EVIDENCE = {
     lastAmended: '2024-01-01',
     keyRequirements: [
       'Risk assessment: understand how management identifies, makes, and discloses estimates',
-      'Understand: methods/models, assumptions, data sources, management's selection of point estimate, uncertainty',
+      `Understand: methods/models, assumptions, data sources, management's selection of point estimate, uncertainty`,
       'Inherent risk factors: estimation uncertainty, complexity, subjectivity',
       'Spectrum of inherent risk for each estimate: consider likelihood and magnitude of misstatement',
       'Responses: (a) obtain evidence from events up to date of auditor report, (b) test how management made estimate, (c) develop auditor point estimate or range',
-      'For significant risks: test controls over estimates, test management's process in detail, develop independent estimate',
+      `For significant risks: test controls over estimates, test management's process in detail, develop independent estimate`,
       'Evaluate reasonableness of management assumptions (both individually and in combination)',
       'Assess indicators of management bias: consider directional consistency, pattern of revisions, one-sided assumptions',
       'Disclosures: evaluate adequacy and conformity with applicable framework',
@@ -577,13 +577,13 @@ export const ISA_AUDIT_EVIDENCE = {
     effectiveDate: '2016-06-17',
     lastAmended: '2024-01-01',
     keyRequirements: [
-      'Understand entity's related party relationships and transactions',
+      `Understand entity's related party relationships and transactions`,
       'Risk assessment: related parties may create increased fraud risk',
       'Inquiries of management: identity of related parties, nature of relationships, transactions entered into',
       'Inspect: board minutes, shareholder registers, contracts, correspondence, tax returns, information from regulators',
       'Evaluate: business rationale of significant transactions, whether terms and conditions are consistent with arms-length basis',
       'Previously undisclosed related parties: communicate to team, reassess risk, evaluate management integrity',
-      'Significant transactions outside normal course: evaluate management's assertions about business purpose and authorisation',
+      `Significant transactions outside normal course: evaluate management's assertions about business purpose and authorisation`,
       'Obtain written representations from management regarding completeness of identification and disclosure',
       'Report to TCWG: significant related party matters arising',
       'FRS 102 s33 / IAS 24 disclosure requirements'
@@ -617,17 +617,17 @@ export const ISA_AUDIT_EVIDENCE = {
     effectiveDate: '2019-09-15',
     lastAmended: '2024-01-01',
     keyRequirements: [
-      'Evaluate management's assessment of going concern (at least 12 months from FS date)',
+      `Evaluate management's assessment of going concern (at least 12 months from FS date)`,
       'UK: management must assess at least 12 months from date of approval of FS',
-      'Consider whether management's assessment covers adequate period',
-      'Obtain written representations regarding management's plans for future actions',
+      `Consider whether management's assessment covers adequate period`,
+      `Obtain written representations regarding management's plans for future actions`,
       'Remain alert throughout the audit for events/conditions that may cast significant doubt',
       'Indicators: net liability position, negative operating cash flows, adverse financial ratios, substantial operating losses, inability to pay creditors on time, loss of major customer, arrears of dividends, inability to comply with loan terms, denial of trade credit, change from credit to cash-on-delivery',
-      'If events/conditions identified: evaluate management's plans and whether they are feasible',
+      `If events/conditions identified: evaluate management's plans and whether they are feasible`,
       'Reporting implications: (a) GC appropriate, no material uncertainty → unmodified, (b) GC appropriate, material uncertainty → unmodified with material uncertainty section (or EOM), (c) GC inappropriate → adverse opinion',
       'UK-specific: auditor must state whether material uncertainty exists, and if not, explain how conclusion reached',
       'UK-specific: for PIE entities — additional reporting on going concern review under ISA (UK) 570 para 21-22',
-      'Document: management's assessment, events/conditions, management's plans, auditor's conclusion'
+      `Document: management's assessment, events/conditions, management's plans, auditor's conclusion`
     ],
     goingConcernIndicators: {
       financial: [

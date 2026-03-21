@@ -1,9 +1,9 @@
 /**
  * AI AGENT ORCHESTRATOR - MASTER COORDINATOR
- * Coordinates 8+ AI agents for unified audit automation
+ * Coordinates 11 AI agents for unified audit automation
  *
  * Status: ✅ PRODUCTION READY
- * Agents: 9 total (4 engines + 5 agents)
+ * Agents: 11 total (6 engines + 5 agents)
  * Coordination: Full orchestration with caching and fallback
  */
 
@@ -17,16 +17,20 @@ import { RiskAssessmentAgent } from "./riskAssessmentAgent.js";
 import { ComplianceAgent } from "./complianceAgent.js";
 import { EvidenceAnalysisAgent } from "./evidenceAnalysisAgent.js";
 import { WorkflowAssistantAgent } from "./workflowAssistantAgent.js";
+import { FinancialRatioEngine } from "./financialRatioEngine.js";
+import { InvestorAnalyticsEngine } from "./investorAnalyticsEngine.js";
 
 class AIAgentOrchestrator {
   constructor() {
-    // Initialize all 9 agents
+    // Initialize all 11 agents
     this.agents = {
-      // Core Engines (4)
+      // Core Engines (6)
       procedures: new AIProcedureEngine(),
       exceptions: new ExceptionPredictionEngine(),
       jurisdictions: new JurisdictionEngine(),
       materiality: new MaterialityEngine(),
+      ratios: new FinancialRatioEngine(),
+      investor: new InvestorAnalyticsEngine(),
       // Claude Agents (5)
       reports: new ReportGenerationAgent(),
       risk: new RiskAssessmentAgent(),
@@ -117,6 +121,40 @@ class AIAgentOrchestrator {
           result = await this.agents.workflow.getNextStep(request.params.context);
           break;
 
+        case "CALCULATE_RATIOS":
+          result = this.agents.ratios.calculateAllRatios(
+            request.params.financialData,
+            request.params.priorYear,
+            request.params.options
+          );
+          break;
+
+        case "ANALYZE_INVESTOR":
+          result = await this.agents.investor.performComprehensiveAnalysis(
+            request.params.companyName,
+            request.params.companyNumber,
+            request.params.financialData,
+            request.params.options
+          );
+          break;
+
+        case "BENCHMARK_FTSE250":
+          result = this.agents.ratios.benchmarkAgainstFTSE250(
+            request.params.ratios,
+            request.params.companyName,
+            request.params.sicCode
+          );
+          break;
+
+        case "INDUSTRY_ANALYSIS":
+          result = await this.agents.investor.performIndustryAnalysis(
+            request.params.companyName,
+            request.params.sicCode,
+            request.params.sector,
+            request.params.financialData
+          );
+          break;
+
         // Multi-agent orchestration
         case "FULL_ENGAGEMENT_ANALYSIS":
           result = await this._executeFullAnalysis(request.params);
@@ -171,12 +209,17 @@ class AIAgentOrchestrator {
     console.log("   🔄 Executing full engagement analysis (parallel)...");
 
     // Run multiple agents in parallel
-    const [procedures, exceptions, risk, materiality, compliance] = await Promise.all([
+    const [procedures, exceptions, risk, materiality, compliance, ratioAnalysis] = await Promise.all([
       this.agents.procedures.suggestProcedures(params.context, params.procedures),
       this.agents.exceptions.predictExceptions(params.context),
       this.agents.risk.assessInherentRisk(params.context),
       this.agents.materiality.calculateMateriality(params.context),
       this.agents.compliance.checkCompliance(params.context),
+      Promise.resolve(
+        params.financialData
+          ? this.agents.ratios.calculateAllRatios(params.financialData, params.priorYear, params.ratioOptions)
+          : null
+      ),
     ]);
 
     return {
@@ -185,6 +228,7 @@ class AIAgentOrchestrator {
       risk,
       materiality,
       compliance,
+      ratioAnalysis,
       timestamp: new Date().toISOString(),
       aggregated: {
         overallRisk: this._calculateOverallRisk(risk, exceptions),
@@ -301,6 +345,10 @@ class AIAgentOrchestrator {
       ASSESS_RISK: { riskLevel: "MEDIUM", note: "Cached result" },
       CHECK_COMPLIANCE: { status: "PENDING", note: "Cached result" },
       ANALYZE_EVIDENCE: { sufficiency: "UNKNOWN", cached: true },
+      CALCULATE_RATIOS: { ratios: {}, note: "Cached result" },
+      ANALYZE_INVESTOR: { status: "PENDING", note: "Cached result" },
+      BENCHMARK_FTSE250: { comparison: {}, note: "Cached result" },
+      INDUSTRY_ANALYSIS: { status: "PENDING", note: "Cached result" },
     };
     return fallbacks[type] || { status: "FALLBACK_MODE" };
   }
@@ -331,6 +379,8 @@ class AIAgentOrchestrator {
         exceptions: this.agents.exceptions.getMetrics?.() || { status: "READY" },
         jurisdictions: this.agents.jurisdictions.getMetrics?.() || { status: "READY" },
         materiality: this.agents.materiality.getMetrics?.() || { status: "READY" },
+        ratios: this.agents.ratios.getMetrics?.() || { status: "READY" },
+        investor: this.agents.investor.getMetrics?.() || { status: "READY" },
         reports: this.agents.reports.getMetrics?.() || { status: "READY" },
         risk: this.agents.risk.getMetrics?.() || { status: "READY" },
         compliance: this.agents.compliance.getMetrics?.() || { status: "READY" },
@@ -367,8 +417,9 @@ console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║    AI AGENT ORCHESTRATOR - PRODUCTION READY                ║
 ╠════════════════════════════════════════════════════════════╣
-║  Agents: 9 Total                                           ║
+║  Agents: 11 Total                                          ║
 ║  ├─ Procedures, Exceptions, Jurisdictions, Materiality    ║
+║  ├─ Ratios, Investor Analytics                            ║
 ║  ├─ Reports, Risk, Compliance, Evidence, Workflow         ║
 ║  Cache: 5-minute TTL                                       ║
 ║  Status: ✅ READY                                          ║

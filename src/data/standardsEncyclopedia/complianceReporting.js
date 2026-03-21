@@ -579,7 +579,7 @@ export const OTHER_REGULATORY_REPORTING = {
 
   SECR: {
     title: 'Streamlined Energy and Carbon Reporting (SECR)',
-    legislation: 'Companies Act 2006 (Strategic Report and Directors' Report) Regulations 2013 (as amended 2018)',
+    legislation: `Companies Act 2006 (Strategic Report and Directors' Report) Regulations 2013 (as amended 2018)`,
     applicableTo: [
       'Quoted companies',
       'Large unquoted companies (meeting 2 of 3: turnover >£36m, balance sheet >£18m, >250 employees)',

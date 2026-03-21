@@ -28,6 +28,7 @@ import EnhancedVisualInterface from "./components/EnhancedVisualInterface";
 import ModernDesignShowcase from "./components/ModernDesignShowcase";
 // AI-Powered Document Extraction: Tokenization, extraction, auto-population, and framework reporting
 import DocumentUploadAndExtractionPanel from "./components/DocumentUploadAndExtractionPanel";
+import { FinancialAnalysisDashboard } from "./components/FinancialAnalysisDashboard";
 
 const COLORS = {
   bg: "#0A0E17",
@@ -63,7 +64,7 @@ const PHASES = [
 // ═══════════════════════════════════════════════════════════════════
 // PLANNING PHASE COMPONENT
 // ═══════════════════════════════════════════════════════════════════
-function PlanningPhase({ engagement, updateEngagement, onAdvance, canAdvance }) {
+function PlanningPhase({ engagement, updateEngagement, onAdvance, canAdvance, financialData, priorYearData, onFinancialDataChange, onPriorYearDataChange }) {
   const [activeTab, setActiveTab] = useState("engagement");
 
   return (
@@ -73,8 +74,8 @@ function PlanningPhase({ engagement, updateEngagement, onAdvance, canAdvance }) 
         <p style={{ color: COLORS.dim, margin: 0 }}>ISA 200, 210, 315, 320 - Set up engagement parameters and audit strategy</p>
       </div>
 
-      <div style={{ display: "flex", gap: "8px", marginBottom: "24px", borderBottom: `1px solid ${COLORS.border}`, paddingBottom: "12px" }}>
-        {["engagement", "risk", "materiality", "strategy", "team"].map(tab => (
+      <div style={{ display: "flex", gap: "8px", marginBottom: "24px", borderBottom: `1px solid ${COLORS.border}`, paddingBottom: "12px", flexWrap: "wrap" }}>
+        {["engagement", "risk", "materiality", "financial", "strategy", "team"].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -204,6 +205,59 @@ function PlanningPhase({ engagement, updateEngagement, onAdvance, canAdvance }) 
         </div>
       )}
 
+      {activeTab === "financial" && (
+        <div>
+          <div style={{ background: COLORS.card, borderRadius: "12px", padding: "24px", border: `1px solid ${COLORS.border}`, marginBottom: "24px" }}>
+            <h3 style={{ color: COLORS.text, marginTop: 0 }}>Financial Statements Input (ISA 520)</h3>
+            <p style={{ color: COLORS.dim, fontSize: "12px", marginBottom: "16px" }}>Enter key financial data for ratio analysis, benchmarking, and going concern assessment</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
+              {[
+                { key: "revenue", label: "Revenue" },
+                { key: "costOfSales", label: "Cost of Sales" },
+                { key: "grossProfit", label: "Gross Profit" },
+                { key: "operatingProfit", label: "Operating Profit" },
+                { key: "profitBeforeTax", label: "Profit Before Tax" },
+                { key: "profitAfterTax", label: "Profit After Tax" },
+                { key: "totalAssets", label: "Total Assets" },
+                { key: "currentAssets", label: "Current Assets" },
+                { key: "inventory", label: "Inventory" },
+                { key: "tradeReceivables", label: "Trade Receivables" },
+                { key: "cashAndEquivalents", label: "Cash & Equivalents" },
+                { key: "totalLiabilities", label: "Total Liabilities" },
+                { key: "currentLiabilities", label: "Current Liabilities" },
+                { key: "nonCurrentLiabilities", label: "Non-Current Liabilities" },
+                { key: "totalEquity", label: "Total Equity" },
+                { key: "operatingCashFlow", label: "Operating Cash Flow" },
+                { key: "interestExpense", label: "Interest Expense" },
+                { key: "depreciation", label: "Depreciation" },
+              ].map(({ key, label }) => (
+                <InputField
+                  key={key}
+                  label={label}
+                  value={financialData[key] || ""}
+                  onChange={(v) => onFinancialDataChange({ ...financialData, [key]: parseFloat(v) || 0 })}
+                  placeholder="0"
+                  type="number"
+                />
+              ))}
+            </div>
+            <div style={{ marginTop: "16px", padding: "12px", background: COLORS.planning + "15", borderRadius: "6px", border: `1px solid ${COLORS.planning}33` }}>
+              <p style={{ color: COLORS.blue, margin: 0, fontSize: "11px" }}>Prior year data enables trend analysis (ISA 520 analytical procedures)</p>
+            </div>
+          </div>
+          {financialData.revenue || financialData.totalAssets ? (
+            <FinancialAnalysisDashboard
+              financialData={financialData}
+              priorYearData={Object.keys(priorYearData || {}).length > 0 ? priorYearData : null}
+              entityName={engagement.entityName}
+              entityType={engagement.entitySize?.toLowerCase() || "private"}
+              sector={engagement.sector}
+              sicCode={engagement.sicCode}
+            />
+          ) : null}
+        </div>
+      )}
+
       {activeTab === "team" && (
         <div style={{ background: COLORS.card, borderRadius: "12px", padding: "24px", border: `1px solid ${COLORS.border}` }}>
           <h3 style={{ color: COLORS.text, marginTop: 0 }}>Team Allocation</h3>
@@ -244,7 +298,7 @@ function PlanningPhase({ engagement, updateEngagement, onAdvance, canAdvance }) 
 // ═══════════════════════════════════════════════════════════════════
 // RISK ASSESSMENT PHASE COMPONENT
 // ═══════════════════════════════════════════════════════════════════
-function RiskAssessmentPhase({ engagement, updateEngagement, onAdvance, canAdvance }) {
+function RiskAssessmentPhase({ engagement, updateEngagement, onAdvance, canAdvance, financialData, priorYearData }) {
   const [activeTab, setActiveTab] = useState("riskMatrix");
 
   const calculateRiskRating = (inherent, control) => {
@@ -263,7 +317,7 @@ function RiskAssessmentPhase({ engagement, updateEngagement, onAdvance, canAdvan
       </div>
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "24px", borderBottom: `1px solid ${COLORS.border}`, paddingBottom: "12px" }}>
-        {["riskMatrix", "fraud", "estimates", "goingConcern", "relatedParties"].map(tab => (
+        {["riskMatrix", "fraud", "estimates", "goingConcern", "relatedParties", "financialHealth"].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -336,6 +390,24 @@ function RiskAssessmentPhase({ engagement, updateEngagement, onAdvance, canAdvan
             }}
           />
         </div>
+      )}
+
+      {activeTab === "financialHealth" && (
+        (financialData?.revenue || financialData?.totalAssets) ? (
+          <FinancialAnalysisDashboard
+            financialData={financialData}
+            priorYearData={Object.keys(priorYearData || {}).length > 0 ? priorYearData : null}
+            entityName={engagement.entityName}
+            entityType={engagement.entitySize?.toLowerCase() || "private"}
+            sector={engagement.sector}
+            sicCode={engagement.sicCode}
+            initialTab="alerts"
+          />
+        ) : (
+          <div style={{ background: COLORS.card, borderRadius: "12px", padding: "24px", border: `1px solid ${COLORS.border}` }}>
+            <p style={{ color: COLORS.dim, textAlign: "center" }}>Enter financial data in the Planning phase Financial tab to see health analysis and alerts here.</p>
+          </div>
+        )
       )}
 
       {canAdvance && (
@@ -453,7 +525,7 @@ function ResultsDashboard({ engagement, phases }) {
 // ═══════════════════════════════════════════════════════════════════
 // COMPLETION PHASE
 // ═══════════════════════════════════════════════════════════════════
-function CompletionPhase({ engagement, updateEngagement, onAdvance, canAdvance }) {
+function CompletionPhase({ engagement, updateEngagement, onAdvance, canAdvance, financialData, priorYearData }) {
   return (
     <div style={{ padding: "24px", maxWidth: "1200px" }}>
       <div style={{ marginBottom: "24px" }}>
@@ -534,6 +606,22 @@ function CompletionPhase({ engagement, updateEngagement, onAdvance, canAdvance }
           ))}
         </div>
       </div>
+
+      {/* Final Analytical Review — ISA 520 */}
+      {(financialData?.revenue || financialData?.totalAssets) && (
+        <div style={{ marginBottom: "24px" }}>
+          <h3 style={{ color: COLORS.completion, marginBottom: "12px" }}>Final Analytical Review (ISA 520)</h3>
+          <FinancialAnalysisDashboard
+            financialData={financialData}
+            priorYearData={Object.keys(priorYearData || {}).length > 0 ? priorYearData : null}
+            entityName={engagement.entityName}
+            entityType={engagement.entitySize?.toLowerCase() || "private"}
+            sector={engagement.sector}
+            sicCode={engagement.sicCode}
+            initialTab="trends"
+          />
+        </div>
+      )}
 
       {canAdvance && (
         <div style={{ marginTop: "24px", textAlign: "center" }}>
@@ -696,6 +784,8 @@ export default function AuditEngine() {
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
   const [viewMode, setViewMode] = useState("phase"); // phase | results | procedures | agents | documentation | extraction | dashboard | collaboration | forms | offline | integrations | activity | visual | design
   const [engagement, setEngagement] = useState(engagementStore.engagement);
+  const [financialData, setFinancialData] = useState({});
+  const [priorYearData, setPriorYearData] = useState({});
 
   // Phase A-B: New System Hooks
   const { activeAgents, progress, isRunning, startAgents } = useAgentProgress();
@@ -1023,6 +1113,10 @@ export default function AuditEngine() {
                 updateEngagement={updateEngagement}
                 onAdvance={advancePhase}
                 canAdvance={canAdvancePhase}
+                financialData={financialData}
+                priorYearData={priorYearData}
+                onFinancialDataChange={setFinancialData}
+                onPriorYearDataChange={setPriorYearData}
               />
             )}
             {currentPhaseIndex === 1 && (
@@ -1031,6 +1125,8 @@ export default function AuditEngine() {
                 updateEngagement={updateEngagement}
                 onAdvance={advancePhase}
                 canAdvance={canAdvancePhase}
+                financialData={financialData}
+                priorYearData={priorYearData}
               />
             )}
             {currentPhaseIndex === 2 && (
@@ -1049,7 +1145,7 @@ export default function AuditEngine() {
                 canAdvance={canAdvancePhase}
               />
             )}
-            {currentPhaseIndex === 4 && <CompletionPhase engagement={engagement} updateEngagement={updateEngagement} onAdvance={advancePhase} canAdvance={canAdvancePhase} />}
+            {currentPhaseIndex === 4 && <CompletionPhase engagement={engagement} updateEngagement={updateEngagement} onAdvance={advancePhase} canAdvance={canAdvancePhase} financialData={financialData} priorYearData={priorYearData} />}
             {currentPhaseIndex === 5 && <ReportingPhase engagement={engagement} updateEngagement={updateEngagement} />}
           </>
         ) : viewMode === "results" ? (
