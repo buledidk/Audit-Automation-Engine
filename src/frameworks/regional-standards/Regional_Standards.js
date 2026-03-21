@@ -35,7 +35,7 @@ export const regionalStandards = {
       specificConsiderations: {
         'FCA Regulated Entities': ['Enhanced reporting', 'Senior Statutory Auditor sign-off'],
         'Public Interest Entities': ['Key audit matters', 'Viability statement assessment'],
-        'Small Companies': ['Simplified audit exemptions', 'Audit thresholds ($750k)]'
+        'Small Companies': ['Simplified audit exemptions', 'Audit thresholds ($750k)']
       }
     }
   },

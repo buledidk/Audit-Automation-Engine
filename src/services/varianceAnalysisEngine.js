@@ -338,7 +338,7 @@ export class VarianceAnalysisEngine {
       drivers.push({
         driver: 'Sales Volume',
         variance: volumeVariance.toFixed(2) + '%',
-        impact: 'PRIMARY' if Math.abs(volumeVariance) > 10 else 'SECONDARY'
+        impact: Math.abs(volumeVariance) > 10 ? 'PRIMARY' : 'SECONDARY'
       });
     }
 
@@ -347,7 +347,7 @@ export class VarianceAnalysisEngine {
       drivers.push({
         driver: 'Average Selling Price',
         variance: priceVariance.toFixed(2) + '%',
-        impact: 'PRIMARY' if Math.abs(priceVariance) > 10 else 'SECONDARY'
+        impact: Math.abs(priceVariance) > 10 ? 'PRIMARY' : 'SECONDARY'
       });
     }
 

@@ -163,7 +163,7 @@ export class FinancialRatioCalculationEngine {
       framework: 'Basel III - Capital Adequacy',
       interpretation: `Shareholder capital generates ${(data.netIncome / data.equity) * 100}% return`,
       status: (data.netIncome / data.equity) > 0.1 ? 'GOOD' : 'BELOW_TARGET',
-      investorPerspective: 'Attractive' if (data.netIncome / data.equity) > 0.15 else 'Marginal'
+      investorPerspective: (data.netIncome / data.equity) > 0.15 ? 'Attractive' : 'Marginal'
     };
 
     // EBITDA Margin = EBITDA / Revenue
@@ -247,7 +247,7 @@ export class FinancialRatioCalculationEngine {
       interpretation: `Payables paid ${payablesTurnover.toFixed(2)} times per year`,
       daysPaid: (365 / payablesTurnover).toFixed(0),
       paymentEfficiency: payablesTurnover > 4 ? 'EFFICIENT' : 'EXTENDED',
-      cashManagement: 'Consider extending terms' if payablesTurnover > 8 else 'Current terms appropriate'
+      cashManagement: payablesTurnover > 8 ? 'Consider extending terms' : 'Current terms appropriate'
     };
 
     // Fixed Asset Turnover = Revenue / Net Fixed Assets
@@ -358,7 +358,7 @@ export class FinancialRatioCalculationEngine {
       framework: 'IAS 33 - Earnings Per Share',
       interpretation: `Each share earned $${(data.netIncome / (data.sharesOutstanding || 1)).toFixed(2)}`,
       status: (data.netIncome / (data.sharesOutstanding || 1)) > 0 ? 'POSITIVE' : 'NEGATIVE',
-      trendAnalysis: 'Improving' if data.epsGrowth > 5 else 'Stable',
+      trendAnalysis: data.epsGrowth > 5 ? 'Improving' : 'Stable',
       components: {
         netIncome: data.netIncome,
         sharesOutstanding: data.sharesOutstanding
