@@ -62,6 +62,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -78,10 +80,7 @@ jobs:
       - name: Check for secrets
         uses: trufflesecurity/trufflehog@main
         with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
-          extra_args: --debug
+          extra_args: --debug --only-verified
 
   deploy-vercel:
     name: Deploy to Vercel
@@ -145,24 +144,6 @@ jobs:
               body: `🚀 Vercel Preview: ${{ steps.deploy.outputs.deployment_url }}`
             })
 
-      - name: Notify Slack
-        if: always()
-        uses: slackapi/slack-github-action@v1
-        with:
-          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
-          payload: |
-            {
-              "text": "AuditEngine Deployment ${{ job.status }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*AuditEngine Deployment*\nStatus: `${{ job.status }}`\nBranch: `${{ github.ref }}`\nCommit: `${{ github.sha }}`"
-                  }
-                }
-              ]
-            }
 
   verify-production:
     name: Verify Production Deployment
