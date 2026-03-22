@@ -3,17 +3,15 @@
  * Evaluates and categorizes audit risks with detailed analysis
  *
  * Status: ✅ PRODUCTION READY
- * Model: Claude 3.5 Sonnet
+ * Model: Claude Opus (via claudeClient sendMessage API)
  */
 
-import { Anthropic } from "@anthropic-ai/sdk";
+import claudeClient, { MODELS, EFFORT } from "./claudeClient.js";
 
 export class RiskAssessmentAgent {
   constructor() {
-    this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY,
-    });
-    this.model = "claude-3-5-sonnet-20241022";
+    this.claude = claudeClient;
+    this.model = MODELS.OPUS;  // Risk assessment uses Opus for deep reasoning
     this.cache = new Map();
     this.CACHE_TTL = 60 * 60 * 1000; // 1 hour
   }
@@ -48,15 +46,16 @@ Return structured JSON:
 Respond with ONLY valid JSON.
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 1000,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.2,
+      maxTokens: 1000,
+      thinking: true,
+      effort: EFFORT.HIGH,
+      domain: "riskAssessment",
     });
 
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    const risk = JSON.parse(text);
+    const risk = this.claude.parseJSON(text);
 
     this.cache.set(cacheKey, risk);
     setTimeout(() => this.cache.delete(cacheKey), this.CACHE_TTL);
@@ -86,15 +85,16 @@ Return JSON:
 }
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 800,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.2,
+      maxTokens: 800,
+      thinking: true,
+      effort: EFFORT.HIGH,
+      domain: "riskAssessment",
     });
 
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    return JSON.parse(text);
+    return this.claude.parseJSON(text);
   }
 
   /**
@@ -124,15 +124,16 @@ Return JSON:
 }
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 500,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.2,
+      maxTokens: 500,
+      thinking: true,
+      effort: EFFORT.HIGH,
+      domain: "riskAssessment",
     });
 
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    return JSON.parse(text);
+    return this.claude.parseJSON(text);
   }
 
   /**
@@ -153,15 +154,16 @@ Return JSON:
 }
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 1000,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.2,
+      maxTokens: 1000,
+      thinking: true,
+      effort: EFFORT.HIGH,
+      domain: "riskAssessment",
     });
 
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    return JSON.parse(text);
+    return this.claude.parseJSON(text);
   }
 
   /**
@@ -173,6 +175,8 @@ Return JSON:
       status: "READY",
       cacheSize: this.cache.size,
       model: this.model,
+      api: "claude.sendMessage",
+      thinking: true,
     };
   }
 }

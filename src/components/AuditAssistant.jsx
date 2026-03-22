@@ -80,7 +80,7 @@ Format responses to include:
     try {
       // Call Claude Haiku for fast response
       const response = await clientRef.current.messages.create({
-        model: 'claude-3-5-haiku-20241022',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1000,
         temperature: 0.5, // Balanced for audit guidance
         system: buildSystemPrompt(),

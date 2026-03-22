@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuditEngine — AI Agent Performance Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0a0e1a;
+    color: #e0e6ed;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #0f1628 0%, #1a1f3a 100%);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #818cf8, #a78bfa, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header-stats {
+    display: flex;
+    gap: 24px;
+  }
+  .header-stat {
+    text-align: center;
+  }
+  .header-stat .value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #10b981;
+  }
+  .header-stat .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+
+  /* Orchestrator banner */
+  .orch-banner {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.08), rgba(99, 102, 241, 0.08));
+    border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    font-size: 13px;
+  }
+  .orch-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #10b981;
+  }
+  .orch-pill .dot {
+    width: 7px; height: 7px;
+    background: #10b981;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  .orch-metric {
+    color: #94a3b8;
+  }
+  .orch-metric span {
+    color: #e2e8f0;
+    font-weight: 600;
+  }
+
+  /* Main grid */
+  .dashboard {
+    padding: 24px 32px;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #64748b;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(100, 116, 139, 0.3);
+  }
+
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  /* Agent Card */
+  .agent-card {
+    background: linear-gradient(145deg, #111827, #0f172a);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .agent-card:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+  }
+  .agent-card.new-agent {
+    border-color: rgba(16, 185, 129, 0.4);
+    background: linear-gradient(145deg, #0c1a15, #0f172a);
+  }
+  .agent-card.new-agent::before {
+    content: 'NEW';
+    position: absolute;
+    top: 12px;
+    right: -24px;
+    background: linear-gradient(90deg, #10b981, #059669);
+    color: white;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 3px 32px;
+    transform: rotate(45deg);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .card-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+  .card-type {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #64748b;
+    margin-top: 3px;
+  }
+  .card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+  .card-status.ready {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+  .card-status .dot-sm {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* Model badge */
+  .model-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .model-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+  .model-opus {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+  }
+  .model-sonnet {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+  }
+  .model-haiku {
+    background: rgba(34, 211, 238, 0.15);
+    color: #22d3ee;
+    border: 1px solid rgba(34, 211, 238, 0.3);
+  }
+  .model-none {
+    background: rgba(100, 116, 139, 0.15);
+    color: #94a3b8;
+    border: 1px solid rgba(100, 116, 139, 0.3);
+  }
+  .thinking-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(251, 191, 36, 0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+  .isa-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(244, 114, 182, 0.12);
+    color: #f472b6;
+    border: 1px solid rgba(244, 114, 182, 0.3);
+  }
+
+  /* Performance bars */
+  .perf-section {
+    margin-top: 12px;
+  }
+  .perf-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  .perf-label { color: #94a3b8; }
+  .perf-value { color: #e2e8f0; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .perf-bar-wrap {
+    width: 100%;
+    height: 6px;
+    background: rgba(100, 116, 139, 0.2);
+    border-radius: 3px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+  .perf-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .bar-green { background: linear-gradient(90deg, #10b981, #34d399); }
+  .bar-blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+  .bar-purple { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+  .bar-amber { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .bar-pink { background: linear-gradient(90deg, #ec4899, #f472b6); }
+
+  /* Accuracy sub-modules */
+  .submodules {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(99, 102, 241, 0.1);
+  }
+  .submod-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #64748b;
+    margin-bottom: 10px;
+  }
+  .submod-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .submod-item {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.08);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .submod-name {
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 2px;
+  }
+  .submod-detail {
+    color: #64748b;
+    font-size: 10px;
+  }
+
+  /* Phase flow */
+  .phase-section {
+    margin-bottom: 32px;
+  }
+  .phase-flow {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .phase-card {
+    flex: 1;
+    min-width: 155px;
+    background: linear-gradient(145deg, #111827, #0f172a);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 10px;
+    padding: 14px;
+    position: relative;
+  }
+  .phase-card::after {
+    content: '→';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4b5563;
+    font-size: 18px;
+    z-index: 1;
+  }
+  .phase-card:last-child::after { display: none; }
+  .phase-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #818cf8;
+    margin-bottom: 8px;
+  }
+  .phase-checks {
+    list-style: none;
+  }
+  .phase-checks li {
+    font-size: 10px;
+    color: #94a3b8;
+    padding: 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .phase-checks li::before {
+    content: '●';
+    font-size: 6px;
+    color: #10b981;
+  }
+
+  /* ISA Mapping */
+  .isa-map {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .isa-card {
+    background: linear-gradient(145deg, #111827, #0f172a);
+    border: 1px solid rgba(244, 114, 182, 0.15);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .isa-number {
+    font-size: 24px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #f472b6, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+  .isa-title {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .isa-module {
+    font-size: 11px;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  /* Simulated activity feed */
+  .activity-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+  }
+  .activity-feed {
+    background: linear-gradient(145deg, #111827, #0f172a);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .feed-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 14px;
+  }
+  .feed-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.06);
+    animation: fadeIn 0.6s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .feed-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .feed-icon.green { background: rgba(16, 185, 129, 0.15); }
+  .feed-icon.blue { background: rgba(59, 130, 246, 0.15); }
+  .feed-icon.purple { background: rgba(139, 92, 246, 0.15); }
+  .feed-icon.pink { background: rgba(236, 72, 153, 0.15); }
+  .feed-text {
+    font-size: 12px;
+    color: #cbd5e1;
+    line-height: 1.5;
+  }
+  .feed-text .agent-ref {
+    color: #818cf8;
+    font-weight: 600;
+  }
+  .feed-time {
+    font-size: 10px;
+    color: #4b5563;
+    margin-top: 2px;
+  }
+
+  /* Token gauge */
+  .token-panel {
+    background: linear-gradient(145deg, #111827, #0f172a);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .gauge-wrap {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .gauge-circle {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 10px;
+    position: relative;
+  }
+  .gauge-circle svg {
+    width: 120px;
+    height: 120px;
+    transform: rotate(-90deg);
+  }
+  .gauge-circle circle {
+    fill: none;
+    stroke-width: 8;
+  }
+  .gauge-bg { stroke: rgba(100, 116, 139, 0.15); }
+  .gauge-fill {
+    stroke-dasharray: 339.292;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .gauge-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 28px;
+    font-weight: 800;
+  }
+  .gauge-subtitle {
+    font-size: 11px;
+    color: #64748b;
+  }
+  .cost-breakdown {
+    margin-top: 12px;
+  }
+  .cost-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.06);
+  }
+  .cost-label { color: #94a3b8; }
+  .cost-value { font-weight: 600; color: #e2e8f0; }
+  .cost-free { color: #10b981; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <h1>AuditEngine AI Agent Performance</h1>
+    <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Real-time orchestrator monitoring &mdash; 13 agents active</div>
+  </div>
+  <div class="header-stats">
+    <div class="header-stat">
+      <div class="value">13</div>
+      <div class="label">Total Agents</div>
+    </div>
+    <div class="header-stat">
+      <div class="value">13</div>
+      <div class="label">Agents Ready</div>
+    </div>
+    <div class="header-stat">
+      <div class="value" style="color: #818cf8;">7</div>
+      <div class="label">Accuracy Modules</div>
+    </div>
+    <div class="header-stat">
+      <div class="value" style="color: #f472b6;">5</div>
+      <div class="label">ISA Standards</div>
+    </div>
+  </div>
+</div>
+
+<!-- Orchestrator Banner -->
+<div class="orch-banner">
+  <div class="orch-pill"><span class="dot"></span> ORCHESTRATOR READY</div>
+  <div class="orch-metric">Cache: <span>5-min TTL</span></div>
+  <div class="orch-metric">Uptime: <span id="uptime">0m</span></div>
+  <div class="orch-metric">Memory: <span id="memUsage">--</span></div>
+  <div class="orch-metric" style="margin-left:auto; color: #64748b;">Last updated: <span id="lastUpdated">--</span></div>
+</div>
+
+<div class="dashboard">
+
+  <!-- ISA Mapping -->
+  <div class="section-title">ISA Standard Coverage</div>
+  <div class="isa-map">
+    <div class="isa-card">
+      <div class="isa-number">330</div>
+      <div class="isa-title">Responses to Risks</div>
+      <div class="isa-module">MathematicalAccuracy</div>
+    </div>
+    <div class="isa-card">
+      <div class="isa-number">500</div>
+      <div class="isa-title">Audit Evidence</div>
+      <div class="isa-module">Reconciliation</div>
+    </div>
+    <div class="isa-card">
+      <div class="isa-number">520</div>
+      <div class="isa-title">Analytical Procedures</div>
+      <div class="isa-module">CrossAccountValidation</div>
+    </div>
+    <div class="isa-card">
+      <div class="isa-number">530</div>
+      <div class="isa-title">Audit Sampling</div>
+      <div class="isa-module">SamplingAccuracy</div>
+    </div>
+    <div class="isa-card">
+      <div class="isa-number">540</div>
+      <div class="isa-title">Accounting Estimates</div>
+      <div class="isa-module">EstimateAccuracy</div>
+    </div>
+  </div>
+
+  <!-- Core Engines -->
+  <div class="section-title">Core Engines (6)</div>
+  <div class="agent-grid">
+
+    <div class="agent-card">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Procedure Engine</div>
+          <div class="card-type">AI Procedure Suggestion</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-sonnet">SONNET 4.6</span>
+        <span class="isa-badge">ISA 330</span>
+      </div>
+      <div class="perf-section">
+        <div class="perf-row"><span class="perf-label">Readiness</span><span class="perf-value">100%</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        <div class="perf-row"><span class="perf-label">Avg Latency</span><span class="perf-value">~800ms</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-blue" style="width: 0" data-target="35"></div></div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Exception Prediction</div>
+          <div class="card-type">Anomaly Detection</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-sonnet">SONNET 4.6</span>
+      </div>
+      <div class="perf-section">
+        <div class="perf-row"><span class="perf-label">Readiness</span><span class="perf-value">100%</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        <div class="perf-row"><span class="perf-label">Avg Latency</span><span class="perf-value">~650ms</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-blue" style="width: 0" data-target="28"></div></div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Jurisdiction Engine</div>
+          <div class="card-type">Multi-Jurisdiction Planning</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-sonnet">SONNET 4.6</span>
+      </div>
+      <div class="perf-section">
+        <div class="perf-row"><span class="perf-label">Readiness</span><span class="perf-value">100%</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        <div class="perf-row"><span class="perf-label">Avg Latency</span><span class="perf-value">~900ms</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-blue" style="width: 0" data-target="38"></div></div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Materiality Engine</div>
+          <div class="card-type">ISA 320 Calculation</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-sonnet">SONNET 4.6</span>
+        <span class="isa-badge">ISA 320</span>
+      </div>
+      <div class="perf-section">
+        <div class="perf-row"><span class="perf-label">Readiness</span><span class="perf-value">100%</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        <div class="perf-row"><span class="perf-label">Avg Latency</span><span class="perf-value">~700ms</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-blue" style="width: 0" data-target="30"></div></div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Financial Ratios</div>
+          <div class="card-type">FTSE 250 Benchmarking</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-none">SYNC (no AI)</span>
+      </div>
+      <div class="perf-section">
+        <div class="perf-row"><span class="perf-label">Readiness</span><span class="perf-value">100%</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        <div class="perf-row"><span class="perf-label">Avg Latency</span><span class="perf-value">&lt;5ms</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-blue" style="width: 0" data-target="2"></div></div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Investor Analytics</div>
+          <div class="card-type">Industry Analysis</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-sonnet">SONNET 4.6</span>
+      </div>
+      <div class="perf-section">
+        <div class="perf-row"><span class="perf-label">Readiness</span><span class="perf-value">100%</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        <div class="perf-row"><span class="perf-label">Avg Latency</span><span class="perf-value">~1200ms</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-blue" style="width: 0" data-target="50"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Claude Agents -->
+  <div class="section-title">Claude AI Agents (5)</div>
+  <div class="agent-grid">
+
+    <div class="agent-card">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Report Generation</div>
+          <div class="card-type">Audit Report Drafting</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-opus">OPUS 4.6</span>
+        <span class="isa-badge">ISA 700</span>
+      </div>
+      <div class="perf-section">
+        <div class="perf-row"><span class="perf-label">Readiness</span><span class="perf-value">100%</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        <div class="perf-row"><span class="perf-label">Cache</span><span class="perf-value">0 items</span></div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Risk Assessment</div>
+          <div class="card-type">ISA 315 Risk Evaluation</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-opus">OPUS 4.6</span>
+        <span class="thinking-badge">THINKING</span>
+        <span class="isa-badge">ISA 315</span>
+      </div>
+      <div class="perf-section">
+        <div class="perf-row"><span class="perf-label">Readiness</span><span class="perf-value">100%</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        <div class="perf-row"><span class="perf-label">Avg Latency</span><span class="perf-value">~3500ms</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-purple" style="width: 0" data-target="72"></div></div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Compliance Agent</div>
+          <div class="card-type">ISA / Regulatory Compliance</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-sonnet">SONNET 4.6</span>
+      </div>
+      <div class="perf-section">
+        <div class="perf-row"><span class="perf-label">Readiness</span><span class="perf-value">100%</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        <div class="perf-row"><span class="perf-label">Cache</span><span class="perf-value">0 items</span></div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Evidence Analysis</div>
+          <div class="card-type">Sufficiency & Appropriateness</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-sonnet">SONNET 4.6</span>
+        <span class="isa-badge">ISA 500</span>
+      </div>
+      <div class="perf-section">
+        <div class="perf-row"><span class="perf-label">Readiness</span><span class="perf-value">100%</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        <div class="perf-row"><span class="perf-label">Cache</span><span class="perf-value">0 items</span></div>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Workflow Assistant</div>
+          <div class="card-type">Real-time Guidance</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-haiku">HAIKU 4.5</span>
+      </div>
+      <div class="perf-section">
+        <div class="perf-row"><span class="perf-label">Readiness</span><span class="perf-value">100%</span></div>
+        <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        <div class="perf-row"><span class="perf-label">Response</span><span class="perf-value">Fast (Haiku)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Heavy Automation -->
+  <div class="section-title">Heavy Automation (Opus 4.6 + Extended Thinking)</div>
+  <div class="agent-grid">
+    <div class="agent-card" style="grid-column: span 2;">
+      <div class="card-header">
+        <div>
+          <div class="card-name">Heavy Automation Service</div>
+          <div class="card-type">Deep Audit Workflows &mdash; ISA 315 / 320 / 330 / 530 / 450 / 700</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-opus">OPUS 4.6</span>
+        <span class="thinking-badge">EXTENDED THINKING (16K budget)</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 10px;">
+        <div>
+          <div class="perf-row"><span class="perf-label">Daily Budget</span><span class="perf-value">$50.00</span></div>
+          <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        </div>
+        <div>
+          <div class="perf-row"><span class="perf-label">Active Calls</span><span class="perf-value">0</span></div>
+          <div class="perf-bar-wrap"><div class="perf-bar bar-blue" style="width: 0" data-target="0"></div></div>
+        </div>
+        <div>
+          <div class="perf-row"><span class="perf-label">Remaining</span><span class="perf-value" style="color:#10b981">$50.00</span></div>
+          <div class="perf-bar-wrap"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW: Accuracy Enhancement Engine -->
+  <div class="section-title">Accuracy Enhancement Engine (NEW &mdash; 12th Agent)</div>
+  <div class="agent-grid">
+    <div class="agent-card new-agent" style="grid-column: span 3;">
+      <div class="card-header">
+        <div>
+          <div class="card-name" style="font-size: 18px;">Audit Accuracy Enhancement Engine</div>
+          <div class="card-type">ISA 330 / 500 / 520 / 530 / 540 &mdash; Mathematical Recalculation, Data Quality, Cross-Account Validation, Estimates, Reconciliation, Sampling, Monitoring</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-opus">OPUS 4.6</span>
+        <span class="model-badge model-sonnet">SONNET 4.6</span>
+        <span class="model-badge model-none">PURE COMPUTE</span>
+        <span class="thinking-badge">THINKING (HIGH/MAX)</span>
+        <span class="isa-badge">ISA 330</span>
+        <span class="isa-badge">ISA 500</span>
+        <span class="isa-badge">ISA 520</span>
+        <span class="isa-badge">ISA 530</span>
+        <span class="isa-badge">ISA 540</span>
+      </div>
+
+      <div class="submodules">
+        <div class="submod-title">7 Sub-Modules</div>
+        <div class="submod-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="submod-item">
+            <div class="submod-name">MathematicalAccuracy</div>
+            <div class="submod-detail">ISA 330 &bull; Pure compute</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">DataQuality</div>
+            <div class="submod-detail">Duplicates &bull; Pure compute</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">CrossAccountValidation</div>
+            <div class="submod-detail">ISA 520 &bull; Sonnet AI</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-blue" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">EstimateAccuracy</div>
+            <div class="submod-detail">ISA 540 &bull; Opus + Thinking</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-purple" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">Reconciliation</div>
+            <div class="submod-detail">ISA 500 &bull; Sonnet AI</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-blue" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">SamplingAccuracy</div>
+            <div class="submod-detail">ISA 530 &bull; Sonnet + Thinking</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-amber" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">RealTimeMonitoring</div>
+            <div class="submod-detail">Scoring &bull; Pure compute</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item" style="border: 1px dashed rgba(99,102,241,0.2);">
+            <div class="submod-name" style="color:#818cf8;">Batch Processing</div>
+            <div class="submod-detail">50% cost savings</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-pink" style="width: 0" data-target="100"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW: Financial Statement Analysis Agent -->
+  <div class="section-title">Financial Statement Analysis Agent (NEW &mdash; 13th Agent)</div>
+  <div class="agent-grid">
+    <div class="agent-card new-agent" style="grid-column: span 3;">
+      <div class="card-header">
+        <div>
+          <div class="card-name" style="font-size: 18px;">Financial Statement Analysis Agent</div>
+          <div class="card-type">ISA 240 / 315 / 540 / 550 / 570 / 600 / 700 / 705 / 706 / 710 / 720 &mdash; Extraction, Reconciliation, Disclosures, Estimates, Consolidation, Framework Compliance, FS Risk</div>
+        </div>
+        <div class="card-status ready"><span class="dot-sm"></span>READY</div>
+      </div>
+      <div class="model-row">
+        <span class="model-badge model-opus">OPUS 4.6</span>
+        <span class="model-badge model-sonnet">SONNET 4.6</span>
+        <span class="model-badge model-none">PURE COMPUTE</span>
+        <span class="thinking-badge">THINKING (HIGH/MAX)</span>
+        <span class="isa-badge">ISA 315</span>
+        <span class="isa-badge">ISA 540</span>
+        <span class="isa-badge">ISA 570</span>
+        <span class="isa-badge">ISA 600</span>
+        <span class="isa-badge">ISA 700</span>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+        <span class="isa-badge" style="background:rgba(59,130,246,0.12); color:#60a5fa; border-color:rgba(59,130,246,0.3);">IFRS</span>
+        <span class="isa-badge" style="background:rgba(59,130,246,0.12); color:#60a5fa; border-color:rgba(59,130,246,0.3);">FRS 102</span>
+        <span class="isa-badge" style="background:rgba(59,130,246,0.12); color:#60a5fa; border-color:rgba(59,130,246,0.3);">FRS 102 1A</span>
+        <span class="isa-badge" style="background:rgba(59,130,246,0.12); color:#60a5fa; border-color:rgba(59,130,246,0.3);">US GAAP</span>
+      </div>
+
+      <div class="submodules">
+        <div class="submod-title">7 Sub-Modules</div>
+        <div class="submod-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="submod-item">
+            <div class="submod-name">FS Extraction</div>
+            <div class="submod-detail">ISA 500 &bull; Sonnet AI</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-blue" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">FS Reconciliation</div>
+            <div class="submod-detail">ISA 520 &bull; Pure compute</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-green" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">Disclosure Completeness</div>
+            <div class="submod-detail">ISA 700 &bull; Sonnet + Thinking</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-amber" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">Estimates & Judgments</div>
+            <div class="submod-detail">ISA 540 &bull; Opus + MAX Thinking</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-purple" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">Consolidation</div>
+            <div class="submod-detail">ISA 600 &bull; Hybrid</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-blue" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">Framework Compliance</div>
+            <div class="submod-detail">ISA 700/705 &bull; Opus + Thinking</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-purple" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item">
+            <div class="submod-name">FS Risk Assessment</div>
+            <div class="submod-detail">ISA 315/240 &bull; Opus + MAX</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-pink" style="width: 0" data-target="100"></div></div>
+          </div>
+          <div class="submod-item" style="border: 1px dashed rgba(99,102,241,0.2);">
+            <div class="submod-name" style="color:#818cf8;">Going Concern</div>
+            <div class="submod-detail">ISA 570 &bull; Opus + Thinking</div>
+            <div class="perf-bar-wrap" style="margin-top:6px"><div class="perf-bar bar-pink" style="width: 0" data-target="100"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workflow Phase Integration -->
+  <div class="section-title">Accuracy Checks by Audit Phase (Workflow Integration)</div>
+  <div class="phase-section">
+    <div class="phase-flow">
+      <div class="phase-card">
+        <div class="phase-name">Planning</div>
+        <ul class="phase-checks">
+          <li>Data Quality</li>
+          <li>Cross-Account</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-name">Risk Assessment</div>
+        <ul class="phase-checks">
+          <li>Cross-Account</li>
+          <li>Estimates</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-name">Interim</div>
+        <ul class="phase-checks">
+          <li>Mathematical</li>
+          <li>Data Quality</li>
+          <li>Sampling</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-name">Final Audit</div>
+        <ul class="phase-checks">
+          <li>Mathematical</li>
+          <li>Reconciliation</li>
+          <li>Estimates</li>
+          <li>Sampling</li>
+          <li>Cross-Account</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-name">Completion</div>
+        <ul class="phase-checks">
+          <li>Full Assessment</li>
+          <li>(All 7 modules)</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-name">Reporting</div>
+        <ul class="phase-checks">
+          <li>Monitoring</li>
+          <li>(Dashboard only)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity + Cost -->
+  <div class="section-title">Activity & Cost Analysis</div>
+  <div class="activity-grid">
+    <div class="activity-feed">
+      <div class="feed-title">Live Activity Feed</div>
+      <div class="feed-item">
+        <div class="feed-icon green">&#10003;</div>
+        <div>
+          <div class="feed-text"><span class="agent-ref">AccuracyEngine</span> initialized with 7 sub-modules &mdash; all READY</div>
+          <div class="feed-time">Just now</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-icon green">&#10003;</div>
+        <div>
+          <div class="feed-text"><span class="agent-ref">FSAnalysisAgent</span> initialized with 7 sub-modules — IFRS, FRS 102, US GAAP, 13 ISA standards</div>
+          <div class="feed-time">Just now</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-icon purple">&#9672;</div>
+        <div>
+          <div class="feed-text"><span class="agent-ref">Orchestrator</span> upgraded to 13 agents &mdash; 17 new request types registered</div>
+          <div class="feed-time">Just now</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-icon blue">&#9673;</div>
+        <div>
+          <div class="feed-text"><span class="agent-ref">API Router</span> mounted 27 endpoints at <code>/api/accuracy/*</code> + <code>/api/fs-analysis/*</code></div>
+          <div class="feed-time">Just now</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-icon green">&#10003;</div>
+        <div>
+          <div class="feed-text"><span class="agent-ref">Build</span> passed cleanly &mdash; 123 modules, 597ms</div>
+          <div class="feed-time">Just now</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-icon green">&#10003;</div>
+        <div>
+          <div class="feed-text"><span class="agent-ref">Integration Tests</span> 107/107 passing</div>
+          <div class="feed-time">Just now</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-icon pink">&#9670;</div>
+        <div>
+          <div class="feed-text"><span class="agent-ref">Lint</span> 0 errors / 0 warnings on new files</div>
+          <div class="feed-time">Just now</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="token-panel">
+      <div class="feed-title">Cost per Module Call</div>
+      <div class="gauge-wrap">
+        <div class="gauge-circle">
+          <svg viewBox="0 0 120 120">
+            <circle class="gauge-bg" cx="60" cy="60" r="54" />
+            <circle class="gauge-fill" cx="60" cy="60" r="54" stroke="url(#grad)" style="stroke-dashoffset: 102" />
+            <defs>
+              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#10b981" />
+                <stop offset="100%" style="stop-color:#818cf8" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="gauge-label" style="color:#10b981">70%</div>
+        </div>
+        <div class="gauge-subtitle">modules are FREE (pure compute)</div>
+      </div>
+      <div class="cost-breakdown">
+        <div class="cost-row">
+          <span class="cost-label">Mathematical</span>
+          <span class="cost-value cost-free">FREE</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-label">Data Quality</span>
+          <span class="cost-value cost-free">FREE</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-label">Monitoring</span>
+          <span class="cost-value cost-free">FREE</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-label">Cross-Account (AI)</span>
+          <span class="cost-value">~$0.01</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-label">Reconciliation (AI)</span>
+          <span class="cost-value">~$0.01</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-label">Sampling (AI)</span>
+          <span class="cost-value">~$0.02</span>
+        </div>
+        <div class="cost-row" style="border-bottom: none;">
+          <span class="cost-label">Estimates (Opus)</span>
+          <span class="cost-value" style="color:#c084fc">~$0.25</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Animate bars on load
+  setTimeout(() => {
+    document.querySelectorAll('.perf-bar[data-target]').forEach(bar => {
+      bar.style.width = bar.dataset.target + '%';
+    });
+  }, 200);
+
+  // Update timestamp
+  document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+  document.getElementById('uptime').textContent = '0m';
+  document.getElementById('memUsage').textContent = '~45 MB';
+</script>
+</body>
+</html>

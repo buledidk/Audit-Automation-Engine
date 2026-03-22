@@ -59,21 +59,19 @@ Search for and provide:
 Return as JSON with these exact keys: industryOverview, keyTrends (array of 5), regulatoryChanges (array), competitiveLandscape, riskFactors (array of {risk, isaReference, likelihood, impact}), financialBenchmarks (object), esgFactors (array), outlook`;
 
     try {
-      const client = new Anthropic({ apiKey: this.apiKey, dangerouslyAllowBrowser: true });
+      const { default: claudeClient } = await import('./claudeClient.js');
 
-      const response = await client.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
+      const { text } = await claudeClient.sendMessage({
+        prompt,
+        model: 'claude-sonnet-4-6',
+        maxTokens: 4000,
         tools: [{ type: 'web_search_20250305' }],
-        messages: [{ role: 'user', content: prompt }]
       });
 
-      const textBlock = response.content.find(b => b.type === 'text');
       let analysis;
 
       try {
-        const jsonMatch = textBlock?.text?.match(/\{[\s\S]*\}/);
-        analysis = jsonMatch ? JSON.parse(jsonMatch[0]) : this._getFallbackIndustryAnalysis(sectorData);
+        analysis = claudeClient.parseJSON(text);
       } catch {
         analysis = this._getFallbackIndustryAnalysis(sectorData);
       }
@@ -237,21 +235,19 @@ Also provide:
 Return as JSON with keys: financialYear, reportingFramework, auditor, auditOpinion, keyAuditMatters (array), financials (object with numeric values in millions)`;
 
     try {
-      const client = new Anthropic({ apiKey: this.apiKey, dangerouslyAllowBrowser: true });
+      const { default: claudeClient } = await import('./claudeClient.js');
 
-      const response = await client.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 3000,
+      const { text } = await claudeClient.sendMessage({
+        prompt,
+        model: 'claude-sonnet-4-6',
+        maxTokens: 3000,
         tools: [{ type: 'web_search_20250305' }],
-        messages: [{ role: 'user', content: prompt }]
       });
 
-      const textBlock = response.content.find(b => b.type === 'text');
       let reportData;
 
       try {
-        const jsonMatch = textBlock?.text?.match(/\{[\s\S]*\}/);
-        reportData = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+        reportData = claudeClient.parseJSON(text);
       } catch {
         reportData = null;
       }

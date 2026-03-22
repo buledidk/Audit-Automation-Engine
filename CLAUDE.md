@@ -6,13 +6,15 @@ AuditEngine is a professional audit automation platform built with React + Vite.
 ## Tech Stack
 - Frontend: React 18 + Vite (deployed on Vercel)
 - Database: Supabase (PostgreSQL) — project: mbvjtondgunckgzrmyhq
-- AI: Claude API via @anthropic-ai/sdk
+- AI: Claude API via @anthropic-ai/sdk v0.80.0 (Opus 4.6 / Sonnet 4.6 / Haiku 4.5)
+- AI Client: src/services/claudeClient.js — centralized with adaptive thinking + batch API
 - Export: docx + xlsx libraries
 - CI/CD: GitHub Actions (Node 20.x, @v4 actions)
 
 ## Architecture
 - src/AuditEngine.jsx — Main monolith (all 6 audit phases)
-- src/services/ — 9 AI agents coordinated via aiAgentOrchestrator
+- src/services/claudeClient.js — Centralized Claude API (Opus/Sonnet/Haiku, thinking, batch)
+- src/services/ — 13 AI agents (6 engines + 5 agents + 1 accuracy engine + 1 FS analysis agent) coordinated via aiAgentOrchestrator
 - src/components/ — UI components (MaterialityCalculator, CommentPanel, etc.)
 - src/data/ — Audit frameworks, procedures, dropdown libraries
 - src/lib/supabaseClient.js — Database client with graceful degradation

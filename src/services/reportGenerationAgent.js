@@ -6,14 +6,12 @@
  * Model: Claude 3.5 Sonnet (or Opus for complex reports)
  */
 
-import { Anthropic } from "@anthropic-ai/sdk";
+import claudeClient, { MODELS, EFFORT } from "./claudeClient.js";
 
 export class ReportGenerationAgent {
   constructor() {
-    this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY,
-    });
-    this.model = "claude-3-5-sonnet-20241022";
+    this.claude = claudeClient;
+    this.model = MODELS.OPUS;  // Reports use Opus for professional quality
     this.cache = new Map();
     this.CACHE_TTL = 60 * 60 * 1000; // 1 hour
   }
@@ -54,15 +52,14 @@ Generate a structured JSON report with:
 Respond with ONLY valid JSON, no markdown.
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 2000,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.3, // More deterministic for reports
+      maxTokens: 2000,
+      thinking: true,
+      effort: EFFORT.MAX,
     });
-
-    const reportText = message.content[0].type === "text" ? message.content[0].text : "{}";
-    const report = JSON.parse(reportText);
+    const report = this.claude.parseJSON(text);
 
     // Cache result
     this.cache.set(cacheKey, report);
@@ -84,14 +81,14 @@ Generate professional, concise content suitable for ${section}.
 Respond with plain text, not JSON.
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 1000,
-      messages: [{ role: "user", content: prompt }],
+      maxTokens: 1000,
+      thinking: false,
       temperature: 0.2,
     });
-
-    return message.content[0].type === "text" ? message.content[0].text : "";
+    return text || "";
   }
 
   /**
@@ -116,15 +113,14 @@ Return JSON:
 }
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 500,
-      messages: [{ role: "user", content: prompt }],
+      maxTokens: 500,
+      thinking: false,
       temperature: 0.2,
     });
-
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    return JSON.parse(text);
+    return this.claude.parseJSON(text);
   }
 
   /**

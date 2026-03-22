@@ -4,13 +4,11 @@
  * Automatically populates audit procedures, findings, and compliance mappings
  */
 
-import Anthropic from '@anthropic-ai/sdk';
+import claudeClient, { MODELS } from './claudeClient.js';
 
 export class AIExtractionService {
   constructor() {
-    this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY
-    });
+    this.claude = claudeClient;
     this.extractionHistory = [];
     this.eventListeners = [];
   }
@@ -127,19 +125,12 @@ Extract all audit-relevant data with high accuracy. Focus on:
 4. Evidence of assertions being tested`;
 
     try {
-      const response = await this.client.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 4000,
+      const { text: content } = await this.claude.sendMessage({
+        prompt: userPrompt,
         system: systemPrompt,
-        messages: [
-          {
-            role: 'user',
-            content: userPrompt
-          }
-        ]
+        model: MODELS.SONNET,
+        maxTokens: 4000,
       });
-
-      const content = response.content[0].text;
 
       // Parse JSON response
       try {

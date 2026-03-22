@@ -9,5 +9,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor': ['react', 'react-dom'],
+        },
+      },
+    },
+  },
 })
-// Vercel deployment sync - Fri Mar 20 15:02:13 UTC 2026

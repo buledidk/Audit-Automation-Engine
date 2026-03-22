@@ -18,6 +18,8 @@ import gdprMiddleware from "../src/middleware/gdprMiddleware.js";
 import rbacMiddleware from "../src/middleware/rbacMiddleware.js";
 import metricsRouter from "../src/api/metrics.js";
 import adminRouter from "../src/api/admin.js";
+import accuracyRoutes from "../src/api/accuracy-enhancement-routes.js";
+import fsAnalysisRoutes from "../src/api/fs-analysis-routes.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -902,9 +904,162 @@ app.post("/api/orchestrator/risk-assessment", async (req, res) => {
 });
 
 // ============================================================================
+// HEAVY AUTOMATION API ENDPOINTS — Claude Opus 4.6 with Extended Thinking
+// ============================================================================
+
+import { HeavyAutomationService } from "../src/services/heavyAutomationService.js";
+import { createRateLimit } from "../src/middleware/rateLimitMiddleware.js";
+import { emitHeavyAutomationProgress } from "./websocket.js";
+
+const heavyAutomation = new HeavyAutomationService();
+const heavyRateLimit = createRateLimit({ windowMs: 300000, maxRequests: 3 });
+
+// ISA 315 — Comprehensive Risk Assessment
+app.post(
+  "/api/heavy-automation/risk-assessment",
+  authenticateToken,
+  rbacMiddleware(["manager", "partner"]),
+  heavyRateLimit,
+  auditLog("HEAVY_RISK_ASSESSMENT"),
+  async (req, res) => {
+    try {
+      const { context } = req.body;
+      if (!context) return res.status(400).json({ error: "Missing required field: context" });
+
+      const result = await heavyAutomation.executeComprehensiveRiskAssessment(context);
+      res.json({ success: true, type: "risk_assessment", result, timestamp: new Date().toISOString() });
+    } catch (error) {
+      const status = error.status || 500;
+      res.status(status).json({ error: error.message, retryAfter: error.retryAfter });
+    }
+  }
+);
+
+// ISA 320 — Materiality Analysis
+app.post(
+  "/api/heavy-automation/materiality",
+  authenticateToken,
+  rbacMiddleware(["manager", "partner"]),
+  heavyRateLimit,
+  auditLog("HEAVY_MATERIALITY"),
+  async (req, res) => {
+    try {
+      const { context } = req.body;
+      if (!context) return res.status(400).json({ error: "Missing required field: context" });
+
+      const result = await heavyAutomation.executeMaterialityAnalysis(context);
+      res.json({ success: true, type: "materiality", result, timestamp: new Date().toISOString() });
+    } catch (error) {
+      const status = error.status || 500;
+      res.status(status).json({ error: error.message, retryAfter: error.retryAfter });
+    }
+  }
+);
+
+// ISA 530 — Sampling Strategy
+app.post(
+  "/api/heavy-automation/sampling",
+  authenticateToken,
+  rbacMiddleware(["manager", "partner"]),
+  heavyRateLimit,
+  auditLog("HEAVY_SAMPLING"),
+  async (req, res) => {
+    try {
+      const { context } = req.body;
+      if (!context) return res.status(400).json({ error: "Missing required field: context" });
+
+      const result = await heavyAutomation.executeSamplingStrategy(context);
+      res.json({ success: true, type: "sampling", result, timestamp: new Date().toISOString() });
+    } catch (error) {
+      const status = error.status || 500;
+      res.status(status).json({ error: error.message, retryAfter: error.retryAfter });
+    }
+  }
+);
+
+// ISA 330 — Audit Procedure Design
+app.post(
+  "/api/heavy-automation/procedures",
+  authenticateToken,
+  rbacMiddleware(["manager", "partner"]),
+  heavyRateLimit,
+  auditLog("HEAVY_PROCEDURES"),
+  async (req, res) => {
+    try {
+      const { context } = req.body;
+      if (!context) return res.status(400).json({ error: "Missing required field: context" });
+
+      const result = await heavyAutomation.executeAuditProcedureDesign(context);
+      res.json({ success: true, type: "procedures", result, timestamp: new Date().toISOString() });
+    } catch (error) {
+      const status = error.status || 500;
+      res.status(status).json({ error: error.message, retryAfter: error.retryAfter });
+    }
+  }
+);
+
+// ISA 450/700 — Findings Analysis
+app.post(
+  "/api/heavy-automation/findings",
+  authenticateToken,
+  rbacMiddleware(["manager", "partner"]),
+  heavyRateLimit,
+  auditLog("HEAVY_FINDINGS"),
+  async (req, res) => {
+    try {
+      const { context } = req.body;
+      if (!context) return res.status(400).json({ error: "Missing required field: context" });
+
+      const result = await heavyAutomation.executeFindingsAnalysis(context);
+      res.json({ success: true, type: "findings", result, timestamp: new Date().toISOString() });
+    } catch (error) {
+      const status = error.status || 500;
+      res.status(status).json({ error: error.message, retryAfter: error.retryAfter });
+    }
+  }
+);
+
+// Full 5-Step Audit Workflow (partner only)
+app.post(
+  "/api/heavy-automation/full-workflow",
+  authenticateToken,
+  rbacMiddleware(["partner"]),
+  heavyRateLimit,
+  auditLog("HEAVY_FULL_WORKFLOW"),
+  async (req, res) => {
+    try {
+      const { context } = req.body;
+      if (!context) return res.status(400).json({ error: "Missing required field: context" });
+
+      const result = await heavyAutomation.executeFullAuditWorkflow(context, (progress) => {
+        emitHeavyAutomationProgress(progress.workflowId, progress);
+      });
+
+      res.json({ success: true, type: "full_workflow", result, timestamp: new Date().toISOString() });
+    } catch (error) {
+      const status = error.status || 500;
+      res.status(status).json({ error: error.message, retryAfter: error.retryAfter });
+    }
+  }
+);
+
+// Status endpoint (any authenticated user)
+app.get("/api/heavy-automation/status", authenticateToken, (req, res) => {
+  try {
+    const status = heavyAutomation.getStatus();
+    const metrics = heavyAutomation.getMetrics();
+    res.json({ success: true, status, metrics, timestamp: new Date().toISOString() });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============================================================================
 // AGENT MONITORING & METRICS API
 // ============================================================================
 
+app.use("/api/accuracy", accuracyRoutes);
+app.use("/api/fs-analysis", fsAnalysisRoutes);
 app.use("/api/metrics", metricsRouter);
 app.use("/api/admin", adminRouter);
 

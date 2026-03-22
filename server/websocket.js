@@ -67,6 +67,24 @@ export function initializeWebSocket(server) {
     });
   });
 
+  // Heavy automation progress namespace
+  io.of('/heavy-automation').on('connection', (socket) => {
+    console.log(`✅ Client connected to /heavy-automation: ${socket.id}`);
+
+    socket.on('subscribe-workflow', (workflowId) => {
+      socket.join(`workflow:${workflowId}`);
+      console.log(`📡 Client subscribed to workflow: ${workflowId}`);
+    });
+
+    socket.on('unsubscribe-workflow', (workflowId) => {
+      socket.leave(`workflow:${workflowId}`);
+    });
+
+    socket.on('disconnect', () => {
+      console.log(`❌ Client disconnected: ${socket.id}`);
+    });
+  });
+
   console.log('🔌 WebSocket server initialized');
   return io;
 }
@@ -122,6 +140,23 @@ export function broadcastAlert(message, severity = 'info') {
     io.emit('system-alert', {
       message,
       severity,
+      timestamp: new Date(),
+    });
+  }
+}
+
+/**
+ * Emit heavy automation workflow progress
+ */
+export function emitHeavyAutomationProgress(workflowId, data) {
+  if (io) {
+    io.of('/heavy-automation').to(`workflow:${workflowId}`).emit('progress', {
+      workflowId,
+      step: data.step,
+      totalSteps: data.totalSteps,
+      stepName: data.stepName,
+      status: data.status,
+      error: data.error || null,
       timestamp: new Date(),
     });
   }

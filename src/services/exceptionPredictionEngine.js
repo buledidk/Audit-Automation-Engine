@@ -9,12 +9,12 @@
  * - Preventive procedure mapping
  */
 
-import { Anthropic } from "@anthropic-ai/sdk";
+import claudeClient, { MODELS, EFFORT } from "./claudeClient.js";
 
 export class ExceptionPredictionEngine {
-  constructor(apiKey = process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY) {
-    this.client = new Anthropic({ apiKey });
-    this.model = "claude-3-5-sonnet-20241022";
+  constructor() {
+    this.claude = claudeClient;
+    this.model = MODELS.SONNET;
     this.cache = new Map();
     this.cacheTimeout = 3600000; // 1 hour
   }
@@ -40,15 +40,16 @@ export class ExceptionPredictionEngine {
     const prompt = this._buildPredictionPrompt(context);
 
     // Call Claude API
-    const response = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 1024,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.2
+      maxTokens: 1024,
+      thinking: true,
+      effort: EFFORT.HIGH,
     });
 
     // Parse response
-    const predictions = this._parseJSON(response.content[0].text);
+    const predictions = this.claude.parseJSON(text);
 
     // Enrich with additional analysis
     const enriched = {
@@ -129,14 +130,15 @@ Return JSON:
 }
 `;
 
-    const response = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 1024,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.2
+      maxTokens: 1024,
+      thinking: false,
+      temperature: 0.2,
     });
 
-    return this._parseJSON(response.content[0].text);
+    return this.claude.parseJSON(text);
   }
 
   /**
@@ -182,14 +184,15 @@ Return JSON:
 }
 `;
 
-    const response = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 512,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.2
+      maxTokens: 512,
+      thinking: false,
+      temperature: 0.2,
     });
 
-    return this._parseJSON(response.content[0].text);
+    return this.claude.parseJSON(text);
   }
 
   /**

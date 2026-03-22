@@ -6,14 +6,12 @@
  * Model: Claude 3.5 Sonnet
  */
 
-import { Anthropic } from "@anthropic-ai/sdk";
+import claudeClient, { MODELS, EFFORT } from "./claudeClient.js";
 
 export class ComplianceAgent {
   constructor() {
-    this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY,
-    });
-    this.model = "claude-3-5-sonnet-20241022";
+    this.claude = claudeClient;
+    this.model = MODELS.SONNET;
     this.cache = new Map();
     this.CACHE_TTL = 60 * 60 * 1000; // 1 hour
   }
@@ -50,15 +48,15 @@ Return JSON:
 }
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 1500,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.2,
+      maxTokens: 1500,
+      thinking: true,
+      effort: EFFORT.HIGH,
+      domain: "compliance",
     });
-
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    const compliance = JSON.parse(text);
+    const compliance = this.claude.parseJSON(text);
 
     this.cache.set(cacheKey, compliance);
     setTimeout(() => this.cache.delete(cacheKey), this.CACHE_TTL);
@@ -87,15 +85,15 @@ Return JSON:
 }
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 1000,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.2,
+      maxTokens: 1000,
+      thinking: true,
+      effort: EFFORT.HIGH,
+      domain: "compliance",
     });
-
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    return JSON.parse(text);
+    return this.claude.parseJSON(text);
   }
 
   /**
@@ -119,15 +117,15 @@ Return JSON:
 }
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 1000,
-      messages: [{ role: "user", content: prompt }],
+      maxTokens: 1000,
+      thinking: false,
       temperature: 0.2,
+      domain: "compliance",
     });
-
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    return JSON.parse(text);
+    return this.claude.parseJSON(text);
   }
 
   /**

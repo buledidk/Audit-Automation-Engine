@@ -60,7 +60,7 @@ Be specific, actionable, and think critically. Document professional skepticism.
     setLoading(true);
     try {
       const response = await clientRef.current.messages.create({
-        model: 'claude-3-5-haiku-20241022',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1200,
         temperature: 0.7, // Higher for creative skepticism
         system: buildSystemPrompt(),

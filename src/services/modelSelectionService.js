@@ -31,7 +31,7 @@ class ModelSelectionService {
 
     this.modelConfig = {
       claude: {
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-sonnet-4-6",
         maxTokens: parseInt(process.env.CLAUDE_MAX_TOKENS) || 4096,
         temperature: parseFloat(process.env.CLAUDE_TEMPERATURE) || 0.2,
       },
@@ -82,7 +82,7 @@ class ModelSelectionService {
     const start = Date.now();
     try {
       await this.clients.claude.messages.create({
-        model: "claude-3-5-sonnet-20241022",
+        model: "claude-sonnet-4-6",
         max_tokens: 100,
         messages: [{ role: "user", content: "ping" }],
       });

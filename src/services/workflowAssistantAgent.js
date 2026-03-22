@@ -6,14 +6,12 @@
  * Model: Claude 3.5 Haiku (fast, real-time)
  */
 
-import { Anthropic } from "@anthropic-ai/sdk";
+import claudeClient, { MODELS, EFFORT } from "./claudeClient.js";
 
 export class WorkflowAssistantAgent {
   constructor() {
-    this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY,
-    });
-    this.model = "claude-3-5-haiku-20241022"; // Fast model for real-time
+    this.claude = claudeClient;
+    this.model = MODELS.HAIKU;  // Fast model for real-time guidance
     this.cache = new Map();
     this.CACHE_TTL = 15 * 60 * 1000; // 15 minutes (shorter for dynamic content)
   }
@@ -43,15 +41,14 @@ Return JSON:
 }
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 300,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.5, // Slightly more creative than pure analysis
+      maxTokens: 300,
+      thinking: false,
+      temperature: 0.5,
     });
-
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    return JSON.parse(text);
+    return this.claude.parseJSON(text);
   }
 
   /**
@@ -77,15 +74,14 @@ Return JSON:
 }
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 400,
-      messages: [{ role: "user", content: prompt }],
+      maxTokens: 400,
+      thinking: false,
       temperature: 0.4,
     });
-
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    return JSON.parse(text);
+    return this.claude.parseJSON(text);
   }
 
   /**
@@ -111,15 +107,14 @@ Return JSON:
 }
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 500,
-      messages: [{ role: "user", content: prompt }],
+      maxTokens: 500,
+      thinking: false,
       temperature: 0.6,
     });
-
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    return JSON.parse(text);
+    return this.claude.parseJSON(text);
   }
 
   /**
@@ -135,14 +130,14 @@ Audit Context: ${context || "General audit question"}
 Be practical and direct.
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 200,
-      messages: [{ role: "user", content: prompt }],
+      maxTokens: 200,
+      thinking: false,
       temperature: 0.7,
     });
-
-    return message.content[0].type === "text" ? message.content[0].text : "No answer available";
+    return text || "No answer available";
   }
 
   /**
@@ -167,15 +162,14 @@ Return JSON:
 }
 `;
 
-    const message = await this.client.messages.create({
+    const { text } = await this.claude.sendMessage({
+      prompt,
       model: this.model,
-      max_tokens: 400,
-      messages: [{ role: "user", content: prompt }],
+      maxTokens: 400,
+      thinking: false,
       temperature: 0.3,
     });
-
-    const text = message.content[0].type === "text" ? message.content[0].text : "{}";
-    return JSON.parse(text);
+    return this.claude.parseJSON(text);
   }
 
   /**

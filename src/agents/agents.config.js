@@ -10,7 +10,7 @@ export const agentConfig = {
   models: {
     primary: {
       provider: 'anthropic',
-      model: process.env.CLAUDE_MODEL || 'claude-3-5-sonnet-20241022',
+      model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-6',
       apiKey: process.env.ANTHROPIC_API_KEY,
       maxTokens: parseInt(process.env.CLAUDE_MAX_TOKENS) || 4096,
       temperature: parseFloat(process.env.CLAUDE_TEMPERATURE) || 0.2,
@@ -34,6 +34,16 @@ export const agentConfig = {
       temperature: parseFloat(process.env.OLLAMA_TEMPERATURE) || 0.5,
       timeout: 30000,
       priority: 3
+    },
+    heavy: {
+      provider: 'anthropic',
+      model: 'claude-opus-4-6',
+      apiKey: process.env.ANTHROPIC_API_KEY,
+      maxTokens: 64000,
+      temperature: 0.2,
+      timeout: 120000,
+      thinking: { type: "enabled", budget_tokens: 16384 },
+      priority: 0
     }
   },
 
@@ -53,7 +63,8 @@ export const agentConfig = {
     RiskAssessmentAgent: 'primary',       // Use Claude
     EvidenceAnalysisAgent: 'primary',     // Use Claude
     WorkflowAssistantAgent: 'fallback',   // Use Ollama (fast, local)
-    ComplianceAgent_Audit: 'primary'      // Use Claude
+    ComplianceAgent_Audit: 'primary',     // Use Claude
+    HeavyAutomationService: 'heavy'       // Use Opus 4.6 with extended thinking
   },
 
   // Fallback chain: try in order
@@ -61,7 +72,7 @@ export const agentConfig = {
 
   // Framework configuration
   framework: {
-    model: process.env.AGENT_MODEL || 'claude-3-5-sonnet-20241022',
+    model: process.env.AGENT_MODEL || 'claude-sonnet-4-6',
     maxTokens: parseInt(process.env.AGENT_MAX_TOKENS) || 4096,
     temperature: parseFloat(process.env.AGENT_TEMPERATURE) || 0.2,
     timeout: parseInt(process.env.AGENT_TIMEOUT) || 30000,
