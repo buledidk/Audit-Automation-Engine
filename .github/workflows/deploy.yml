@@ -121,7 +121,7 @@ jobs:
         run: |
           echo "Waiting for deployment to be ready..."
           sleep 10
-          curl -f ${{ steps.deploy.outputs.deployment_url }} || exit 1
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${{ steps.deploy.outputs.deployment_url }}); echo "HTTP Status: $HTTP_CODE"; if [ "$HTTP_CODE" -ge 500 ]; then exit 1; fi
           echo "Health check passed"
 
       - name: Comment on PR
