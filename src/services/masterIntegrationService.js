@@ -86,7 +86,23 @@ class MasterIntegrationService extends EventEmitter {
       // ── PHASE 3: Agent Orchestration ──────────────────────────────
       await this.bootPhase('Phase 3: Agent Orchestration', async () => {
         this.systems.orchestrator = AIAgentOrchestrator;
-        this.logBoot('AI Agent Orchestrator (9 agents)', 'ready');
+
+        // Verify all agents are ready
+        const status = AIAgentOrchestrator.getStatus();
+        const agentCount = status.agents || 0;
+        this.logBoot(`AI Agent Orchestrator (${agentCount} agents)`, 'ready');
+
+        // Verify accuracy engine
+        const accuracyStatus = AIAgentOrchestrator.agents?.accuracy?.getStatus?.();
+        if (accuracyStatus?.enabled) {
+          this.logBoot(`  └─ Accuracy Enhancement Engine (${accuracyStatus.modules} modules, ISA 330/500/520/530/540)`, 'ready');
+        }
+
+        // Verify FS analysis agent
+        const fsStatus = AIAgentOrchestrator.agents?.fsAnalysis?.getStatus?.();
+        if (fsStatus?.enabled) {
+          this.logBoot(`  └─ FS Analysis Agent (${fsStatus.modules} modules, ${fsStatus.supportedFrameworks?.join('/')} )`, 'ready');
+        }
 
         // Wire orchestrator events to monitoring
         this.wireOrchestratorToMonitoring();
@@ -172,7 +188,7 @@ class MasterIntegrationService extends EventEmitter {
 ║  Boot Time:    ${String(bootTime).padEnd(8)}ms                                    ║
 ║  Subsystems:   ${String(Object.keys(this.systems).length).padEnd(8)} initialized                          ║
 ║  AI Models:    Multi-model (Claude/OpenAI/Ollama)                 ║
-║  Agents:       9 AI agents orchestrated                           ║
+║  Agents:       13 AI agents orchestrated                          ║
 ║  Connectors:   Slack, GitHub, Email, AWS                          ║
 ║  Monitoring:   Real-time with self-healing                        ║
 ║  WebSocket:    3 namespaces active                                ║

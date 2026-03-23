@@ -740,6 +740,122 @@ async function testTrendAnalysis() {
 }
 
 // ============================================================================
+// 8. ACCURACY ENHANCEMENT ENGINE (15 checks)
+// ============================================================================
+
+async function testAccuracyEnhancementEngine() {
+  setCategory('Accuracy Enhancement Engine');
+
+  // Import main engine
+  let accuracyEngine;
+  try {
+    const mod = await import(resolve(__dirname, 'src/services/AuditAccuracyEnhancementEngine.js'));
+    accuracyEngine = mod.default;
+    assert(accuracyEngine, 'AuditAccuracyEnhancementEngine imports successfully');
+  } catch (err) {
+    fail('AuditAccuracyEnhancementEngine imports successfully', err);
+    return;
+  }
+
+  // Status check
+  const status = accuracyEngine.getStatus();
+  assert(status.enabled === true, 'Accuracy engine is enabled');
+  assert(status.modules === 7, `Accuracy engine has 7 modules (got ${status.modules})`);
+  assert(status.status === 'READY', 'Accuracy engine status is READY');
+  assert(Array.isArray(status.isaReferences) && status.isaReferences.length === 5,
+    `Accuracy engine covers 5 ISA standards (got ${status.isaReferences?.length})`);
+
+  // Sub-module imports
+  try {
+    const subMods = await import(resolve(__dirname, 'src/services/accuracy-enhancements/index.js'));
+    assert(subMods.mathematicalAccuracy, 'MathematicalAccuracyModule exported');
+    assert(subMods.dataQuality, 'DataQualityModule exported');
+    assert(subMods.crossAccountValidation, 'CrossAccountValidationModule exported');
+    assert(subMods.estimateAccuracy, 'EstimateAccuracyModule exported');
+    assert(subMods.reconciliation, 'ReconciliationModule exported');
+    assert(subMods.samplingAccuracy, 'SamplingAccuracyModule exported');
+    assert(subMods.realTimeMonitoring, 'RealTimeMonitoringModule exported');
+  } catch (err) {
+    for (let i = 0; i < 7; i++) fail('Sub-module export check', err);
+  }
+
+  // Mathematical accuracy — trial balance validation
+  const tbResult = accuracyEngine.modules.mathematical.validateTrialBalance([
+    { account: 'Cash', debit: 100000, credit: 0 },
+    { account: 'Revenue', debit: 0, credit: 80000 },
+    { account: 'Expenses', debit: 30000, credit: 0 },
+    { account: 'Equity', debit: 0, credit: 50000 }
+  ]);
+  assert(tbResult.balanced === true, `Trial balance validation works (balanced=${tbResult.balanced})`);
+  assert(tbResult.debitTotal === 130000 && tbResult.creditTotal === 130000,
+    `Trial balance totals correct (D:${tbResult.debitTotal} C:${tbResult.creditTotal})`);
+
+  // Data quality — duplicate detection
+  const dupeResult = accuracyEngine.modules.dataQuality.detectDuplicates(
+    [{ id: 1, amount: 500 }, { id: 2, amount: 500 }, { id: 3, amount: 999 }],
+    ['amount']
+  );
+  assert(dupeResult.duplicates.length === 1, `Duplicate detection works (found ${dupeResult.duplicates.length})`);
+}
+
+// ============================================================================
+// 9. FINANCIAL STATEMENT ANALYSIS AGENT (15 checks)
+// ============================================================================
+
+async function testFinancialStatementAnalysisAgent() {
+  setCategory('Financial Statement Analysis Agent');
+
+  // Import main agent
+  let fsAgent;
+  try {
+    const mod = await import(resolve(__dirname, 'src/services/FinancialStatementAnalysisAgent.js'));
+    fsAgent = mod.default;
+    assert(fsAgent, 'FinancialStatementAnalysisAgent imports successfully');
+  } catch (err) {
+    fail('FinancialStatementAnalysisAgent imports successfully', err);
+    return;
+  }
+
+  // Status check
+  const status = fsAgent.getStatus();
+  assert(status.enabled === true, 'FS analysis agent is enabled');
+  assert(status.modules === 7, `FS analysis agent has 7 modules (got ${status.modules})`);
+  assert(status.status === 'READY', 'FS analysis agent status is READY');
+  assert(Array.isArray(status.supportedFrameworks) && status.supportedFrameworks.length === 4,
+    `FS agent supports 4 frameworks (got ${status.supportedFrameworks?.length})`);
+  assert(Array.isArray(status.isaReferences) && status.isaReferences.length === 13,
+    `FS agent covers 13 ISA standards (got ${status.isaReferences?.length})`);
+
+  // Sub-module imports
+  try {
+    const subMods = await import(resolve(__dirname, 'src/services/fs-analysis/index.js'));
+    assert(subMods.fsExtraction, 'FSExtractionModule exported');
+    assert(subMods.fsReconciliation, 'FSReconciliationModule exported');
+    assert(subMods.disclosureCompleteness, 'DisclosureCompletenessModule exported');
+    assert(subMods.estimateAndJudgment, 'EstimateAndJudgmentModule exported');
+    assert(subMods.consolidationValidation, 'ConsolidationValidationModule exported');
+    assert(subMods.frameworkCompliance, 'FrameworkComplianceModule exported');
+    assert(subMods.fsRiskAssessment, 'FSRiskAssessmentModule exported');
+  } catch (err) {
+    for (let i = 0; i < 7; i++) fail('Sub-module export check', err);
+  }
+
+  // FS Reconciliation — balance sheet equation
+  const bsResult = fsAgent.modules.reconciliation.validateBalanceSheetEquation({
+    assets: { current: 500000, nonCurrent: 800000, total: 1300000 },
+    liabilities: { current: 200000, nonCurrent: 400000, total: 600000 },
+    equity: { total: 700000 }
+  });
+  assert(bsResult.balanced === true, `Balance sheet validation works (balanced=${bsResult.balanced})`);
+
+  // FS Reconciliation — cash flow
+  const cfResult = fsAgent.modules.reconciliation.reconcileCashFlowStatement({
+    openingCash: 100000, operating: 50000, investing: -30000, financing: -10000, fxEffects: 0, closingCash: 110000
+  });
+  assert(cfResult.reconciled === true, `Cash flow reconciliation works (reconciled=${cfResult.reconciled})`);
+}
+
+// ============================================================================
 // RUN ALL TESTS & REPORT
 // ============================================================================
 
@@ -757,6 +873,8 @@ async function main() {
   await testFTSE250Data();
   await testBenchmarking();
   await testTrendAnalysis();
+  await testAccuracyEnhancementEngine();
+  await testFinancialStatementAnalysisAgent();
 
   // ========================================================================
   // REPORT

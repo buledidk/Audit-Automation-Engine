@@ -64,7 +64,9 @@ export const agentConfig = {
     EvidenceAnalysisAgent: 'primary',     // Use Claude
     WorkflowAssistantAgent: 'fallback',   // Use Ollama (fast, local)
     ComplianceAgent_Audit: 'primary',     // Use Claude
-    HeavyAutomationService: 'heavy'       // Use Opus 4.6 with extended thinking
+    HeavyAutomationService: 'heavy',       // Use Opus 4.6 with extended thinking
+    AuditAccuracyEnhancementEngine: 'primary', // Mix of Sonnet + Opus internally
+    FinancialStatementAnalysisAgent: 'heavy'    // Opus-heavy for FS compliance/estimates/risk
   },
 
   // Fallback chain: try in order
