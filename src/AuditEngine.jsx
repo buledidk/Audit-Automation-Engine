@@ -7,6 +7,7 @@ import AgentRecommendationsPanel from "./components/AgentRecommendationsPanel";
 import DocumentationPanel from "./components/DocumentationPanel";
 import useAgentProgress from "./hooks/useAgentProgress";
 import useDocumentGeneration from "./hooks/useDocumentGeneration";
+import FloatingAgentPanel from "./components/FloatingAgentPanel";
 import useOfflineMode from "./hooks/useOfflineMode";
 import useIntegrations from "./hooks/useIntegrations";
 
@@ -1243,6 +1244,9 @@ export default function AuditEngine() {
           </Suspense>
         ) : null}
       </div>
+
+      {/* Floating Agent Panel - visible on all views */}
+      <FloatingAgentPanel engagement={engagement} />
     </div>
   );
 }
