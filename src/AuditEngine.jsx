@@ -8,6 +8,7 @@ import DocumentationPanel from "./components/DocumentationPanel";
 import useAgentProgress from "./hooks/useAgentProgress";
 import useDocumentGeneration from "./hooks/useDocumentGeneration";
 import FloatingAgentPanel from "./components/FloatingAgentPanel";
+import StatusBar from "./components/StatusBar";
 import useOfflineMode from "./hooks/useOfflineMode";
 import useIntegrations from "./hooks/useIntegrations";
 
@@ -1113,6 +1114,8 @@ export default function AuditEngine() {
         </div>
       </div>
 
+      {/* RIGHT COLUMN: Content + StatusBar */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {/* MAIN CONTENT AREA */}
       <div style={{ flex: 1, overflow: "auto", background: COLORS.bg }}>
         {viewMode === "phase" ? (
@@ -1243,6 +1246,10 @@ export default function AuditEngine() {
             <ModernDesignShowcase />
           </Suspense>
         ) : null}
+      </div>
+
+      {/* Status Bar */}
+      <StatusBar engagement={engagement} />
       </div>
 
       {/* Floating Agent Panel - visible on all views */}
