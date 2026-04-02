@@ -66,7 +66,17 @@ export const agentConfig = {
     ComplianceAgent_Audit: 'primary',     // Use Claude
     HeavyAutomationService: 'heavy',       // Use Opus 4.6 with extended thinking
     AuditAccuracyEnhancementEngine: 'primary', // Mix of Sonnet + Opus internally
-    FinancialStatementAnalysisAgent: 'heavy'    // Opus-heavy for FS compliance/estimates/risk
+    FinancialStatementAnalysisAgent: 'heavy',   // Opus-heavy for FS compliance/estimates/risk
+    // Operational Agents (9)
+    OrchestratorAgent: 'primary',             // Workflow coordination
+    RiskIntelligenceAgent: 'primary',         // Ratio monitoring (calculation-heavy, no LLM needed)
+    QualityGuardianAgent: 'primary',          // FRC readiness scoring
+    EvidenceLinkerAgent: 'fallback',          // File classification (fast, local)
+    NarrativeWriterAgent: 'primary',          // ISA-compliant prose generation (Claude needed)
+    DeadlineAgent: 'fallback',               // Date calculation only
+    LearningAgent: 'primary',                // Pattern analysis
+    HumanInterfaceAgent: 'primary',          // NL query routing (Claude needed)
+    EvidenceCorroborationAgent: 'fallback'   // Matching logic only
   },
 
   // Fallback chain: try in order

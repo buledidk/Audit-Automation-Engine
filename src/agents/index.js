@@ -17,3 +17,17 @@ export { AgentCLI } from './AgentCLI.js';
 
 // Default export
 export { default as AgentIntegration } from './AgentIntegration.js';
+
+// Operational Agents (9 new agents)
+export { OPERATIONAL_AGENTS } from './definitions/index.js';
+export {
+  orchestratorAgent,
+  riskIntelligenceAgent,
+  qualityGuardianAgent,
+  evidenceLinkerAgent,
+  narrativeWriterAgent,
+  deadlineAgent,
+  learningAgent,
+  humanInterfaceAgent,
+  evidenceCorroborationAgent
+} from './definitions/index.js';
