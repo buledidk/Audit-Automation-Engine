@@ -25,6 +25,8 @@ const EnhancedVisualInterface = lazy(() => import("./components/EnhancedVisualIn
 const ModernDesignShowcase = lazy(() => import("./components/ModernDesignShowcase"));
 const DocumentUploadAndExtractionPanel = lazy(() => import("./components/DocumentUploadAndExtractionPanel"));
 const FinancialAnalysisDashboard = lazy(() => import("./components/FinancialAnalysisDashboard").then(m => ({ default: m.FinancialAnalysisDashboard })));
+const IPVDashboard = lazy(() => import("./components/IPVDashboard"));
+const ClientPortal = lazy(() => import("./components/ClientPortal"));
 
 // Lightweight loading fallback for lazy-loaded panels
 function PanelLoader() {
@@ -1111,6 +1113,38 @@ export default function AuditEngine() {
           >
             🎨 Modern Design System
           </button>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginTop: "8px" }}>
+            <button
+              onClick={() => setViewMode("ipv")}
+              style={{
+                padding: "8px",
+                background: viewMode === "ipv" ? "#F5A623" + "30" : "transparent",
+                border: `1px solid ${viewMode === "ipv" ? "#F5A623" : COLORS.border}`,
+                color: viewMode === "ipv" ? "#F5A623" : COLORS.dim,
+                borderRadius: "4px",
+                fontSize: "10px",
+                fontWeight: 600,
+                cursor: "pointer"
+              }}
+            >
+              💰 IPV
+            </button>
+            <button
+              onClick={() => setViewMode("portal")}
+              style={{
+                padding: "8px",
+                background: viewMode === "portal" ? "#42A5F5" + "30" : "transparent",
+                border: `1px solid ${viewMode === "portal" ? "#42A5F5" : COLORS.border}`,
+                color: viewMode === "portal" ? "#42A5F5" : COLORS.dim,
+                borderRadius: "4px",
+                fontSize: "10px",
+                fontWeight: 600,
+                cursor: "pointer"
+              }}
+            >
+              🏢 Portal
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1244,6 +1278,14 @@ export default function AuditEngine() {
         ) : viewMode === "design" ? (
           <Suspense fallback={<PanelLoader />}>
             <ModernDesignShowcase />
+          </Suspense>
+        ) : viewMode === "ipv" ? (
+          <Suspense fallback={<PanelLoader />}>
+            <IPVDashboard engagement={engagement} updateEngagement={updateEngagement} />
+          </Suspense>
+        ) : viewMode === "portal" ? (
+          <Suspense fallback={<PanelLoader />}>
+            <ClientPortal engagement={engagement} updateEngagement={updateEngagement} />
           </Suspense>
         ) : null}
       </div>
