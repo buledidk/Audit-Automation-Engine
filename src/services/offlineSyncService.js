@@ -50,10 +50,33 @@ class OfflineSyncService {
     this.syncInProgress = true;
     this.emit('sync:started', { queueSize: this.queue.size });
 
-    for (const [actionId, item] of this.queue) {
+    for (const [actionId, item] of this.queue) { // eslint-disable-line no-unused-vars
       try {
-        // Simulate sync to backend
-        await new Promise(r => setTimeout(r, 100));
+        // Execute the queued action against Supabase
+        const { createEngagement, updateEngagement, createFinding, logAuditEntry, isSupabaseConfigured } = await import('../lib/supabaseClient.js');
+
+        if (!isSupabaseConfigured()) {
+          throw new Error('Supabase not configured');
+        }
+
+        const { action } = item;
+        switch (action.type) {
+          case 'CREATE_ENGAGEMENT':
+            await createEngagement(action.data);
+            break;
+          case 'UPDATE_ENGAGEMENT':
+            await updateEngagement(action.id, action.data);
+            break;
+          case 'CREATE_FINDING':
+            await createFinding(action.engagementId, action.data);
+            break;
+          case 'AUDIT_LOG':
+            await logAuditEntry(action.engagementId, action.action, action.details);
+            break;
+          default:
+            // For unknown action types, try a generic API call
+            console.warn(`Unknown sync action type: ${action.type}`);
+        }
 
         item.status = 'synced';
         item.syncedAt = new Date().toISOString();

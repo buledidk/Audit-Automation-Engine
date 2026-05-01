@@ -7,23 +7,48 @@
       "Bash(npm:*)",
       "Bash(node:*)",
       "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(npx:*)",
+      "Bash(curl:*)",
       "Read",
       "Write",
       "Edit",
       "Glob",
-      "Grep"
+      "Grep",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)"
     ]
   },
   "env": {
-    "NODE_ENV": "development"
+    "NODE_ENV": "development",
+    "VITE_APP_ENV": "development"
   },
   "model": "claude-opus-4-6",
   "alwaysThinkingEnabled": true,
-  "attribution": {
-    "commit": "https://claude.ai/code/session_01CHQJRAWuBamwrCQSnCvGsE"
-  },
   "respectGitignore": true,
   "cleanupPeriodDays": 30,
   "spinnerTipsEnabled": true,
-  "syntax HighlightingDisabled": false
+  "hooks": {
+    "PreToolCall": [
+      {
+        "matcher": "Read|Edit|Write",
+        "command": "if echo \"$TOOL_INPUT\" | grep -qE '\\.env\\.local|\\.env\\.production|\\.env\\.vercel|\\.env$'; then echo 'BLOCK: env file contains secrets' && exit 1; fi"
+      },
+      {
+        "matcher": "Edit|Write",
+        "command": "if echo \"$TOOL_INPUT\" | grep -qE 'StandardsLibrary\\.js|RegulatoryData\\.js|AuditMethodology\\.js|CrossReferenceIndex\\.js|FRSEncyclopaedia\\.js|IFRSEncyclopaedia\\.js|ChartOfAccounts\\.js|TestingProgrammes\\.js'; then echo 'CAUTION: Large regulatory data file (>100KB). Verify ISA/FRS accuracy before editing.' && exit 1; fi"
+      }
+    ],
+    "PostToolCall": [
+      {
+        "matcher": "Bash",
+        "command": "if echo \"$TOOL_INPUT\" | grep -qE 'vitest run|npm run test|npm run build'; then echo 'Build/test completed'; fi"
+      }
+    ]
+  }
 }

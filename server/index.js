@@ -9,6 +9,7 @@
  *   4. Health check scheduler
  */
 
+import '../src/lib/loadEnv.js';
 import app from "./app.js";
 import masterIntegration from "../src/services/masterIntegrationService.js";
 

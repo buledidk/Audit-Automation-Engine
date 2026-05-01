@@ -428,7 +428,7 @@ export class FrameworkReportingEngine {
   /**
    * Calculate compliance score
    */
-  calculateComplianceScore(gaps, framework) {
+  calculateComplianceScore(gaps, _framework) {
     if (!gaps || gaps.length === 0) return 100;
 
     const criticalCount = gaps.filter(g => g.severity === 'critical').length;
@@ -473,7 +473,7 @@ export class FrameworkReportingEngine {
   /**
    * Assess FRS 102 compliance
    */
-  assessFRS102Compliance(auditData, frsDefinition) {
+  assessFRS102Compliance(auditData, _frsDefinition) {
     const gaps = [];
 
     // Check key requirements
@@ -516,7 +516,7 @@ export class FrameworkReportingEngine {
   /**
    * Assess GDPR compliance
    */
-  assessGDPRCompliance(auditData, gdprDefinition) {
+  assessGDPRCompliance(auditData, _gdprDefinition) {
     const gaps = [];
 
     if (auditData.hasPersonalData) {
@@ -541,7 +541,7 @@ export class FrameworkReportingEngine {
   /**
    * Assess ISQM compliance
    */
-  assessISQMCompliance(auditData, isqmDefinition) {
+  assessISQMCompliance(auditData, _isqmDefinition) {
     const gaps = [];
 
     if (!auditData.qualityControls) {
@@ -626,14 +626,14 @@ export class FrameworkReportingEngine {
   /**
    * Check if disclosure is required
    */
-  requiresDisclosure(finding, frsDefinition) {
+  requiresDisclosure(finding, _frsDefinition) {
     return finding.severity === 'high' || finding.severity === 'critical';
   }
 
   /**
    * Assess mapping of finding to IFRS
    */
-  mapFindingsToIFRS(findings, ifrsDefinition) {
+  mapFindingsToIFRS(findings, _ifrsDefinition) {
     return findings.map(finding => ({
       description: finding.description,
       ifrsStandard: this.identifyRelevantIFRS(finding),
@@ -658,7 +658,7 @@ export class FrameworkReportingEngine {
   /**
    * Map findings to GDPR
    */
-  mapFindingsToGDPR(findings, gdprDefinition) {
+  mapFindingsToGDPR(findings, _gdprDefinition) {
     return findings.filter(f => f.dataProtectionRelevant || f.description.toLowerCase().includes('personal')).map(finding => ({
       description: finding.description,
       relevantArticle: this.identifyGDPRArticle(finding),

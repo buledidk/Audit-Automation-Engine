@@ -8,10 +8,9 @@
 import { useState, useMemo, useEffect } from "react";
 import JurisdictionEngine from "../services/jurisdictionEngine";
 import * as apiClient from "../services/apiClient";
-import { useApiCall } from "../hooks/useApi";
 
 export function EngagementPlanning({
-  engagementId = "",
+  _engagementId = "",
   onSave = () => {}
 }) {
   const [engagement, setEngagement] = useState({

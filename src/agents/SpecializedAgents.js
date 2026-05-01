@@ -7,7 +7,6 @@
  * - ComplianceAgent: Ensures GDPR/regulatory compliance
  */
 
-import { AgentFramework } from './AgentFramework.js';
 
 export class SupervisorAgent {
   constructor(framework) {
@@ -280,4 +279,4 @@ export class AgentRegistry {
   }
 }
 
-export default SpecializedAgents;
+export default AgentRegistry;

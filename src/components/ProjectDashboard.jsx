@@ -1,9 +1,57 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 /**
  * ProjectDashboard - Real-time tracking of audit automation platform
  * Shows phase progress, system health, agent status, and worker queue status
  */
+const getProgressColor = (progress) => {
+  if (progress === 0) return '#999'; // Gray
+  if (progress < 33) return '#ff9500'; // Orange
+  if (progress < 66) return '#ffb81c'; // Yellow
+  if (progress < 100) return '#34c759'; // Green
+  return '#00ff00'; // Bright green
+};
+
+const ProgressBar = ({ progress, label }) => ( // eslint-disable-line no-unused-vars
+  <div style={{ marginBottom: '15px' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+      <span style={{ fontWeight: 'bold' }}>{label}</span>
+      <span style={{ color: getProgressColor(progress) }}>{progress}%</span>
+    </div>
+    <div style={{
+      width: '100%',
+      height: '20px',
+      backgroundColor: '#eee',
+      borderRadius: '10px',
+      overflow: 'hidden'
+    }}>
+      <div style={{
+        width: `${progress}%`,
+        height: '100%',
+        backgroundColor: getProgressColor(progress),
+        transition: 'width 0.3s ease'
+      }} />
+    </div>
+  </div>
+);
+
+const SystemHealth = ({ name, running, status }) => ( // eslint-disable-line no-unused-vars
+  <div style={{
+    padding: '10px',
+    marginBottom: '10px',
+    backgroundColor: running ? '#e8f5e9' : '#ffebee',
+    border: `1px solid ${running ? '#4caf50' : '#f44336'}`,
+    borderRadius: '4px'
+  }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <span>{name}</span>
+      <span style={{ color: running ? '#4caf50' : '#f44336' }}>
+        {running ? '✓ Running' : '✗ ' + (status || 'Offline')}
+      </span>
+    </div>
+  </div>
+);
+
 export function ProjectDashboard() {
   const [status, setStatus] = useState({
     phases: {
@@ -41,7 +89,7 @@ export function ProjectDashboard() {
           const data = await response.json();
           setStatus(prevStatus => ({...prevStatus, ...data}));
         }
-      } catch (error) {
+      } catch (error) { // eslint-disable-line no-unused-vars
         console.log('Status check not yet available');
       }
     };
@@ -52,53 +100,7 @@ export function ProjectDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const getProgressColor = (progress) => {
-    if (progress === 0) return '#999'; // Gray
-    if (progress < 33) return '#ff9500'; // Orange
-    if (progress < 66) return '#ffb81c'; // Yellow
-    if (progress < 100) return '#34c759'; // Green
-    return '#00ff00'; // Bright green
-  };
 
-  const ProgressBar = ({ progress, label }) => (
-    <div style={{ marginBottom: '15px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-        <span style={{ fontWeight: 'bold' }}>{label}</span>
-        <span style={{ color: getProgressColor(progress) }}>{progress}%</span>
-      </div>
-      <div style={{
-        width: '100%',
-        height: '20px',
-        backgroundColor: '#eee',
-        borderRadius: '10px',
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          width: `${progress}%`,
-          height: '100%',
-          backgroundColor: getProgressColor(progress),
-          transition: 'width 0.3s ease'
-        }} />
-      </div>
-    </div>
-  );
-
-  const SystemHealth = ({ name, running, status }) => (
-    <div style={{
-      padding: '10px',
-      marginBottom: '10px',
-      backgroundColor: running ? '#e8f5e9' : '#ffebee',
-      border: `1px solid ${running ? '#4caf50' : '#f44336'}`,
-      borderRadius: '4px'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <span>{name}</span>
-        <span style={{ color: running ? '#4caf50' : '#f44336' }}>
-          {running ? '✓ Running' : '✗ ' + (status || 'Offline')}
-        </span>
-      </div>
-    </div>
-  );
 
   return (
     <div style={{

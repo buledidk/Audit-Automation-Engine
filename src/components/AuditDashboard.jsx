@@ -6,7 +6,6 @@
 
 import { useState, useEffect, useMemo } from "react";
 import AuditDashboardService from "../services/auditDashboardService";
-import * as apiClient from "../services/apiClient";
 
 export function AuditDashboard({ engagementId = "" }) {
   const [metrics, setMetrics] = useState(null);
@@ -19,32 +18,6 @@ export function AuditDashboard({ engagementId = "" }) {
   const service = useMemo(() => {
     return new AuditDashboardService();
   }, []);
-
-  // Subscribe to real-time updates
-  useEffect(() => {
-    if (!engagementId) {
-      setError("Engagement ID required");
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    // Initial load
-    loadData();
-
-    // Subscribe to real-time updates
-    const unsubscribe = service.subscribeToUpdates(engagementId, (data) => {
-      setMetrics(data.metrics);
-      setHeatMap(data.heatMap);
-      setActivities(data.activity);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [engagementId, service]);
 
   /**
    * Load initial data
@@ -69,6 +42,35 @@ export function AuditDashboard({ engagementId = "" }) {
       setLoading(false);
     }
   }
+
+    // Subscribe to real-time updates
+  useEffect(() => {
+    if (!engagementId) {
+      setTimeout(() => {
+        setError("Engagement ID required");
+        setLoading(false);
+      }, 0);
+      return;
+    }
+
+    setTimeout(() => { setLoading(true); setError(null); }, 0);
+
+    // Initial load
+    setTimeout(() => { loadData(); }, 0);
+
+    // Subscribe to real-time updates
+    const unsubscribe = service.subscribeToUpdates(engagementId, (data) => {
+      setMetrics(data.metrics);
+      setHeatMap(data.heatMap);
+      setActivities(data.activity);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [engagementId, service]);
+
+
 
   /**
    * Get risk color

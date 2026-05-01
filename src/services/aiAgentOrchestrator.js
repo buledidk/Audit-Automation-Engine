@@ -3,49 +3,52 @@
  * Coordinates 13 AI agents for unified audit automation
  *
  * Status: ✅ PRODUCTION READY
- * Agents: 13 total (6 engines + 5 agents + 1 accuracy engine + 1 FS analysis agent)
+ * Agents: 13 total (4 engines + 5 agents + 4 methodology agents)
  * Coordination: Full orchestration with caching and fallback
+ * Quality Control: ISA 220 compliance with quality assessment
+ * Real-time KPIs: Live metrics collection and broadcasting
+ * ISA 330: Smart methodology pipeline (agents 10-13)
  */
 
 // Import all agents and engines
+import Anthropic from "@anthropic-ai/sdk";
 import { AIProcedureEngine } from "./aiProcedureEngine.js";
 import { ExceptionPredictionEngine } from "./exceptionPredictionEngine.js";
 import { JurisdictionEngine } from "./jurisdictionEngine.js";
 import { MaterialityEngine } from "./materialityEngine.js";
-import { ReportGenerationAgent } from "./reportGenerationAgent.js";
-import { RiskAssessmentAgent } from "./riskAssessmentAgent.js";
-import { ComplianceAgent } from "./complianceAgent.js";
-import { EvidenceAnalysisAgent } from "./evidenceAnalysisAgent.js";
-import { WorkflowAssistantAgent } from "./workflowAssistantAgent.js";
-import { FinancialRatioEngine } from "./financialRatioEngine.js";
-import { InvestorAnalyticsEngine } from "./investorAnalyticsEngine.js";
-import { HeavyAutomationService } from "./heavyAutomationService.js";
-import { AuditAccuracyEnhancementEngine } from "./AuditAccuracyEnhancementEngine.js";
-import { FinancialStatementAnalysisAgent } from "./FinancialStatementAnalysisAgent.js";
+import { ReportGenerationAgent } from "../agents/reportGenerationAgent.js";
+import { RiskAssessmentAgent } from "../agents/riskAssessmentAgent.js";
+import { ComplianceAgent } from "../agents/complianceAgent.js";
+import { EvidenceAnalysisAgent } from "../agents/evidenceAnalysisAgent.js";
+import { WorkflowAssistantAgent } from "../agents/workflowAssistantAgent.js";
+import { agentQualityAssessmentService } from "./agentQualityAssessmentService.js";
+
+// ISA 330 Methodology Agents (10-13)
+import { AuditSectionsService } from "./auditSectionsService.js";
+import { ControlsTestingAgent } from "./controlsTestingAgent.js";
+import { SubstantiveProceduresAgent } from "./substantiveProceduresAgent.js";
+import { SmartProceduresEngine } from "./smartProceduresEngine.js";
 
 class AIAgentOrchestrator {
   constructor() {
     // Initialize all 13 agents
     this.agents = {
-      // Core Engines (6)
+      // Core Engines (4)
       procedures: new AIProcedureEngine(),
       exceptions: new ExceptionPredictionEngine(),
       jurisdictions: new JurisdictionEngine(),
       materiality: new MaterialityEngine(),
-      ratios: new FinancialRatioEngine(),
-      investor: new InvestorAnalyticsEngine(),
       // Claude Agents (5)
       reports: new ReportGenerationAgent(),
       risk: new RiskAssessmentAgent(),
       compliance: new ComplianceAgent(),
       evidence: new EvidenceAnalysisAgent(),
       workflow: new WorkflowAssistantAgent(),
-      // Heavy Automation (Claude Opus 4.6 with extended thinking)
-      heavyAutomation: new HeavyAutomationService(),
-      // Accuracy Enhancement Engine (ISA 330/500/520/530/540)
-      accuracy: new AuditAccuracyEnhancementEngine(),
-      // Financial Statement Analysis Agent (ISA 240/315/540/570/600/700)
-      fsAnalysis: new FinancialStatementAnalysisAgent(),
+      // ISA 330 Methodology Agents (4)
+      sections: new AuditSectionsService(),
+      controlsTesting: new ControlsTestingAgent(),
+      substantive: new SubstantiveProceduresAgent(),
+      smartProcedures: new SmartProceduresEngine(),
     };
 
     // Caching system
@@ -130,40 +133,6 @@ class AIAgentOrchestrator {
           result = await this.agents.workflow.getNextStep(request.params.context);
           break;
 
-        case "CALCULATE_RATIOS":
-          result = this.agents.ratios.calculateAllRatios(
-            request.params.financialData,
-            request.params.priorYear,
-            request.params.options
-          );
-          break;
-
-        case "ANALYZE_INVESTOR":
-          result = await this.agents.investor.performComprehensiveAnalysis(
-            request.params.companyName,
-            request.params.companyNumber,
-            request.params.financialData,
-            request.params.options
-          );
-          break;
-
-        case "BENCHMARK_FTSE250":
-          result = this.agents.ratios.benchmarkAgainstFTSE250(
-            request.params.ratios,
-            request.params.companyName,
-            request.params.sicCode
-          );
-          break;
-
-        case "INDUSTRY_ANALYSIS":
-          result = await this.agents.investor.performIndustryAnalysis(
-            request.params.companyName,
-            request.params.sicCode,
-            request.params.sector,
-            request.params.financialData
-          );
-          break;
-
         // Multi-agent orchestration
         case "FULL_ENGAGEMENT_ANALYSIS":
           result = await this._executeFullAnalysis(request.params);
@@ -177,126 +146,34 @@ class AIAgentOrchestrator {
           result = await this._riskAssessmentSuite(request.params);
           break;
 
-        // Heavy Automation (Opus 4.6 with extended thinking)
-        case "HEAVY_RISK_ASSESSMENT":
-          result = await this.agents.heavyAutomation.executeComprehensiveRiskAssessment(request.params.context);
+        // ISA 330 Methodology request types
+        case "EVALUATE_CONTROLS":
+          result = await this.agents.controlsTesting.evaluateControls(request.params);
           break;
 
-        case "HEAVY_MATERIALITY":
-          result = await this.agents.heavyAutomation.executeMaterialityAnalysis(request.params.context);
+        case "GENERATE_SUBSTANTIVE_PROGRAMME":
+          result = await this.agents.substantive.generateSubstantiveProgramme(request.params);
           break;
 
-        case "HEAVY_SAMPLING":
-          result = await this.agents.heavyAutomation.executeSamplingStrategy(request.params.context);
+        case "ANALYZE_SECTIONS":
+          result = request.params.initialize
+            ? this.agents.sections.initializeSections(request.engagementId, request.params)
+            : this.agents.sections.getAllSections(request.engagementId);
           break;
 
-        case "HEAVY_PROCEDURES":
-          result = await this.agents.heavyAutomation.executeAuditProcedureDesign(request.params.context);
+        case "SMART_PROCEDURES":
+          result = await this.agents.smartProcedures.executeMethodologySuite(request.params);
           break;
 
-        case "HEAVY_FINDINGS":
-          result = await this.agents.heavyAutomation.executeFindingsAnalysis(request.params.context);
+        case "METHODOLOGY_SUITE":
+          result = await this.agents.smartProcedures.executeMethodologySuite({
+            ...request.params,
+            engagementId: request.engagementId,
+          });
           break;
 
-        case "HEAVY_FULL_WORKFLOW":
-          result = await this.agents.heavyAutomation.executeFullAuditWorkflow(
-            request.params.context,
-            request.params.onProgress
-          );
-          break;
-
-        // Accuracy Enhancement Engine (ISA 330/500/520/530/540)
-        case "ASSESS_ACCURACY":
-          result = await this.agents.accuracy.runFullAccuracyAssessment(
-            request.engagementId,
-            request.params.data
-          );
-          break;
-
-        case "CHECK_MATHEMATICAL_ACCURACY":
-          result = await this.agents.accuracy.runMathematicalAccuracy(request.params.data);
-          break;
-
-        case "CHECK_DATA_QUALITY":
-          result = await this.agents.accuracy.runDataQualityAssessment(request.params.data);
-          break;
-
-        case "VALIDATE_CROSS_ACCOUNT":
-          result = await this.agents.accuracy.runCrossAccountValidation(request.params.data);
-          break;
-
-        case "VERIFY_ESTIMATES":
-          result = await this.agents.accuracy.runEstimateAccuracy(
-            request.params.estimates,
-            request.params.context
-          );
-          break;
-
-        case "RUN_RECONCILIATION":
-          result = await this.agents.accuracy.runReconciliation(
-            request.params.sourceA,
-            request.params.sourceB,
-            request.params.rules
-          );
-          break;
-
-        case "VALIDATE_SAMPLING":
-          result = await this.agents.accuracy.runSamplingAccuracy(
-            request.params.sample,
-            request.params.population,
-            request.params.options
-          );
-          break;
-
-        case "BATCH_ACCURACY_CHECK":
-          result = await this.agents.accuracy.runBatchAccuracyChecks(request.params.items);
-          break;
-
-        // Financial Statement Analysis Agent (ISA 240/315/540/570/600/700)
-        case "ANALYZE_FINANCIAL_STATEMENTS":
-          result = await this.agents.fsAnalysis.runFullFSAnalysis(
-            request.engagementId, request.params.data
-          );
-          break;
-
-        case "EXTRACT_FS_DATA":
-          result = await this.agents.fsAnalysis.runFSExtraction(request.params.data);
-          break;
-
-        case "RECONCILE_FS":
-          result = await this.agents.fsAnalysis.runFSReconciliation(request.params.data);
-          break;
-
-        case "CHECK_DISCLOSURES":
-          result = await this.agents.fsAnalysis.runDisclosureCompleteness(
-            request.params.financialStatements, request.params.framework, request.params.context
-          );
-          break;
-
-        case "EVALUATE_FS_ESTIMATES":
-          result = await this.agents.fsAnalysis.runEstimateAnalysis(
-            request.params.financialStatements, request.params.context
-          );
-          break;
-
-        case "VALIDATE_CONSOLIDATION":
-          result = await this.agents.fsAnalysis.runConsolidationValidation(request.params.data);
-          break;
-
-        case "CHECK_FRAMEWORK_COMPLIANCE":
-          result = await this.agents.fsAnalysis.runFrameworkCompliance(
-            request.params.financialStatements, request.params.context
-          );
-          break;
-
-        case "ASSESS_FS_RISK":
-          result = await this.agents.fsAnalysis.runFSRiskAssessment(
-            request.params.financialStatements, request.params.context
-          );
-          break;
-
-        case "ASSESS_GOING_CONCERN":
-          result = await this.agents.fsAnalysis.runGoingConcern(request.params.data);
+        case "AI_CHAT":
+          result = await this._handleAIChat(request.params);
           break;
 
         default:
@@ -313,6 +190,22 @@ class AIAgentOrchestrator {
 
       // 4. Update metrics
       this._updateMetrics(requestId, true, latency);
+
+      // 5. QUALITY ASSESSMENT - Record execution (ISA 220)
+      const agentName = this._getAgentNameForRequestType(request.type);
+      if (agentName) {
+        agentQualityAssessmentService.recordExecution({
+          agentName,
+          engagementId: request.engagementId,
+          requestType: request.type,
+          requestParams: request.params,
+          responseData: result,
+          duration: latency,
+          tokensUsed: result.tokensUsed || 0,
+          costUsd: result.costUsd || 0,
+          success: true
+        }).catch(err => console.warn('⚠️ Quality assessment error:', err));
+      }
 
       console.log(`   ✅ Success (${latency}ms)`);
       return result;
@@ -340,20 +233,12 @@ class AIAgentOrchestrator {
     console.log("   🔄 Executing full engagement analysis (parallel)...");
 
     // Run multiple agents in parallel
-    const [procedures, exceptions, risk, materiality, compliance, ratioAnalysis, accuracy] = await Promise.all([
+    const [procedures, exceptions, risk, materiality, compliance] = await Promise.all([
       this.agents.procedures.suggestProcedures(params.context, params.procedures),
       this.agents.exceptions.predictExceptions(params.context),
       this.agents.risk.assessInherentRisk(params.context),
       this.agents.materiality.calculateMateriality(params.context),
       this.agents.compliance.checkCompliance(params.context),
-      Promise.resolve(
-        params.financialData
-          ? this.agents.ratios.calculateAllRatios(params.financialData, params.priorYear, params.ratioOptions)
-          : null
-      ),
-      params.accuracyData
-        ? this.agents.accuracy.runFullAccuracyAssessment(params.engagementId, params.accuracyData).catch(() => null)
-        : Promise.resolve(null),
     ]);
 
     return {
@@ -362,8 +247,6 @@ class AIAgentOrchestrator {
       risk,
       materiality,
       compliance,
-      ratioAnalysis,
-      accuracy,
       timestamp: new Date().toISOString(),
       aggregated: {
         overallRisk: this._calculateOverallRisk(risk, exceptions),
@@ -461,6 +344,24 @@ class AIAgentOrchestrator {
       (this.metrics.averageLatency * (allLatencies - 1) + latency) / allLatencies;
   }
 
+  async _handleAIChat(params) {
+    const { system, messages } = params;
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      throw new Error("AI_CHAT requires a non-empty messages array");
+    }
+    const client = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY,
+    });
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1500,
+      system: system || "You are an expert UK statutory auditor.",
+      messages: messages.slice(-6),
+    });
+    const text = response.content?.map(b => b.text || "").join("\n") || "";
+    return { text, model: response.model, usage: response.usage };
+  }
+
   _calculateOverallRisk(risk, exceptions) {
     const riskScore = risk?.score || 50;
     const exceptionScore = exceptions?.exception_probability * 100 || 0;
@@ -473,42 +374,23 @@ class AIAgentOrchestrator {
 
   _getFallbackResult(type) {
     const fallbacks = {
-      SUGGEST_PROCEDURES: { suggestions: [], note: "Cached - API rate limited" },
-      PREDICT_EXCEPTIONS: { probability: 0, confidence: "low", cached: true },
-      PLAN_JURISDICTION: { plan: "Standard audit approach", fallback: true },
+      SUGGEST_PROCEDURES: { suggestions: [] },
+      PREDICT_EXCEPTIONS: { probability: 0, confidence: "low" },
+      PLAN_JURISDICTION: { plan: "Standard audit approach" },
       GENERATE_REPORT: { summary: "Report generation available on next request" },
-      ASSESS_RISK: { riskLevel: "MEDIUM", note: "Cached result" },
-      CHECK_COMPLIANCE: { status: "PENDING", note: "Cached result" },
-      ANALYZE_EVIDENCE: { sufficiency: "UNKNOWN", cached: true },
-      CALCULATE_RATIOS: { ratios: {}, note: "Cached result" },
-      ANALYZE_INVESTOR: { status: "PENDING", note: "Cached result" },
-      BENCHMARK_FTSE250: { comparison: {}, note: "Cached result" },
-      INDUSTRY_ANALYSIS: { status: "PENDING", note: "Cached result" },
-      HEAVY_RISK_ASSESSMENT: { status: "PENDING", note: "Heavy automation cached/rate limited" },
-      HEAVY_MATERIALITY: { status: "PENDING", note: "Heavy automation cached/rate limited" },
-      HEAVY_SAMPLING: { status: "PENDING", note: "Heavy automation cached/rate limited" },
-      HEAVY_PROCEDURES: { status: "PENDING", note: "Heavy automation cached/rate limited" },
-      HEAVY_FINDINGS: { status: "PENDING", note: "Heavy automation cached/rate limited" },
-      HEAVY_FULL_WORKFLOW: { status: "PENDING", note: "Heavy automation cached/rate limited" },
-      ASSESS_ACCURACY: { status: "PENDING", note: "Accuracy assessment cached/rate limited" },
-      CHECK_MATHEMATICAL_ACCURACY: { status: "PENDING", note: "Accuracy cached/rate limited" },
-      CHECK_DATA_QUALITY: { status: "PENDING", note: "Accuracy cached/rate limited" },
-      VALIDATE_CROSS_ACCOUNT: { status: "PENDING", note: "Accuracy cached/rate limited" },
-      VERIFY_ESTIMATES: { status: "PENDING", note: "Accuracy cached/rate limited" },
-      RUN_RECONCILIATION: { status: "PENDING", note: "Accuracy cached/rate limited" },
-      VALIDATE_SAMPLING: { status: "PENDING", note: "Accuracy cached/rate limited" },
-      BATCH_ACCURACY_CHECK: { status: "PENDING", note: "Accuracy cached/rate limited" },
-      ANALYZE_FINANCIAL_STATEMENTS: { status: "PENDING", note: "FS analysis cached/rate limited" },
-      EXTRACT_FS_DATA: { status: "PENDING", note: "FS analysis cached/rate limited" },
-      RECONCILE_FS: { status: "PENDING", note: "FS analysis cached/rate limited" },
-      CHECK_DISCLOSURES: { status: "PENDING", note: "FS analysis cached/rate limited" },
-      EVALUATE_FS_ESTIMATES: { status: "PENDING", note: "FS analysis cached/rate limited" },
-      VALIDATE_CONSOLIDATION: { status: "PENDING", note: "FS analysis cached/rate limited" },
-      CHECK_FRAMEWORK_COMPLIANCE: { status: "PENDING", note: "FS analysis cached/rate limited" },
-      ASSESS_FS_RISK: { status: "PENDING", note: "FS analysis cached/rate limited" },
-      ASSESS_GOING_CONCERN: { status: "PENDING", note: "FS analysis cached/rate limited" },
+      ASSESS_RISK: { riskLevel: "MEDIUM" },
+      CHECK_COMPLIANCE: { status: "PENDING" },
+      ANALYZE_EVIDENCE: { sufficiency: "UNKNOWN" },
+      EVALUATE_CONTROLS: { controlAssessments: [] },
+      GENERATE_SUBSTANTIVE_PROGRAMME: { procedures: [] },
+      ANALYZE_SECTIONS: { sections: [] },
+      SMART_PROCEDURES: { success: false },
+      METHODOLOGY_SUITE: { success: false },
     };
-    return fallbacks[type] || { status: "FALLBACK_MODE" };
+    const result = fallbacks[type] || { status: "FALLBACK_MODE" };
+    result.__fallback = true;
+    result.__reason = "Rate limited (429) — not a real agent result";
+    return result;
   }
 
   /**
@@ -537,16 +419,15 @@ class AIAgentOrchestrator {
         exceptions: this.agents.exceptions.getMetrics?.() || { status: "READY" },
         jurisdictions: this.agents.jurisdictions.getMetrics?.() || { status: "READY" },
         materiality: this.agents.materiality.getMetrics?.() || { status: "READY" },
-        ratios: this.agents.ratios.getMetrics?.() || { status: "READY" },
-        investor: this.agents.investor.getMetrics?.() || { status: "READY" },
         reports: this.agents.reports.getMetrics?.() || { status: "READY" },
         risk: this.agents.risk.getMetrics?.() || { status: "READY" },
         compliance: this.agents.compliance.getMetrics?.() || { status: "READY" },
         evidence: this.agents.evidence.getMetrics?.() || { status: "READY" },
         workflow: this.agents.workflow.getMetrics?.() || { status: "READY" },
-        heavyAutomation: this.agents.heavyAutomation.getMetrics?.() || { status: "READY" },
-        accuracy: this.agents.accuracy.getMetrics?.() || { status: "READY" },
-        fsAnalysis: this.agents.fsAnalysis.getMetrics?.() || { status: "READY" },
+        sections: this.agents.sections.getMetrics?.() || { status: "READY" },
+        controlsTesting: this.agents.controlsTesting.getMetrics?.() || { status: "READY" },
+        substantive: this.agents.substantive.getMetrics?.() || { status: "READY" },
+        smartProcedures: this.agents.smartProcedures.getMetrics?.() || { status: "READY" },
       },
     };
   }
@@ -569,6 +450,30 @@ class AIAgentOrchestrator {
       clearInterval(this.cleanupInterval);
     }
   }
+
+  /**
+   * MAP REQUEST TYPE TO AGENT NAME
+   * Helper for quality assessment tracking
+   */
+  _getAgentNameForRequestType(requestType) {
+    const mapping = {
+      'SUGGEST_PROCEDURES': 'AIProcedureEngine',
+      'PREDICT_EXCEPTIONS': 'ExceptionPredictionEngine',
+      'PLAN_JURISDICTION': 'JurisdictionEngine',
+      'CALCULATE_MATERIALITY': 'MaterialityEngine',
+      'GENERATE_REPORT': 'ReportGenerationAgent',
+      'ASSESS_RISK': 'RiskAssessmentAgent',
+      'CHECK_COMPLIANCE': 'ComplianceAgent',
+      'ANALYZE_EVIDENCE': 'EvidenceAnalysisAgent',
+      'GET_WORKFLOW_GUIDANCE': 'WorkflowAssistantAgent',
+      'EVALUATE_CONTROLS': 'ControlsTestingAgent',
+      'GENERATE_SUBSTANTIVE_PROGRAMME': 'SubstantiveProceduresAgent',
+      'ANALYZE_SECTIONS': 'AuditSectionsService',
+      'SMART_PROCEDURES': 'SmartProceduresEngine',
+      'METHODOLOGY_SUITE': 'SmartProceduresEngine'
+    };
+    return mapping[requestType] || null;
+  }
 }
 
 // Export singleton instance
@@ -580,10 +485,9 @@ console.log(`
 ╠════════════════════════════════════════════════════════════╣
 ║  Agents: 13 Total                                          ║
 ║  ├─ Procedures, Exceptions, Jurisdictions, Materiality    ║
-║  ├─ Ratios, Investor Analytics                            ║
 ║  ├─ Reports, Risk, Compliance, Evidence, Workflow         ║
-║  ├─ Accuracy Enhancement (ISA 330/500/520/530/540)        ║
-║  ├─ FS Analysis (ISA 315/540/570/600/700)                 ║
+║  ├─ Sections, ControlsTesting, Substantive, SmartProcs    ║
+║  ISA 330: Smart Methodology Pipeline ✅                    ║
 ║  Cache: 5-minute TTL                                       ║
 ║  Status: ✅ READY                                          ║
 ╚════════════════════════════════════════════════════════════╝

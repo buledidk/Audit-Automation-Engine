@@ -1,105 +1,121 @@
-import http from 'http';
+#!/usr/bin/env node
 
-console.log('\n╔════════════════════════════════════════════════════════╗');
-console.log('║   🏥 MONITORING + SYNC + HEALTH WATCHDOG STARTED     ║');
-console.log('║   (TERMINAL 3 - Watchdog)                            ║');
-console.log('╚════════════════════════════════════════════════════════╝\n');
+/**
+ * start-watchdog.js — Health monitor for AuditEngine services
+ *
+ * Usage: node scripts/start-watchdog.js
+ *
+ * Polls the backend health endpoint and frontend dev server at regular
+ * intervals. Logs status changes and alerts on failures.
+ */
 
-let eventCount = 0;
-let syncCount = 0;
-let monitorCycles = 0;
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3001';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const POLL_INTERVAL = parseInt(process.env.WATCHDOG_INTERVAL || '10000', 10); // 10s default
+const MAX_CONSECUTIVE_FAILURES = 3;
 
-console.log('📊 WATCHDOG SERVICES:');
-console.log('   ✅ Health Monitoring (30s checks)');
-console.log('   ✅ Database Sync Engine (real-time)');
-console.log('   ✅ Terminal Connectivity Checker\n');
+const state = {
+  backend: { up: null, failures: 0, lastCheck: null },
+  frontend: { up: null, failures: 0, lastCheck: null },
+  startTime: new Date(),
+  checks: 0,
+};
 
-// Health check: verify all 3 terminals are running
-async function checkTerminalConnectivity() {
-  const checks = {
-    terminal_1_dev: { url: 'http://localhost:3000', expected: 'React app' },
-    terminal_2_api: { url: 'http://localhost:4000/health', expected: 'api-gateway' },
-    terminal_3_self: { url: 'http://localhost:5000/health', expected: 'watchdog' }
-  };
-
-  const results = {};
-  for (const [name, check] of Object.entries(checks)) {
-    try {
-      const response = await fetch(check.url);
-      results[name] = response.ok ? '✅ ONLINE' : '❌ OFFLINE';
-    } catch (e) {
-      results[name] = '❌ OFFLINE';
-    }
-  }
-  return results;
+function timestamp() {
+  return new Date().toISOString().replace('T', ' ').slice(0, 19);
 }
 
-// Simulate monitoring
-setInterval(() => {
-  monitorCycles++;
-  eventCount += Math.floor(Math.random() * 5);
-  syncCount += Math.floor(Math.random() * 3);
+function formatUptime() {
+  const ms = Date.now() - state.startTime.getTime();
+  const s = Math.floor(ms / 1000) % 60;
+  const m = Math.floor(ms / 60000) % 60;
+  const h = Math.floor(ms / 3600000);
+  return `${h}h ${m}m ${s}s`;
+}
 
-  const timestamp = new Date().toLocaleTimeString();
-  console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-  console.log(`🏥 WATCHDOG CYCLE: ${monitorCycles} @ ${timestamp}`);
-  console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+async function checkService(name, url, healthPath) {
+  const svc = state[name];
+  const fullUrl = `${url}${healthPath}`;
 
-  console.log('\n📊 METRICS:');
-  console.log(`   📬 Total events processed: ${eventCount}`);
-  console.log(`   🔄 Total sync operations: ${syncCount}`);
-  console.log(`   ⏱️  Monitoring cycles: ${monitorCycles}`);
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
 
-  console.log('\n🗄️  DATABASE STATUS:');
-  console.log(`   ✅ Primary DB:      Connected & Synced`);
-  console.log(`   ✅ Backup DB:       Connected & Synced`);
-  console.log(`   ✅ Regional DB:     Connected & Synced`);
-  console.log(`   🔀 Replication lag: <100ms`);
+    const res = await fetch(fullUrl, { signal: controller.signal });
+    clearTimeout(timeout);
 
-  console.log('\n🔀 SYNC OPERATIONS:');
-  const recentOps = Math.floor(Math.random() * 10) + 1;
-  console.log(`   📤 Events synced in last cycle: ${recentOps}`);
-  console.log(`   ⚡ Sync latency: ${Math.floor(Math.random() * 50) + 10}ms`);
-  console.log(`   📈 Queue health: 🟢 NORMAL`);
+    const wasDown = svc.up === false;
+    svc.up = res.ok;
+    svc.failures = 0;
+    svc.lastCheck = new Date();
 
-}, 30000);
+    if (wasDown) {
+      console.log(`[watchdog] ${timestamp()} ✓ ${name} RECOVERED (${res.status})`);
+    }
+  } catch (err) {
+    svc.failures++;
+    svc.lastCheck = new Date();
+    const wasUp = svc.up === true || svc.up === null;
 
-// Watchdog server for health checks
-const server = http.createServer((req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Content-Type', 'application/json');
+    if (wasUp) {
+      svc.up = false;
+      console.log(`[watchdog] ${timestamp()} ✗ ${name} DOWN — ${err.cause?.code || err.message}`);
+    }
 
-  if (req.url === '/health') {
-    res.writeHead(200);
-    res.end(JSON.stringify({
-      status: 'healthy',
-      component: 'watchdog',
-      monitoring: 'active',
-      sync: 'active',
-      timestamp: new Date()
-    }));
-  } else {
-    res.writeHead(404);
-    res.end(JSON.stringify({ error: 'Not found' }));
+    if (svc.failures >= MAX_CONSECUTIVE_FAILURES && svc.failures % MAX_CONSECUTIVE_FAILURES === 0) {
+      console.log(
+        `[watchdog] ${timestamp()} ⚠ ${name} has been down for ${svc.failures} consecutive checks`
+      );
+    }
   }
-});
+}
 
-const WATCHDOG_PORT = 5000;
-server.listen(WATCHDOG_PORT, () => {
-  console.log(`✅ Watchdog health endpoint: http://localhost:${WATCHDOG_PORT}/health\n`);
-});
+function printStatus() {
+  const be = state.backend.up === null ? '?' : state.backend.up ? '✓' : '✗';
+  const fe = state.frontend.up === null ? '?' : state.frontend.up ? '✓' : '✗';
 
-// Initial status
-setTimeout(() => {
-  console.log('✅ WATCHDOG FULLY INITIALIZED\n');
-  console.log('🔗 CONNECTED COMPONENTS:');
-  console.log('   ✅ Terminal 1 (Brain) - Development Server');
-  console.log('   ✅ Terminal 2 (Engine) - API Gateway + Hub');
-  console.log('   ✅ Terminal 3 (Watchdog) - This process');
-  console.log('\n🎯 All 3 terminals synchronized and communicating\n');
-}, 1000);
+  console.log(
+    `[watchdog] ${timestamp()} ` +
+      `Backend[${be}] Frontend[${fe}] ` +
+      `Checks:${state.checks} Uptime:${formatUptime()}`
+  );
+}
 
+async function poll() {
+  state.checks++;
+
+  await Promise.all([
+    checkService('backend', BACKEND_URL, '/api/health'),
+    checkService('frontend', FRONTEND_URL, '/'),
+  ]);
+
+  // Print full status every 6th check (~1 min at 10s interval)
+  if (state.checks % 6 === 0) {
+    printStatus();
+  }
+}
+
+// ─── Main ────────────────────────────────────────────────────────
+console.log(`[watchdog] AuditEngine Health Monitor`);
+console.log(`[watchdog] Backend:  ${BACKEND_URL}/api/health`);
+console.log(`[watchdog] Frontend: ${FRONTEND_URL}/`);
+console.log(`[watchdog] Interval: ${POLL_INTERVAL / 1000}s`);
+console.log('');
+
+// Initial check
+poll();
+
+// Periodic polling
+const timer = setInterval(poll, POLL_INTERVAL);
+
+// Graceful shutdown
 process.on('SIGINT', () => {
-  console.log('\n\n👋 Watchdog shutting down gracefully...');
+  console.log(`\n[watchdog] Shutting down — ran ${state.checks} checks over ${formatUptime()}`);
+  clearInterval(timer);
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  clearInterval(timer);
   process.exit(0);
 });

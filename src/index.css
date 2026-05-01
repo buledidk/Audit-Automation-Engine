@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-slate-850: #1a1f35;
+  --color-brand: #F5A623;
+  --color-brand-light: #FFD54F;
+  --color-ae-bg: #0B1120;
+  --color-ae-card: rgba(255, 255, 255, 0.06);
+  --color-ae-border: rgba(255, 255, 255, 0.12);
+  --color-ae-green: #66BB6A;
+  --color-ae-red: #EF5350;
+  --color-ae-orange: #FFA726;
+  --color-ae-blue: #42A5F5;
+  --color-ae-purple: #CE93D8;
+  --color-ae-dim: #B0B8C8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background: #0B1120;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #F0F0F0;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Smooth scrolling for main content */
+html,
+main,
+[role="main"] {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced focus-visible styling for dark theme */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #6366F1;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+  border-radius: 4px;
+}
+
+/* Prevent default outline on non-keyboard focus */
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Transitions */
+button, input, textarea, select, a {
+  transition: all 0.2s ease;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Backdrop blur cards */
+.ae-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Headings */
+h1, h2, h3, .ae-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+}
+
+/* Splash screen animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; pointer-events: none; }
+}
+
+@keyframes loadingBar {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(102, 187, 106, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(102, 187, 106, 0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.ae-splash {
+  position: fixed;
+  inset: 0;
+  background: #0B1120;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.5s ease forwards, fadeOut 0.4s ease 1.5s forwards;
+}
+
+.ae-splash-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: #1E3A5F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  color: #fff;
+  margin-bottom: 20px;
+  animation: fadeIn 0.6s ease 0.2s both;
+}
+
+.ae-splash-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #F0F0F0;
+  margin-bottom: 4px;
+  animation: fadeIn 0.6s ease 0.4s both;
+}
+
+.ae-splash-tagline {
+  font-size: 12px;
+  color: #B0B8C8;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  animation: fadeIn 0.6s ease 0.6s both;
+}
+
+.ae-splash-bar {
+  width: 200px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  animation: fadeIn 0.6s ease 0.7s both;
+}
+
+.ae-splash-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1E3A5F, #F5A623);
+  border-radius: 2px;
+  animation: loadingBar 1.2s ease 0.8s both;
+}
+
+/* Auto-save pulse indicator */
+.ae-save-pulse {
+  animation: pulseGlow 2s ease infinite;
+}
+
+/* Toast animation */
+@keyframes slideInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.ae-toast {
+  animation: slideInUp 0.3s ease forwards;
+}

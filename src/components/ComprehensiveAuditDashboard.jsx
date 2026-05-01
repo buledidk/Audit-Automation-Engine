@@ -4,15 +4,14 @@
  * Real-time data binding with full functionality
  */
 
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useAudit } from "../context/AuditContext";
-import AgentMonitoringDashboard from "./AgentMonitoringDashboard";
 import useAgentMetrics from "../hooks/useAgentMetrics";
 
 /**
  * Monitoring Tab Content Component
  */
-function MonitoringTabContent() {
+function MonitoringTabContent() { // eslint-disable-line no-unused-vars
   const { agents, systemHealth, metrics, loading, error } = useAgentMetrics(true, 2000);
 
   if (loading) {

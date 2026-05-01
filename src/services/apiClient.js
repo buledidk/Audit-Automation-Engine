@@ -17,9 +17,21 @@ const api = axios.create({
   }
 });
 
-// Add JWT token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+// Add Supabase JWT to requests
+api.interceptors.request.use(async (config) => {
+  // Try Supabase session first, fall back to legacy token
+  try {
+    const { getSession } = await import('../lib/supabaseClient.js');
+    const session = await getSession();
+    if (session?.access_token) {
+      config.headers.Authorization = `Bearer ${session.access_token}`;
+      return config;
+    }
+  } catch (e) {
+    // Supabase not available, fall back
+  }
+  // Legacy fallback
+  const token = localStorage.getItem("token") || localStorage.getItem("authToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -29,9 +41,17 @@ api.interceptors.request.use((config) => {
 // Handle response errors
 api.interceptors.response.use(
   (response) => response.data,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
+      // Clear both legacy and Supabase tokens
       localStorage.removeItem("token");
+      localStorage.removeItem("authToken");
+      try {
+        const { signOut } = await import('../lib/supabaseClient.js');
+        await signOut();
+      } catch (e) {
+        // Ignore if Supabase not configured
+      }
       window.location.href = "/login";
     }
     throw error.response?.data || { error: "Network error" };
@@ -42,10 +62,29 @@ api.interceptors.response.use(
 // AUTHENTICATION
 // ============================================================================
 export const auth = {
-  login: (email, password) =>
-    api.post("/api/auth/login", { email, password }),
-  logout: () => {
+  login: async (email, password) => {
+    // Try Supabase auth first
+    try {
+      const { signIn } = await import('../lib/supabaseClient.js');
+      const data = await signIn(email, password);
+      if (data?.session) {
+        return { success: true, token: data.session.access_token, user: data.user };
+      }
+    } catch (e) {
+      // Fall back to server auth if Supabase auth fails
+      console.warn('Supabase auth failed, trying server auth:', e.message);
+    }
+    return api.post("/api/auth/login", { email, password });
+  },
+  logout: async () => {
+    try {
+      const { signOut } = await import('../lib/supabaseClient.js');
+      await signOut();
+    } catch (e) {
+      // Ignore
+    }
     localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
   },
   getCurrentUser: () =>
     api.get("/api/users/me")

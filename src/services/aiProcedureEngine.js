@@ -10,12 +10,12 @@
  * - Result caching
  */
 
-import claudeClient, { MODELS, EFFORT } from "./claudeClient.js";
+import Anthropic from "@anthropic-ai/sdk";
 
 export class AIProcedureEngine {
-  constructor() {
-    this.claude = claudeClient;
-    this.model = MODELS.SONNET;
+  constructor(apiKey = process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY) {
+    this.client = new Anthropic({ dangerouslyAllowBrowser: true, apiKey });
+    this.model = "claude-sonnet-4-6";
     this.cache = new Map();
     this.cacheTimeout = 3600000; // 1 hour
   }
@@ -48,19 +48,17 @@ export class AIProcedureEngine {
     // Build Claude prompt
     const prompt = this._buildRankingPrompt(context, relevantProcedures);
 
-    // Call Claude API with adaptive thinking for complex reasoning
-    const { text } = await this.claude.sendMessage({
-      prompt,
+    // Call Claude API
+    const response = await this.client.messages.create({
       model: this.model,
-      maxTokens: 1024,
-      thinking: true,
-      effort: EFFORT.HIGH,
-      domain: "procedures",
+      max_tokens: 1024,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.2 // Consistent, deterministic
     });
 
     // Parse response
     const recommendations = this._parseRecommendations(
-      text,
+      response.content[0].text,
       relevantProcedures
     );
 
@@ -111,16 +109,14 @@ Provide assessment in JSON format:
 }
 `;
 
-    const { text } = await this.claude.sendMessage({
-      prompt,
+    const response = await this.client.messages.create({
       model: this.model,
-      maxTokens: 512,
-      temperature: 0.2,
-      thinking: false,
-      domain: "procedures",
+      max_tokens: 512,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.2
     });
 
-    return this.claude.parseJSON(text);
+    return this._parseJSON(response.content[0].text);
   }
 
   /**
@@ -161,16 +157,14 @@ Return JSON with:
 }
 `;
 
-    const { text } = await this.claude.sendMessage({
-      prompt,
+    const response = await this.client.messages.create({
       model: this.model,
-      maxTokens: 512,
-      temperature: 0.2,
-      thinking: false,
-      domain: "procedures",
+      max_tokens: 512,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.2
     });
 
-    return this.claude.parseJSON(text).preventive_procedures || [];
+    return this._parseJSON(response.content[0].text).preventive_procedures || [];
   }
 
   /**
@@ -179,7 +173,7 @@ Return JSON with:
    * @param {Array} procedures - Available procedures
    * @returns {Promise<Object>} Strategy recommendation
    */
-  async recommendAuditStrategy(context, procedures) {
+  async recommendAuditStrategy(context, _procedures) {
     const prompt = `
 You are a senior audit partner designing audit strategy.
 
@@ -211,16 +205,14 @@ Return JSON:
 }
 `;
 
-    const { text } = await this.claude.sendMessage({
-      prompt,
+    const response = await this.client.messages.create({
       model: this.model,
-      maxTokens: 512,
-      thinking: true,
-      effort: EFFORT.HIGH,
-      domain: "procedures",
+      max_tokens: 512,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.2
     });
 
-    return this.claude.parseJSON(text);
+    return this._parseJSON(response.content[0].text);
   }
 
   /**

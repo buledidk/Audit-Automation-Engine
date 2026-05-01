@@ -105,7 +105,6 @@ class PDFGenerationService {
       ['Status', auditData.status || 'pending'],
     ];
 
-    const y = doc.y;
     for (const [label, value] of stats) {
       doc
         .fontSize(11)

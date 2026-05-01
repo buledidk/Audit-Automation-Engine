@@ -4,7 +4,7 @@
  * and project progress with live updates
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import useAgentMetrics from '../hooks/useAgentMetrics';
 
 const SystemMetricsDashboard = () => {
@@ -30,12 +30,14 @@ const SystemMetricsDashboard = () => {
       const totalTokens = agents.reduce((sum, a) => sum + a.tokensUsed, 0);
       const avgLatency = agents.reduce((sum, a) => sum + (a.averageExecutionTime || 0), 0) / agents.length;
 
-      setStats({
-        totalExecutions: totalExecs,
-        totalTokens,
-        avgLatency: Math.round(avgLatency),
-        uptime: '100%',
-      });
+      setTimeout(() => {
+        setStats({
+          totalExecutions: totalExecs,
+          totalTokens,
+          avgLatency: Math.round(avgLatency),
+          uptime: '100%',
+        });
+      }, 0);
     }
   }, [agents]);
 
@@ -242,7 +244,7 @@ const SystemMetricsDashboard = () => {
 };
 
 // Helper Components
-const MetricCard = ({ title, value, status, icon }) => {
+const MetricCard = ({ title, value, status, icon }) => { // eslint-disable-line no-unused-vars
   const statusColors = {
     healthy: '#4CAF50',
     degraded: '#FFC107',
@@ -276,7 +278,7 @@ const MetricCard = ({ title, value, status, icon }) => {
   );
 };
 
-const StatBox = ({ label, value }) => (
+const StatBox = ({ label, value }) => ( // eslint-disable-line no-unused-vars
   <div style={{
     padding: '15px',
     backgroundColor: '#f5f5f5',

@@ -1,0 +1,629 @@
+/**
+ * GuidanceSidePanel.css
+ *
+ * Styling for the audit guidance side panel
+ * Clean, professional design with collapsible sections
+ */
+
+.guidance-side-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: #333;
+}
+
+.guidance-side-panel.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9f9f9;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Panel Header */
+.panel-header {
+  padding: 20px;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  border-bottom: 2px solid #27ae60;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.panel-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-header .section-label {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.section-meta {
+  display: flex;
+  gap: 15px;
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.section-id {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.timestamp {
+  opacity: 0.7;
+}
+
+/* Panel Content */
+.panel-content {
+  flex: 1;
+  padding: 0;
+  overflow-y: auto;
+}
+
+/* Guidance Sections */
+.guidance-section {
+  border-bottom: 1px solid #ddd;
+  background: white;
+}
+
+.guidance-section:last-child {
+  border-bottom: none;
+}
+
+.section-header {
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-left: 4px solid #27ae60;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.section-header:hover {
+  background: #f0f1f3;
+  border-left-color: #229954;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.section-header .toggle-icon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  color: #666;
+  font-size: 12px;
+}
+
+.section-header .toggle-icon.expanded {
+  transform: rotate(90deg);
+}
+
+.section-header .badge {
+  background: #27ae60;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.section-content {
+  padding: 16px 20px;
+  line-height: 1.6;
+}
+
+/* ISA Guidance Styles */
+.isa-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.isa-tab {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  color: #333;
+}
+
+.isa-tab:hover {
+  background: #f0f0f0;
+  border-color: #27ae60;
+}
+
+.isa-tab.active {
+  background: #27ae60;
+  color: white;
+  border-color: #27ae60;
+}
+
+.isa-detail {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 4px;
+  border-left: 3px solid #27ae60;
+}
+
+.isa-detail h4 {
+  margin: 0 0 8px 0;
+  color: #2c3e50;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.guidance-text {
+  font-size: 13px;
+  color: #555;
+  margin: 0 0 12px 0;
+}
+
+.key-requirements,
+.documentation {
+  margin-top: 12px;
+}
+
+.key-requirements h5,
+.documentation h5 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.key-requirements ul,
+.documentation ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: #555;
+}
+
+.key-requirements li,
+.documentation li {
+  margin-bottom: 4px;
+}
+
+.isa-overview {
+  padding: 12px;
+  background: #f0f7ff;
+  border-radius: 4px;
+  border-left: 3px solid #3498db;
+}
+
+.isa-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.isa-item {
+  padding: 8px;
+  background: white;
+  border-radius: 3px;
+  font-size: 13px;
+  border-left: 2px solid #3498db;
+  padding-left: 10px;
+}
+
+/* FRS/IFRS Requirements */
+.requirement-block {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  border-left: 3px solid #3498db;
+}
+
+.requirement-block.frs {
+  border-left-color: #e67e22;
+}
+
+.requirement-block.ifrs {
+  border-left-color: #9b59b6;
+}
+
+.requirement-block h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.requirement-scope {
+  font-size: 13px;
+  margin: 0 0 8px 0;
+  color: #555;
+}
+
+.requirement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.update-badge {
+  background: #f39c12;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Key Audit Matters & Risks */
+.key-matters-list,
+.risks-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.matter-item,
+.risk-item {
+  padding: 8px;
+  margin-bottom: 8px;
+  background: #fafafa;
+  border-radius: 3px;
+  font-size: 13px;
+  color: #555;
+  border-left: 2px solid #27ae60;
+  padding-left: 12px;
+}
+
+.matter-icon {
+  margin-right: 6px;
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.risk-icon {
+  margin-right: 6px;
+  color: #e74c3c;
+}
+
+/* Agent Cards */
+.agent-card {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  border-left: 3px solid #27ae60;
+  border: 1px solid #e0e0e0;
+  border-left: 3px solid #27ae60;
+}
+
+.agent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.agent-card h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.role-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  background: #3498db;
+}
+
+.role-badge.primary {
+  background: #27ae60;
+}
+
+.role-badge.secondary {
+  background: #95a5a6;
+}
+
+.required-badge {
+  background: #e74c3c;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.agent-rationale {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.specialties {
+  margin: 8px 0;
+}
+
+.specialties strong {
+  font-size: 12px;
+  color: #2c3e50;
+}
+
+.specialty-tags {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.specialty-tag {
+  background: #e8f5e9;
+  color: #27ae60;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  border: 1px solid #27ae60;
+}
+
+.agent-status {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  color: #555;
+}
+
+.status-badge {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  background: #27ae60;
+}
+
+.status-badge.assigned {
+  background: #27ae60;
+}
+
+/* Procedures */
+.filter-procedures {
+  margin-bottom: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-procedures label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+}
+
+.filter-procedures select {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 12px;
+  background: white;
+  cursor: pointer;
+}
+
+.procedures-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.procedure-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  background: #fafafa;
+  border-radius: 3px;
+  border-left: 3px solid #95a5a6;
+  align-items: flex-start;
+}
+
+.procedure-item.priority-high {
+  border-left-color: #e74c3c;
+  background: #fef5f5;
+}
+
+.procedure-item.priority-medium {
+  border-left-color: #f39c12;
+  background: #fffaf5;
+}
+
+.procedure-item.priority-low {
+  border-left-color: #27ae60;
+  background: #f5faf9;
+}
+
+.procedure-checkbox {
+  flex-shrink: 0;
+}
+
+.procedure-checkbox input {
+  cursor: pointer;
+}
+
+.procedure-details {
+  flex: 1;
+}
+
+.procedure-name {
+  margin: 0;
+  font-size: 13px;
+  color: #333;
+  font-weight: 500;
+}
+
+.procedure-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.priority-badge,
+.phase-badge {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+}
+
+.priority-badge {
+  background: #95a5a6;
+}
+
+.priority-badge.priority-high {
+  background: #e74c3c;
+}
+
+.priority-badge.priority-medium {
+  background: #f39c12;
+}
+
+.priority-badge.priority-low {
+  background: #27ae60;
+}
+
+.phase-badge {
+  background: #3498db;
+}
+
+/* Panel Footer */
+.panel-footer {
+  padding: 16px 20px;
+  background: white;
+  border-top: 1px solid #ddd;
+  display: flex;
+  gap: 8px;
+  position: sticky;
+  bottom: 0;
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #27ae60;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #229954;
+}
+
+.btn-secondary {
+  background: #ecf0f1;
+  color: #2c3e50;
+}
+
+.btn-secondary:hover {
+  background: #d5dbdb;
+}
+
+/* Scrollbar styling */
+.panel-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panel-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.panel-content::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 4px;
+}
+
+.panel-content::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .panel-header {
+    padding: 16px;
+  }
+
+  .section-header {
+    padding: 12px 16px;
+  }
+
+  .section-content {
+    padding: 12px 16px;
+  }
+
+  .panel-footer {
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .guidance-side-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 300px;
+    z-index: 100;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+  }
+}

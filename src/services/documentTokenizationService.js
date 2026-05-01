@@ -115,7 +115,7 @@ export class DocumentTokenizationService {
   async extractFromExcel(file) {
     return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = (_e) => {
         try {
           // For browser compatibility, we'll parse as text
           // Production version should use backend API or xlsx library

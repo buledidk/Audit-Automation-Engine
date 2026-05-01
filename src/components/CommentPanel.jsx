@@ -4,12 +4,12 @@
  * Main UI component for displaying and managing comments on working papers
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import {
   COMMENT_TYPES,
   PRIORITY_LEVELS,
   RESOLUTION_STATUS,
-  COMMENT_TEMPLATES
+  COMMENT_TEMPLATES // eslint-disable-line no-unused-vars
 } from '../models/commentSystem';
 import commentService from '../lib/commentService';
 
@@ -150,7 +150,7 @@ export function CommentPanel({
   const handleReplyToComment = async (parentCommentId, replyText) => {
     setLoading(true);
     try {
-      const reply = await commentService.replyToComment(parentCommentId, {
+      const reply = await commentService.replyToComment(parentCommentId, { // eslint-disable-line no-unused-vars
         engagementId,
         text: replyText,
         createdBy: {
@@ -327,7 +327,7 @@ export function CommentPanel({
 // COMMENT FORM COMPONENT
 // ═════════════════════════════════════════════════════════════════════
 
-function CommentForm({
+function CommentForm({ // eslint-disable-line no-unused-vars
   selectedType,
   setSelectedType,
   selectedTemplate,
@@ -512,13 +512,13 @@ function CommentForm({
 // COMMENT ITEM COMPONENT
 // ═════════════════════════════════════════════════════════════════════
 
-function CommentItem({
+function CommentItem({ // eslint-disable-line no-unused-vars
   comment,
   isExpanded,
   onToggleExpand,
   onResolve,
   onReply,
-  currentUser
+  _currentUser
 }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyText, setReplyText] = useState('');

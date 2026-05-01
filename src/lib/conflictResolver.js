@@ -29,7 +29,11 @@ export class ThreeWayMerge {
       const current = currentVersion?.[key];
       const incoming = incomingVersion?.[key];
 
-      const result = this._mergeField(key, base, current, incoming);
+      // If key doesn't exist in incoming object, treat incoming as unchanged (use base value)
+      const incomingHasKey = incomingVersion ? Object.prototype.hasOwnProperty.call(incomingVersion, key) : false;
+      const effectiveIncoming = incomingHasKey ? incoming : base;
+
+      const result = this._mergeField(key, base, current, effectiveIncoming);
 
       if (result.conflict) {
         conflicts.push({
@@ -105,16 +109,19 @@ export class ThreeWayMerge {
    * @private
    */
   static _mergeArray(fieldName, base, current, incoming) {
-    // Calculate what each side added/removed
-    const addedByServer = current.filter(x => !base.includes(x));
-    const removedByServer = base.filter(x => !current.includes(x));
+    // Helper for deep array contains check
+    const deepIncludes = (arr, item) => arr.some(x => this._deepEqual(x, item));
 
-    const addedByClient = incoming.filter(x => !base.includes(x));
-    const removedByClient = base.filter(x => !incoming.includes(x));
+    // Calculate what each side added/removed
+    const addedByServer = current.filter(x => !deepIncludes(base, x));
+    const removedByServer = base.filter(x => !deepIncludes(current, x));
+
+    const addedByClient = incoming.filter(x => !deepIncludes(base, x));
+    const removedByClient = base.filter(x => !deepIncludes(incoming, x));
 
     // If both removed the same item, it's intentional - respect it
     const commonRemovals = removedByServer.filter(x =>
-      removedByClient.some(y => this._deepEqual(x, y))
+      deepIncludes(removedByClient, x)
     );
 
     // If one removes while other modifies same array position, conflict
@@ -141,7 +148,10 @@ export class ThreeWayMerge {
     let merged = [...base];
 
     // Apply removals that both sides agree on
-    merged = merged.filter(x => !commonRemovals.some(y => this._deepEqual(x, y)));
+    merged = merged.filter(x => !deepIncludes(commonRemovals, x));
+    
+    // Apply server-only removals
+    merged = merged.filter(x => !deepIncludes(removedByServer, x) || deepIncludes(addedByClient, x));
 
     // Add new items (deduplicated)
     const toAdd = [...addedByServer, ...addedByClient];
@@ -315,7 +325,7 @@ export class ConflictDetector {
   /**
    * Retrieve version history for diff
    */
-  static async getVersionHistory(workingPaperId, limit = 10) {
+  static async getVersionHistory(workingPaperId, _limit = 10) {
     // Implementation would fetch from database
     // Returns array of { version, timestamp, editor, snapshot }
     return [];

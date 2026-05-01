@@ -1,469 +1,304 @@
 /**
- * Advanced Materiality Calculation Engine
- *
- * Features:
- * - Multi-benchmark materiality calculation
- * - Sensitivity analysis
- * - Scenario planning
- * - Industry benchmarking
+ * Materiality Engine — ISA 320 / ISA 450 compliant
+ * Auto-selects benchmark, applies risk multiplier, computes PM and trivial threshold
  */
 
+// ─── Benchmark selectors ───────────────────────────────────────────────────
+
+const BENCHMARKS = {
+  pbt:     { label: 'Profit Before Tax',  rate: 0.05 },
+  revenue: { label: 'Revenue',            rateMin: 0.005, rateMax: 0.01 },
+  assets:  { label: 'Total Assets',       rateMin: 0.01,  rateMax: 0.02 },
+  equity:  { label: 'Equity',             rateMin: 0.02,  rateMax: 0.05 },
+};
+
+const RISK_MULTIPLIERS = { low: 1.0, medium: 0.75, high: 0.5 };
+const PM_RATES         = { low: 0.75, medium: 0.625, high: 0.5 };
+const TRIVIAL_RATE     = 0.05;
+
+// ─── Auto-benchmark logic ──────────────────────────────────────────────────
+
+function _selectBenchmark(financialData) {
+  const { revenue, totalAssets, profitBeforeTax, equity } = financialData;
+
+  // PBT: only if stable and positive
+  if (profitBeforeTax > 0 && revenue > 0 && profitBeforeTax / revenue >= 0.03) {
+    return {
+      key: 'pbt',
+      value: profitBeforeTax,
+      rate: BENCHMARKS.pbt.rate,
+      label: BENCHMARKS.pbt.label,
+      reasoning: 'Entity is profit-oriented with stable positive PBT (≥3% margin). ISA 320 recommends 5% of PBT as default benchmark.',
+    };
+  }
+
+  // Revenue: PBT volatile or loss-making
+  if (revenue > 0 && (profitBeforeTax <= 0 || profitBeforeTax / revenue < 0.03)) {
+    const rate = profitBeforeTax < 0 ? BENCHMARKS.revenue.rateMax : BENCHMARKS.revenue.rateMin;
+    return {
+      key: 'revenue',
+      value: revenue,
+      rate,
+      label: BENCHMARKS.revenue.label,
+      reasoning: profitBeforeTax < 0
+        ? 'Entity is loss-making — revenue provides a more stable benchmark. Applied 1% rate.'
+        : 'PBT margin <3% indicates volatility — revenue benchmark (0.5%) preferred.',
+    };
+  }
+
+  // Assets: asset-heavy entities
+  if (totalAssets > 0 && totalAssets > revenue * 2) {
+    return {
+      key: 'assets',
+      value: totalAssets,
+      rate: BENCHMARKS.assets.rateMin,
+      label: BENCHMARKS.assets.label,
+      reasoning: 'Asset-heavy entity (total assets >2× revenue) — typical for property, investment, or holding companies. Applied 1% of total assets.',
+    };
+  }
+
+  // Equity: financial institutions or equity-driven entities
+  if (equity > 0) {
+    return {
+      key: 'equity',
+      value: equity,
+      rate: BENCHMARKS.equity.rateMin,
+      label: BENCHMARKS.equity.label,
+      reasoning: 'Equity benchmark applied — appropriate for financial institutions, investment funds, or where equity is the primary metric for users.',
+    };
+  }
+
+  return {
+    key: 'revenue',
+    value: revenue || 0,
+    rate: BENCHMARKS.revenue.rateMin,
+    label: BENCHMARKS.revenue.label,
+    reasoning: 'Fallback to revenue benchmark — insufficient data to apply primary benchmarks.',
+  };
+}
+
+// ─── Main export: calculateMateriality ────────────────────────────────────
+
+/**
+ * @param {Object} financialData  { revenue, totalAssets, profitBeforeTax, grossProfit, equity }
+ * @param {'low'|'medium'|'high'} riskLevel
+ */
+export function calculateMateriality(financialData, riskLevel = 'medium') {
+  const { value, rate, label, key, reasoning } = _selectBenchmark(financialData);
+  const multiplier = RISK_MULTIPLIERS[riskLevel] ?? 0.75;
+  const pmRate     = PM_RATES[riskLevel] ?? 0.625;
+
+  const overall                = Math.round(value * rate * multiplier);
+  const performanceMateriality = Math.round(overall * pmRate);
+  const trivialThreshold       = Math.round(overall * TRIVIAL_RATE);
+
+  return {
+    overall,
+    performanceMateriality,
+    trivialThreshold,
+    benchmark:           label,
+    benchmarkKey:        key,
+    benchmarkValue:      value,
+    benchmarkPercentage: rate * 100,
+    riskMultiplier:      multiplier,
+    pmPercentage:        pmRate * 100,
+    reasoning,
+    isaReference: 'ISA 320 / ISA 450',
+    notes: [
+      `Overall materiality: ${overall.toLocaleString()} (${(rate * 100).toFixed(2)}% × ${label} × ${multiplier} risk multiplier)`,
+      `Performance materiality: ${performanceMateriality.toLocaleString()} (${(pmRate * 100).toFixed(0)}% of overall — ${riskLevel} risk)`,
+      `Trivial threshold: ${trivialThreshold.toLocaleString()} (5% of overall materiality per ISA 450.A3)`,
+    ],
+  };
+}
+
+// ─── evaluateMisstatements ─────────────────────────────────────────────────
+
+/**
+ * Classify aggregate uncorrected misstatements against materiality thresholds
+ * @param {Array}  findings   [{ description, amount, adjustedByClient }]
+ * @param {Object} materiality  result of calculateMateriality
+ */
+export function evaluateMisstatements(findings, materiality) {
+  const uncorrected = findings.filter(f => !f.adjustedByClient);
+  const aggregate   = uncorrected.reduce((sum, f) => sum + Math.abs(f.amount || 0), 0);
+
+  let classification, implication, action;
+
+  if (aggregate < materiality.trivialThreshold) {
+    classification = 'below_trivial';
+    implication    = 'Aggregate misstatements are below trivial threshold — no further action required.';
+    action         = 'No accumulation required (ISA 450.A3)';
+  } else if (aggregate < materiality.performanceMateriality) {
+    classification = 'above_trivial_below_pm';
+    implication    = 'Aggregate misstatements exceed trivial threshold but remain below performance materiality.';
+    action         = 'Accumulate and monitor. Consider impact on audit opinion if further misstatements arise.';
+  } else if (aggregate < materiality.overall) {
+    classification = 'above_pm_below_overall';
+    implication    = 'Aggregate misstatements exceed performance materiality — consider extending procedures.';
+    action         = 'Extend audit procedures. Consider requesting management to correct misstatements.';
+  } else {
+    classification = 'above_overall';
+    implication    = 'Aggregate misstatements exceed overall materiality — financial statements may be materially misstated.';
+    action         = 'Require material adjustments or modify audit opinion (ISA 705).';
+  }
+
+  return {
+    findings: uncorrected,
+    aggregate,
+    classification,
+    implication,
+    action,
+    isaReference: 'ISA 450',
+    thresholds: {
+      trivial:                materiality.trivialThreshold,
+      performanceMateriality: materiality.performanceMateriality,
+      overall:                materiality.overall,
+    },
+  };
+}
+
+// ─── materialitySensitivity ────────────────────────────────────────────────
+
+/**
+ * Show how materiality varies across all 4 benchmarks
+ * @param {Object} financialData
+ */
+export function materialitySensitivity(financialData) {
+  const { revenue, totalAssets, profitBeforeTax, equity } = financialData;
+
+  const scenarios = [
+    { label: 'PBT (5%)',           value: profitBeforeTax, rate: 0.05 },
+    { label: 'Revenue (0.5%)',     value: revenue,         rate: 0.005 },
+    { label: 'Revenue (1%)',       value: revenue,         rate: 0.01 },
+    { label: 'Total Assets (1%)',  value: totalAssets,     rate: 0.01 },
+    { label: 'Total Assets (2%)',  value: totalAssets,     rate: 0.02 },
+    { label: 'Equity (2%)',        value: equity,          rate: 0.02 },
+    { label: 'Equity (5%)',        value: equity,          rate: 0.05 },
+  ];
+
+  return scenarios
+    .filter(s => s.value > 0)
+    .map(s => ({
+      label:                   s.label,
+      benchmarkValue:          s.value,
+      rate:                    s.rate,
+      overall:                 Math.round(s.value * s.rate),
+      performanceMateriality:  Math.round(s.value * s.rate * 0.75),
+      trivialThreshold:        Math.round(s.value * s.rate * 0.05),
+    }))
+    .sort((a, b) => a.overall - b.overall);
+}
+
+// ─── Cascading recalculation helper ───────────────────────────────────────
+
+/**
+ * When materiality changes, recalculate sample sizes and re-evaluate findings
+ */
+export function cascadeOnMaterialityChange(newMateriality, populationSize, existingFindings = []) {
+  const { overall, performanceMateriality } = newMateriality;
+  const tolerableRate       = performanceMateriality / (populationSize || 1);
+  const suggestedSampleSize = Math.min(Math.ceil(1 / tolerableRate * 2.6), populationSize);
+  const misstatementReview  = evaluateMisstatements(existingFindings, newMateriality);
+
+  return {
+    newMateriality,
+    suggestedSampleSize,
+    findingsImpact: misstatementReview,
+    narrative: `With revised overall materiality of ${overall.toLocaleString()}, recommended sample size is ${suggestedSampleSize} items. ${misstatementReview.implication}`,
+  };
+}
+
+// ─── MaterialityEngine class wrapper ─────────────────────────────────────
+/**
+ * Class wrapper around the functional API for consumers that
+  * instantiate with `new MaterialityEngine()`.
+   */
 export class MaterialityEngine {
-  constructor() {
-    this.benchmarks = {
-      profit: { rate: 0.05, label: "5% of Pre-Tax Profit" },
-      revenue: { rate: 0.01, label: "1% of Revenue" },
-      assets: { rate: 0.01, label: "1% of Total Assets" },
-      equity: { rate: 0.05, label: "5% of Equity" }
-    };
-
-    this.industryBenchmarks = {
-      Manufacturing: {
-        primary: "profit",
-        secondary: "assets",
-        weights: { profit: 0.6, assets: 0.4 }
-      },
-      SaaS: {
-        primary: "revenue",
-        secondary: "profit",
-        weights: { revenue: 0.6, profit: 0.4 }
-      },
-      Retail: {
-        primary: "profit",
-        secondary: "revenue",
-        weights: { profit: 0.5, revenue: 0.5 }
-      },
-      Banking: {
-        primary: "assets",
-        secondary: "equity",
-        weights: { assets: 0.7, equity: 0.3 }
-      }
-    };
-  }
-
-  /**
-   * Calculate base materiality using multiple benchmarks
-   * @param {Object} context - Financial context
-   * @returns {Object} Materiality calculation
-   */
-  calculateBaseMateriality(context) {
-    if (!context.preTextProfit && !context.revenue && !context.assets && !context.equity) {
-      throw new Error("At least one benchmark value is required");
+    calculateBaseMateriality(context) {
+          const financialData = {
+                  revenue: context.revenue || 0,
+                  totalAssets: context.assets || 0,
+                  profitBeforeTax: context.preTextProfit || 0,
+                  equity: context.equity || 0,
+          };
+          const result = calculateMateriality(financialData, 'medium');
+          return {
+                  overall_materiality: result.overall,
+                  performance_materiality: result.performanceMateriality,
+                  trivial_threshold: result.trivialThreshold,
+                  basis: result.benchmark,
+                  calculation_method: `${result.benchmarkPercentage}% of ${result.benchmark}`,
+                  justification: result.reasoning,
+                  benchmark_results: Object.entries(BENCHMARKS).map(([key, b]) => ({
+                            benchmark: b.label,
+                            value: financialData[key === 'pbt' ? 'profitBeforeTax' : key === 'assets' ? 'totalAssets' : key] || 0,
+                            basis: `${(b.rate || b.rateMin || 0) * 100}% of ${b.label}`,
+                  })),
+          };
     }
 
-    // Determine applicable benchmarks
-    const benchmarkResults = [];
-
-    if (context.preTextProfit) {
-      benchmarkResults.push({
-        benchmark: "5% Profit",
-        value: context.preTextProfit * 0.05,
-        basis: "Pre-Tax Profit"
-      });
+    performSensitivityAnalysis(overallMateriality) {
+          const variations = [
+            { label: '-20%', change: -20 },
+            { label: '-10%', change: -10 },
+            { label: 'Base', change: 0 },
+            { label: '+10%', change: 10 },
+            { label: '+20%', change: 20 },
+                ];
+          return {
+                  sensitivity_scenarios: variations.map(v => ({
+                            scenario: v.label,
+                            change: v.change,
+                            materiality: Math.round(overallMateriality * (1 + v.change / 100)),
+                            impact: v.change === 0
+                                        ? 'Current materiality level'
+                                        : `${Math.abs(v.change)}% ${v.change > 0 ? 'increase' : 'decrease'} in materiality threshold`,
+                  })),
+                  recommended_range: {
+                            low: Math.round(overallMateriality * 0.9),
+                            high: Math.round(overallMateriality * 1.1),
+                  },
+          };
     }
 
-    if (context.revenue) {
-      benchmarkResults.push({
-        benchmark: "1% Revenue",
-        value: context.revenue * 0.01,
-        basis: "Revenue"
-      });
+    planScenarios(context) {
+          const base = this.calculateBaseMateriality(context);
+          return {
+                  optimistic: {
+                            description: 'Optimistic — Revenue growth 10%',
+                            materiality: Math.round(base.overall_materiality * 1.1),
+                            likelihood: 'Possible',
+                            assumptions: ['Revenue grows 10%', 'Margins stable', 'No significant risks identified'],
+                  },
+                  base: {
+                            description: 'Base case — Current financials',
+                            materiality: base.overall_materiality,
+                            likelihood: 'Most likely',
+                            assumptions: ['Current year financials unchanged', 'Risk profile maintained'],
+                  },
+                  pessimistic: {
+                            description: 'Pessimistic — Revenue decline 15%',
+                            materiality: Math.round(base.overall_materiality * 0.85),
+                            likelihood: 'Possible',
+                            assumptions: ['Revenue declines 15%', 'Increased risk profile', 'Additional procedures needed'],
+                  },
+          };
     }
 
-    if (context.assets) {
-      benchmarkResults.push({
-        benchmark: "1% Assets",
-        value: context.assets * 0.01,
-        basis: "Total Assets"
-      });
+    calculateSampleSize(context) {
+          const base = this.calculateBaseMateriality(context);
+          const pop = context.populationSize || 1000;
+          const tolerable = base.performance_materiality / pop;
+          const sampleSize = Math.min(Math.ceil((1 / tolerable) * 2.6), pop);
+          return {
+                  recommended_sample_size: sampleSize,
+                  sample_percentage: ((sampleSize / pop) * 100).toFixed(1),
+                  confidence_level: '95%',
+                  methodology: 'Monetary Unit Sampling (MUS)',
+                  materiality_basis: `Based on performance materiality of ${base.performance_materiality.toLocaleString()}`,
+          };
     }
-
-    if (context.equity) {
-      benchmarkResults.push({
-        benchmark: "5% Equity",
-        value: context.equity * 0.05,
-        basis: "Equity"
-      });
-    }
-
-    // Apply industry weighting
-    const industryWeights = this.industryBenchmarks[context.industry];
-    let overallMateriality = 0;
-
-    if (industryWeights) {
-      // Weighted calculation based on industry
-      let weightedTotal = 0;
-      let totalWeight = 0;
-
-      benchmarkResults.forEach((result) => {
-        const basisKey = result.basis.toLowerCase().replace("-", "").replace(" ", "");
-        const weight = this._getWeightForBasis(basisKey, industryWeights);
-
-        if (weight > 0) {
-          weightedTotal += result.value * weight;
-          totalWeight += weight;
-        }
-      });
-
-      overallMateriality = totalWeight > 0 ? weightedTotal / totalWeight : benchmarkResults[0].value;
-    } else {
-      // Default: use average of all benchmarks
-      overallMateriality =
-        benchmarkResults.reduce((sum, r) => sum + r.value, 0) / benchmarkResults.length;
-    }
-
-    // Calculate performance materiality (typically 75% of overall)
-    const performanceMateriality = overallMateriality * 0.75;
-
-    // Calculate trivial threshold (typically 5% of overall)
-    const trivialThreshold = overallMateriality * 0.05;
-
-    return {
-      overall_materiality: Math.round(overallMateriality),
-      performance_materiality: Math.round(performanceMateriality),
-      trivial_threshold: Math.round(trivialThreshold),
-      basis: this._determineBasis(context, industryWeights),
-      benchmark_results: benchmarkResults,
-      calculation_method: "Multi-Benchmark Weighted Average",
-      industry: context.industry,
-      justification: this._generateJustification(
-        overallMateriality,
-        benchmarkResults,
-        context.industry
-      )
-    };
-  }
-
-  /**
-   * Perform sensitivity analysis
-   * @param {Number} baseMateriality
-   * @param {Object} tolerances - {low: %, high: %}
-   * @returns {Object} Sensitivity analysis results
-   */
-  performSensitivityAnalysis(baseMateriality, tolerances = { low: 10, high: 20 }) {
-    const scenarios = [];
-
-    // Low tolerance scenario (-10%)
-    scenarios.push({
-      scenario: "Conservative (-10%)",
-      materiality: Math.round(baseMateriality * 0.9),
-      change: -10,
-      impact:
-        "Higher sample sizes required, increased audit work, more conservative conclusions"
-    });
-
-    // Base case
-    scenarios.push({
-      scenario: "Base Case",
-      materiality: Math.round(baseMateriality),
-      change: 0,
-      impact: "Standard audit procedures and sample sizes"
-    });
-
-    // High tolerance scenario (+10%)
-    scenarios.push({
-      scenario: "Liberal (+10%)",
-      materiality: Math.round(baseMateriality * 1.1),
-      change: 10,
-      impact: "Lower sample sizes possible, reduced audit work"
-    });
-
-    // Extreme scenarios
-    scenarios.push({
-      scenario: "Very Conservative (-20%)",
-      materiality: Math.round(baseMateriality * 0.8),
-      change: -20,
-      impact: "Significant increase in audit scope and cost"
-    });
-
-    scenarios.push({
-      scenario: "Very Liberal (+20%)",
-      materiality: Math.round(baseMateriality * 1.2),
-      change: 20,
-      impact: "Significant reduction in audit scope"
-    });
-
-    return {
-      base_materiality: baseMateriality,
-      sensitivity_scenarios: scenarios,
-      recommended_range: {
-        low: Math.round(baseMateriality * 0.9),
-        high: Math.round(baseMateriality * 1.1)
-      }
-    };
-  }
-
-  /**
-   * Plan scenarios for materiality
-   * @param {Object} context - Financial context
-   * @returns {Object} Scenario planning results
-   */
-  planScenarios(context) {
-    const baseMat = this.calculateBaseMateriality(context);
-
-    return {
-      best_case: {
-        description: "All benchmarks at upper range",
-        materiality: Math.round(baseMat.overall_materiality * 1.15),
-        assumptions: ["Strong profitability", "Growing revenue", "Healthy equity"],
-        likelihood: "Low (20%)"
-      },
-
-      base_case: {
-        description: "Standard assumptions",
-        materiality: baseMat.overall_materiality,
-        assumptions: [
-          "Stable profitability",
-          "Consistent revenue",
-          "Adequate equity base"
-        ],
-        likelihood: "High (60%)"
-      },
-
-      worst_case: {
-        description: "Reduced profitability and growth",
-        materiality: Math.round(baseMat.overall_materiality * 0.85),
-        assumptions: ["Lower profitability", "Slower growth", "Tighter equity"],
-        likelihood: "Medium (20%)"
-      }
-    };
-  }
-
-  /**
-   * Get benchmark comparison for industry
-   * @param {Object} context
-   * @returns {Object} Industry benchmark data
-   */
-  benchmarkComparison(context) {
-    const baseMat = this.calculateBaseMateriality(context);
-    const industryBench = this.industryBenchmarks[context.industry];
-
-    if (!industryBench) {
-      return {
-        message: "No industry benchmarks available",
-        calculated_materiality: baseMat.overall_materiality
-      };
-    }
-
-    return {
-      your_materiality: baseMat.overall_materiality,
-      industry_standard: this._getIndustryStandard(context),
-      variance_percentage: this._calculateVariance(
-        baseMat.overall_materiality,
-        this._getIndustryStandard(context)
-      ),
-      assessment: this._assessMaterialityReason(
-        baseMat,
-        context.industry
-      ),
-      industry_median: this._estimateIndustryMedian(context)
-    };
-  }
-
-  /**
-   * Calculate sample size based on materiality
-   * @param {Object} context
-   * @returns {Object} Sample size recommendation
-   */
-  calculateSampleSize(context) {
-    const materiality = this.calculateBaseMateriality(context);
-
-    // Using statistical sampling formulas
-    const populationSize = context.populationSize || 1000;
-    const riskOfIncorrectAcceptance = 0.05; // 5%
-    const tolerable = materiality.overall_materiality;
-
-    // Sample size = (z-score² × population variance) / (tolerable error)²
-    const zScore = 1.96; // 95% confidence level
-
-    // Estimate sample size
-    let sampleSize = Math.ceil(
-      (zScore * zScore * populationSize) / (tolerable * populationSize)
-    );
-
-    sampleSize = Math.min(sampleSize, populationSize);
-    sampleSize = Math.max(sampleSize, 25); // Minimum 25 samples
-
-    return {
-      recommended_sample_size: sampleSize,
-      sample_percentage: Math.round((sampleSize / populationSize) * 100),
-      confidence_level: "95%",
-      materiality_basis: materiality.basis,
-      methodology: "Statistical Sampling with Materiality Threshold"
-    };
-  }
-
-  /**
-   * Generate audit documentation
-   * @param {Object} context
-   * @returns {Object} Audit documentation
-   */
-  generateAuditDocumentation(context) {
-    const materiality = this.calculateBaseMateriality(context);
-    const sensitivity = this.performSensitivityAnalysis(materiality.overall_materiality);
-    const scenarios = this.planScenarios(context);
-    const sampleSize = this.calculateSampleSize(context);
-
-    return {
-      section: "Audit Documentation - Materiality Assessment",
-      engagement_name: context.entityName,
-      year_end: context.financialYearEnd,
-      prepared_by: context.preparedBy || "Audit Team",
-      approval_status: "For Review",
-
-      calculation_summary: {
-        overall_materiality: materiality.overall_materiality,
-        performance_materiality: materiality.performance_materiality,
-        trivial_threshold: materiality.trivial_threshold,
-        basis: materiality.basis,
-        justification: materiality.justification
-      },
-
-      sensitivity_analysis: sensitivity.sensitivity_scenarios,
-      scenario_planning: scenarios,
-      sample_size_recommendation: sampleSize,
-
-      audit_implications: {
-        scope_impact: this._describeAuditScope(materiality.overall_materiality),
-        procedure_impact: this._describeProcedureImpact(materiality.overall_materiality),
-        risk_consideration: this._describeRiskConsideration(context)
-      },
-
-      approval_section: {
-        manager_review: "Pending",
-        partner_approval: "Pending",
-        date_approved: null
-      }
-    };
-  }
-
-  /**
-   * Get weight for basis
-   * @private
-   */
-  _getWeightForBasis(basis, weights) {
-    const mapping = {
-      profit: "profit",
-      revenue: "revenue",
-      assets: "assets",
-      equity: "equity"
-    };
-
-    return weights[mapping[basis]] || 0;
-  }
-
-  /**
-   * Determine materiality basis
-   * @private
-   */
-  _determineBasis(context, industryWeights) {
-    if (!industryWeights) {
-      return "Multiple Benchmarks (Average)";
-    }
-
-    return `Industry-Weighted: ${industryWeights.primary} (${Math.round(
-      industryWeights.weights[industryWeights.primary] * 100
-    )}%)`;
-  }
-
-  /**
-   * Generate justification
-   * @private
-   */
-  _generateJustification(materiality, benchmarks, industry) {
-    return `Overall materiality of $${Math.round(
-      materiality
-    )} has been determined based on ${benchmarks.length} key benchmarks for ${industry || "the entity"
-    } and represents a reasonable threshold for audit planning and evaluation.`;
-  }
-
-  /**
-   * Get industry standard
-   * @private
-   */
-  _getIndustryStandard(context) {
-    // Estimated industry standards
-    const standards = {
-      Manufacturing: 50000,
-      SaaS: 40000,
-      Retail: 30000,
-      Banking: 100000
-    };
-
-    return standards[context.industry] || 50000;
-  }
-
-  /**
-   * Calculate variance
-   * @private
-   */
-  _calculateVariance(yourValue, industryValue) {
-    const variance = ((yourValue - industryValue) / industryValue) * 100;
-    return Math.round(variance);
-  }
-
-  /**
-   * Assess materiality
-   * @private
-   */
-  _assessMaterialityReason(materiality, industry) {
-    const variance = this._calculateVariance(
-      materiality.overall_materiality,
-      this._getIndustryStandard({ industry })
-    );
-
-    if (variance > 20) {
-      return `Materiality is ${variance}% above industry average, likely due to higher profitability or scale.`;
-    }
-    if (variance < -20) {
-      return `Materiality is ${Math.abs(variance)}% below industry average, likely due to lower profitability or scale.`;
-    }
-    return `Materiality is within normal range for ${industry} industry.`;
-  }
-
-  /**
-   * Estimate industry median
-   * @private
-   */
-  _estimateIndustryMedian(context) {
-    // Returns estimated median for industry
-    const medians = {
-      Manufacturing: 45000,
-      SaaS: 38000,
-      Retail: 28000,
-      Banking: 95000
-    };
-
-    return medians[context.industry] || 40000;
-  }
-
-  /**
-   * Describe audit scope
-   * @private
-   */
-  _describeAuditScope(materiality) {
-    if (materiality > 75000) return "Focused scope on high-risk areas";
-    if (materiality > 50000) return "Standard audit scope";
-    return "Expanded scope with additional procedures";
-  }
-
-  /**
-   * Describe procedure impact
-   * @private
-   */
-  _describeProcedureImpact(materiality) {
-    if (materiality > 75000) return "Reduced sample sizes, focused procedures";
-    if (materiality > 50000) return "Standard sample sizes and procedures";
-    return "Increased sample sizes, expanded procedures";
-  }
-
-  /**
-   * Describe risk consideration
-   * @private
-   */
-  _describeRiskConsideration(context) {
-    return `Risk assessment: ${context.riskLevel || "Medium"}. Materiality has been set considering identified risks and control environment.`;
-  }
 }
 
 export default MaterialityEngine;

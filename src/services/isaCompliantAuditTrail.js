@@ -393,7 +393,6 @@ export class ISACompliantAuditTrail {
     );
 
     const byStandard = {};
-    const complianceStatus = {};
     let totalCompliant = 0;
 
     for (const trail of trails) {

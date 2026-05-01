@@ -6,7 +6,6 @@
 
 import { useState, useMemo } from "react";
 import MaterialityEngine from "../services/materialityEngine";
-import * as apiClient from "../services/apiClient";
 
 export function MaterialityCalculator({
   entityName = "",
@@ -100,24 +99,24 @@ export function MaterialityCalculator({
             <input
               type="number"
               value={preTextProfit}
-              onChange={(e) => {}}
+              onChange={(_e) => {}}
               disabled
             />
           </div>
 
           <div className="input-group">
             <label>Revenue</label>
-            <input type="number" value={revenue} onChange={(e) => {}} disabled />
+            <input type="number" value={revenue} onChange={(_e) => {}} disabled />
           </div>
 
           <div className="input-group">
             <label>Total Assets</label>
-            <input type="number" value={assets} onChange={(e) => {}} disabled />
+            <input type="number" value={assets} onChange={(_e) => {}} disabled />
           </div>
 
           <div className="input-group">
             <label>Equity</label>
-            <input type="number" value={equity} onChange={(e) => {}} disabled />
+            <input type="number" value={equity} onChange={(_e) => {}} disabled />
           </div>
         </div>
 

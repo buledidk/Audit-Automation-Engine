@@ -9,12 +9,12 @@
  * - Preventive procedure mapping
  */
 
-import claudeClient, { MODELS, EFFORT } from "./claudeClient.js";
+import Anthropic from "@anthropic-ai/sdk";
 
 export class ExceptionPredictionEngine {
-  constructor() {
-    this.claude = claudeClient;
-    this.model = MODELS.SONNET;
+  constructor(apiKey = process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY) {
+    this.client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+    this.model = "claude-sonnet-4-6";
     this.cache = new Map();
     this.cacheTimeout = 3600000; // 1 hour
   }
@@ -40,16 +40,15 @@ export class ExceptionPredictionEngine {
     const prompt = this._buildPredictionPrompt(context);
 
     // Call Claude API
-    const { text } = await this.claude.sendMessage({
-      prompt,
+    const response = await this.client.messages.create({
       model: this.model,
-      maxTokens: 1024,
-      thinking: true,
-      effort: EFFORT.HIGH,
+      max_tokens: 1024,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.2
     });
 
     // Parse response
-    const predictions = this.claude.parseJSON(text);
+    const predictions = this._parseJSON(response.content[0].text);
 
     // Enrich with additional analysis
     const enriched = {
@@ -130,15 +129,14 @@ Return JSON:
 }
 `;
 
-    const { text } = await this.claude.sendMessage({
-      prompt,
+    const response = await this.client.messages.create({
       model: this.model,
-      maxTokens: 1024,
-      thinking: false,
-      temperature: 0.2,
+      max_tokens: 1024,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.2
     });
 
-    return this.claude.parseJSON(text);
+    return this._parseJSON(response.content[0].text);
   }
 
   /**
@@ -184,15 +182,14 @@ Return JSON:
 }
 `;
 
-    const { text } = await this.claude.sendMessage({
-      prompt,
+    const response = await this.client.messages.create({
       model: this.model,
-      maxTokens: 512,
-      thinking: false,
-      temperature: 0.2,
+      max_tokens: 512,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.2
     });
 
-    return this.claude.parseJSON(text);
+    return this._parseJSON(response.content[0].text);
   }
 
   /**

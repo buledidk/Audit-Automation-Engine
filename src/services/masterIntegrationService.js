@@ -333,7 +333,7 @@ class MasterIntegrationService extends EventEmitter {
             emitConnectorStatus(name, status);
           });
         }
-      } catch (err) {
+      } catch (err) { // eslint-disable-line no-unused-vars
         // Connector health check failed silently
       }
     };

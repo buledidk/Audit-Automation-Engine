@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 
 /**
  * AuditDropdown Component - Advanced dropdown with search, filter, and custom options
@@ -11,9 +11,9 @@ export function AuditDropdown({
   onChange,
   placeholder = "Search or select...",
   searchable = true,
-  filterable = false,
+  _filterable = false,
   filters = {},
-  onFilterChange,
+  _onFilterChange,
   multi = false,
   customizable = false,
   onAddCustom,
@@ -21,7 +21,7 @@ export function AuditDropdown({
   minWidth = "200px",
   groupBy = null,
   showDescription = false,
-  highlightStyle = "bg",
+  _highlightStyle = "bg",
   disabled = false
 }) {
   const [isOpen, setIsOpen] = useState(false);

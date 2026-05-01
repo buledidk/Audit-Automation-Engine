@@ -4,13 +4,13 @@
  * Supabase integration for all comment operations
  */
 
-import { supabase } from './supabaseClient';
+import { supabase, isSupabaseConfigured } from '../supabaseClient';
 import {
-  COMMENT_TYPES,
-  COMMENT_TEMPLATES,
-  RESOLUTION_STATUS,
-  WORKPAPER_COMMENT_SECTIONS,
-  STAGE_COMMENT_SECTIONS
+  COMMENT_TYPES, // eslint-disable-line no-unused-vars
+  COMMENT_TEMPLATES, // eslint-disable-line no-unused-vars
+  RESOLUTION_STATUS, // eslint-disable-line no-unused-vars
+  WORKPAPER_COMMENT_SECTIONS, // eslint-disable-line no-unused-vars
+  STAGE_COMMENT_SECTIONS // eslint-disable-line no-unused-vars
 } from '../models/commentSystem';
 
 // ═════════════════════════════════════════════════════════════════════
@@ -23,6 +23,8 @@ import {
  * @returns {Promise<object>} Created comment with ID
  */
 export const createComment = async (commentData) => {
+  if (!isSupabaseConfigured()) return null;
+
   const {
     engagementId,
     workingPaperId,
@@ -83,6 +85,8 @@ export const createComment = async (commentData) => {
  * @returns {Promise<object>} Updated comment
  */
 export const updateComment = async (commentId, updates, editedBy) => {
+  if (!isSupabaseConfigured()) return null;
+
   try {
     const { data: existing } = await supabase
       .from('audit_comments')
@@ -132,6 +136,8 @@ export const updateComment = async (commentId, updates, editedBy) => {
  * @returns {Promise<object>} Created reply
  */
 export const replyToComment = async (parentCommentId, replyData) => {
+  if (!isSupabaseConfigured()) return null;
+
   const { engagementId, text, createdBy } = replyData;
 
   try {
@@ -174,6 +180,8 @@ export const replyToComment = async (parentCommentId, replyData) => {
  * @returns {Promise<array>} Array of reply comments
  */
 export const getCommentReplies = async (parentCommentId) => {
+  if (!isSupabaseConfigured()) return null;
+
   try {
     const { data, error } = await supabase
       .from('audit_comments')
@@ -200,6 +208,8 @@ export const getCommentReplies = async (parentCommentId) => {
  * @returns {Promise<void>}
  */
 export const mentionUsers = async (commentId, mentions) => {
+  if (!isSupabaseConfigured()) return null;
+
   try {
     const mentionRecords = mentions.map(user => ({
       comment_id: commentId,
@@ -241,6 +251,8 @@ export const mentionUsers = async (commentId, mentions) => {
  * @returns {Promise<object>} Updated comment
  */
 export const resolveComment = async (commentId, resolutionData) => {
+  if (!isSupabaseConfigured()) return null;
+
   const {
     resolvedBy,
     resolutionNotes,
@@ -312,6 +324,8 @@ export const resolveComment = async (commentId, resolutionData) => {
  * @returns {Promise<array>} Comments array
  */
 export const getWorkingPaperComments = async (engagementId, workingPaperId, filters = {}) => {
+  if (!isSupabaseConfigured()) return null;
+
   try {
     let query = supabase
       .from('audit_comments')
@@ -356,6 +370,8 @@ export const getWorkingPaperComments = async (engagementId, workingPaperId, filt
  * @returns {Promise<object>} Created evidence link
  */
 export const linkEvidence = async (commentId, evidence) => {
+  if (!isSupabaseConfigured()) return null;
+
   const {
     documentType,
     fileName,
@@ -393,6 +409,8 @@ export const linkEvidence = async (commentId, evidence) => {
  * @returns {Promise<array>} Evidence array
  */
 export const getCommentEvidence = async (commentId) => {
+  if (!isSupabaseConfigured()) return null;
+
   try {
     const { data, error } = await supabase
       .from('audit_comment_evidence')
@@ -420,6 +438,8 @@ export const getCommentEvidence = async (commentId) => {
  * @returns {Promise<object>} Created/updated section
  */
 export const updateWPCommentSection = async (engagementId, workingPaperId, sectionData) => {
+  if (!isSupabaseConfigured()) return null;
+
   const {
     sectionId,
     sectionTitle,
@@ -465,6 +485,8 @@ export const updateWPCommentSection = async (engagementId, workingPaperId, secti
  * @returns {Promise<object>} Updated section
  */
 export const signOffWorkingPaper = async (engagementId, workingPaperId, signOffData) => {
+  if (!isSupabaseConfigured()) return null;
+
   const {
     reviewedBy,
     reviewerInitials,
@@ -516,6 +538,8 @@ export const signOffWorkingPaper = async (engagementId, workingPaperId, signOffD
  * @returns {Promise<array>} Templates array
  */
 export const getCommentTemplates = async (engagementId, filters = {}) => {
+  if (!isSupabaseConfigured()) return null;
+
   try {
     let query = supabase
       .from('comment_templates')
@@ -555,6 +579,8 @@ export const getCommentTemplates = async (engagementId, filters = {}) => {
  * @returns {Promise<array>} Suggestions array
  */
 export const getCommentSuggestions = async (engagementId, workingPaperId, context) => {
+  if (!isSupabaseConfigured()) return null;
+
   try {
     const suggestions = [];
 
@@ -627,6 +653,8 @@ export const getCommentSuggestions = async (engagementId, workingPaperId, contex
  * @returns {Promise<object>} Analytics data
  */
 export const getCommentAnalytics = async (engagementId) => {
+  if (!isSupabaseConfigured()) return null;
+
   try {
     // Get all comments
     const { data: comments, error: commentsError } = await supabase
@@ -704,11 +732,13 @@ export const getCommentAnalytics = async (engagementId) => {
  * @returns {Promise<array>} Compliance check results
  */
 export const runComplianceChecks = async (engagementId) => {
+  if (!isSupabaseConfigured()) return null;
+
   const results = [];
 
   try {
     // Get engagement config
-    const { data: config } = await supabase
+    const { data: _config } = await supabase
       .from('engagement_comment_config')
       .select('*')
       .eq('engagement_id', engagementId)
@@ -786,6 +816,8 @@ export const runComplianceChecks = async (engagementId) => {
  * @returns {Promise<object>} Created notification
  */
 export const notifyUser = async (notification) => {
+  if (!isSupabaseConfigured()) return null;
+
   const {
     userId,
     email,
@@ -830,8 +862,10 @@ export const notifyUser = async (notification) => {
  * @returns {Promise<void>}
  */
 export const recordAuditTrail = async (trailData) => {
+  if (!isSupabaseConfigured()) return null;
+
   const {
-    engagementId,
+    engagementId, // eslint-disable-line no-unused-vars
     userId,
     action,
     wpId,

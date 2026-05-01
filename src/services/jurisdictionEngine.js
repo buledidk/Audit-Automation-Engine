@@ -7,12 +7,12 @@
  * COPY & PASTE READY - Production Grade
  */
 
-import claudeClient, { MODELS, EFFORT } from "./claudeClient.js";
+import Anthropic from "@anthropic-ai/sdk";
 
 export class JurisdictionEngine {
-  constructor() {
-    this.claude = claudeClient;
-    this.model = MODELS.SONNET;
+  constructor(apiKey = process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY) {
+    this.client = new Anthropic({ dangerouslyAllowBrowser: true, apiKey });
+    this.model = "claude-sonnet-4-6";
 
     // Jurisdiction Configuration - UK/EU FOCUS
     this.jurisdictions = {
@@ -518,15 +518,13 @@ Include:
 Return as JSON.
 `;
 
-    const { text } = await this.claude.sendMessage({
-      prompt,
+    const response = await this.client.messages.create({
       model: this.model,
-      maxTokens: 2000,
-      thinking: true,
-      effort: EFFORT.HIGH,
+      max_tokens: 2000,
+      messages: [{ role: "user", content: prompt }]
     });
 
-    return this.claude.parseJSON(text);
+    return this._parseJSON(response.content[0].text);
   }
 
   /**

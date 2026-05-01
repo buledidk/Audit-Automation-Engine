@@ -4,9 +4,9 @@
  */
 
 import express from 'express';
-import agentMonitoringService from '../services/agentMonitoringService.js';
+import agentMonitoringService from '../agents/agentMonitoringService.js';
 import selfHealingService from '../services/selfHealingService.js';
-import agentRecoveryService from '../services/agentRecoveryService.js';
+import agentRecoveryService from '../agents/agentRecoveryService.js';
 
 const router = express.Router();
 

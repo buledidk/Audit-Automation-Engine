@@ -260,7 +260,7 @@ export class DocumentManagementService {
     const document = this.documents.get(documentId);
 
     // Simulated DLP patterns (in production: use real DLP service)
-    const patterns = {
+    const patterns = { // eslint-disable-line no-unused-vars
       bankAccount: /\b\d{8,17}\b/g,
       ssn: /\b\d{3}-\d{2}-\d{4}\b/g,
       creditCard: /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/g,
@@ -362,7 +362,7 @@ export class DocumentManagementService {
       .digest("hex");
   }
 
-  async _queueForProcessing(documentId, uploadData) {
+  async _queueForProcessing(documentId, _uploadData) {
     // Queue for asynchronous processing
     setTimeout(() => this.processDocument(documentId), 1000);
   }

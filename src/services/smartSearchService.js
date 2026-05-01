@@ -134,7 +134,7 @@ export class SmartSearchService {
   /**
    * Search Companies House
    */
-  async searchCompaniesHouse(query, filters) {
+  async searchCompaniesHouse(query, _filters) {
     console.log(`🏢 Searching Companies House...`);
 
     try {
@@ -160,7 +160,7 @@ export class SmartSearchService {
   /**
    * Search internal audit data
    */
-  async searchAuditData(query, filters) {
+  async searchAuditData(query, _filters) {
     console.log(`📋 Searching audit data...`);
 
     // This would search against stored audit findings, procedures, and test results

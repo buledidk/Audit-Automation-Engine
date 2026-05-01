@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import WorksheetHeader from './WorksheetTemplates';
+import { useState } from 'react';
 
 /**
  * ═════════════════════════════════════════════════════════════════════════════
@@ -351,7 +350,7 @@ export function C1_TrialBalance() {
 // C1 SPECIFIC COMPONENTS
 // ═════════════════════════════════════════════════════════════════════════════
 
-function C1Header({ wsData, updateWS }) {
+function C1Header({ wsData, _updateWS }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -424,7 +423,7 @@ function C1Header({ wsData, updateWS }) {
   );
 }
 
-function C1ObjectiveScope({ wsData, updateWS }) {
+function C1ObjectiveScope({ wsData, _updateWS }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -517,7 +516,7 @@ function C1ObjectiveScope({ wsData, updateWS }) {
   );
 }
 
-function C1ProcedureExecution({ wsData, updateWS }) {
+function C1ProcedureExecution({ wsData, _updateWS }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -585,7 +584,7 @@ function C1ProcedureExecution({ wsData, updateWS }) {
   );
 }
 
-function C1ResultsSummary({ wsData, updateWS }) {
+function C1ResultsSummary({ wsData, _updateWS }) { // eslint-disable-line no-unused-vars
   const totalExceptions = wsData.procedures.reduce((sum, p) => sum + (p.exceptionsFound || 0), 0);
   const totalProcedures = wsData.procedures.length;
   const passedProcedures = wsData.procedures.filter(p => p.conclusion === 'Y').length;
@@ -629,7 +628,7 @@ function C1ResultsSummary({ wsData, updateWS }) {
   );
 }
 
-function C1AssertionMatrix({ wsData, updateWS }) {
+function C1AssertionMatrix({ wsData, _updateWS }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -683,7 +682,7 @@ function C1AssertionMatrix({ wsData, updateWS }) {
   );
 }
 
-function C1EvidenceDocumentation({ wsData, updateWS }) {
+function C1EvidenceDocumentation({ wsData, _updateWS }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -742,7 +741,7 @@ function C1EvidenceDocumentation({ wsData, updateWS }) {
   );
 }
 
-function C1SensitiveAreas({ wsData, updateWS }) {
+function C1SensitiveAreas({ wsData, _updateWS }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -822,7 +821,7 @@ function C1SensitiveAreas({ wsData, updateWS }) {
   );
 }
 
-function C1RisksAndControls({ wsData, updateWS }) {
+function C1RisksAndControls({ wsData, _updateWS }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -876,7 +875,7 @@ function C1RisksAndControls({ wsData, updateWS }) {
   );
 }
 
-function C1Conclusion({ wsData, updateWS }) {
+function C1Conclusion({ wsData, _updateWS }) { // eslint-disable-line no-unused-vars
   const allAssertionsSatisfied = wsData.assertionMatrix?.every(m => m.conclusion === 'Y');
 
   return (
@@ -938,7 +937,7 @@ function C1Conclusion({ wsData, updateWS }) {
 // UTILITY COMPONENTS
 // ═════════════════════════════════════════════════════════════════════════════
 
-function ReadOnlyField({ label, value }) {
+function ReadOnlyField({ label, value }) { // eslint-disable-line no-unused-vars
   return (
     <div>
       <p style={{ color: COLORS.dim, fontSize: '10px', fontWeight: 600, margin: '0 0 4px 0' }}>{label}</p>
@@ -947,7 +946,7 @@ function ReadOnlyField({ label, value }) {
   );
 }
 
-function SummaryBox({ label, value, color }) {
+function SummaryBox({ label, value, color }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.bg,
@@ -962,7 +961,7 @@ function SummaryBox({ label, value, color }) {
   );
 }
 
-function StatusBox({ label, value }) {
+function StatusBox({ label, value }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.bg,
@@ -984,7 +983,7 @@ function StatusBox({ label, value }) {
   );
 }
 
-function ExportButton({ format, color, wsData }) {
+function ExportButton({ format, color, _wsData }) { // eslint-disable-line no-unused-vars
   const handleExport = () => {
     alert(`Export to ${format} - Feature to be implemented. Would generate professional audit workpaper document.`);
   };

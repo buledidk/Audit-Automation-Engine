@@ -234,7 +234,7 @@ class AuditPlatformService extends EventEmitter {
     }
   }
 
-  calculateMaterially(financials) {
+  calculateMaterially(_financials) {
     if (!this.state.materiality) return null;
 
     return {

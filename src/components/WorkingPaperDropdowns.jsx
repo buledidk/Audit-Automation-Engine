@@ -1,6 +1,4 @@
-import React, { useState, useMemo } from "react";
-import { AuditDropdown, FilterBar } from "./AuditDropdown";
-import { SampleSizeSuggestion } from "./SampleSizeSuggestion";
+import { useState, useMemo } from "react";
 import dropdownLibrary from "../data/dropdownLibrary.json";
 import quickFillTemplates from "../data/quickFillTemplates.json";
 
@@ -13,7 +11,7 @@ export function WorkingPaperDropdowns({
   accountType = "revenue",
   workingPaperId = "D3",
   engagement = {},
-  onUpdate = () => {}
+  _onUpdate = () => {}
 }) {
   const [state, setState] = useState({
     assertion: null,
@@ -29,7 +27,7 @@ export function WorkingPaperDropdowns({
     showSampleCalculator: false
   });
 
-  const [filters, setFilters] = useState({
+  const [_filters, _setFilters] = useState({
     riskLevel: null,
     applicableAccounts: null
   });

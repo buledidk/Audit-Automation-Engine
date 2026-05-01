@@ -6,7 +6,6 @@
 
 import { useState, useEffect, useMemo } from "react";
 import ExceptionPredictionEngine from "../services/exceptionPredictionEngine";
-import * as apiClient from "../services/apiClient";
 
 export function ExceptionPredictionPanel({
   fsli = "",

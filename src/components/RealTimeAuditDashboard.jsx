@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 /**
  * Real-Time Audit Dashboard
@@ -6,14 +6,14 @@ import React, { useState, useEffect } from 'react';
  * Compliant with ISA 315 and ISA 330 (Risk Assessment & Response)
  */
 const RealTimeAuditDashboard = () => {
-  const [auditMetrics, setAuditMetrics] = useState({
+  const [auditMetrics, _setAuditMetrics] = useState({
     completionRate: 65,
     riskItems: 12,
     findingsResolved: 8,
     timeSpent: 24.5
   });
 
-  const [fsliProgress, setFsliProgress] = useState({
+  const [fsliProgress, _setFsliProgress] = useState({
     cash: { progress: 100, status: 'completed', findings: 0 },
     receivables: { progress: 85, status: 'in-progress', findings: 2 },
     inventory: { progress: 60, status: 'in-progress', findings: 1 },

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import agentOrchestrationService from '../services/agentOrchestrationService';
+import agentOrchestrationService from '../agents/agentOrchestrationService';
 
 /**
  * Hook for managing agent progress and coordination

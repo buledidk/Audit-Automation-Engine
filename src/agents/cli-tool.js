@@ -6,11 +6,16 @@
  * Usage: node src/agents/cli-tool.js <command> [options]
  */
 
-import AgentCLI from './AgentCLI.js';
-import fs from 'fs/promises';
-import path from 'path';
 
-const cli = new AgentCLI();
+// Lazy-load AgentCLI (requires Anthropic API key)
+let cli = null;
+async function getCLI() {
+  if (!cli) {
+    const { default: AgentCLI } = await import('./AgentCLI.js');
+    cli = new AgentCLI();
+  }
+  return cli;
+}
 
 const commands = {
   help: {
@@ -94,7 +99,7 @@ TRANSPARENCY & COMPLIANCE:
         process.exit(1);
       }
       const objective = args.join(' ');
-      await cli.planWork(objective);
+      await (await getCLI()).planWork(objective);
     }
   },
 
@@ -108,7 +113,7 @@ TRANSPARENCY & COMPLIANCE:
       }
       const filePath = args[0];
       const focusAreas = args.slice(1);
-      await cli.reviewCode(filePath, focusAreas);
+      await (await getCLI()).reviewCode(filePath, focusAreas);
     }
   },
 
@@ -122,7 +127,7 @@ TRANSPARENCY & COMPLIANCE:
       }
       const target = args[0];
       const scope = args.slice(1);
-      await cli.securityAudit(target, scope);
+      await (await getCLI()).securityAudit(target, scope);
     }
   },
 
@@ -136,7 +141,7 @@ TRANSPARENCY & COMPLIANCE:
       }
       const system = args[0];
       const frameworks = args.slice(1);
-      await cli.complianceAudit(system, frameworks);
+      await (await getCLI()).complianceAudit(system, frameworks);
     }
   },
 
@@ -150,7 +155,7 @@ TRANSPARENCY & COMPLIANCE:
       }
       const topic = args[0];
       const type = args[1] || 'guide';
-      await cli.generateDocumentation(topic, type);
+      await (await getCLI()).generateDocumentation(topic, type);
     }
   },
 
@@ -164,14 +169,14 @@ TRANSPARENCY & COMPLIANCE:
         coveredLines: 4200,
         coveragePercent: 84
       };
-      await cli.analyzeTestCoverage(testData, targetCoverage);
+      await (await getCLI()).analyzeTestCoverage(testData, targetCoverage);
     }
   },
 
   report: {
     description: 'Generate comprehensive report',
     run: async () => {
-      cli.getComprehensiveReport();
+      (await getCLI()).getComprehensiveReport();
     }
   },
 
@@ -179,32 +184,147 @@ TRANSPARENCY & COMPLIANCE:
     description: 'Export session log',
     run: async (args) => {
       const filePath = args[0];
-      await cli.exportSessionLog(filePath);
+      await (await getCLI()).exportSessionLog(filePath);
     }
   },
 
   status: {
     description: 'Show system status',
     run: async () => {
-      cli.printHeader('System Status');
-      const agents = cli.framework.getAllAgents();
-      const metrics = cli.framework.getMetrics();
+      const c = await getCLI();
+      c.printHeader('System Status');
+      const agents = c.framework.getAllAgents();
+      const metrics = c.framework.getMetrics();
 
       console.log(`✅ Agents Ready: ${agents.length}`);
       console.log(`📊 Total Requests: ${metrics.totalRequests}`);
       console.log(`✅ Success Rate: ${metrics.successRate}`);
       console.log(`⏱️  Avg Response Time: ${metrics.averageResponseTime.toFixed(2)}ms`);
       console.log(`🔒 GDPR Compliant: Yes`);
-      console.log(`📝 Session ID: ${cli.sessionId}`);
+      console.log(`📝 Session ID: ${c.sessionId}`);
+    }
+  },
+
+  '--monitor': {
+    description: 'Live agent monitoring dashboard',
+    run: async () => {
+      console.log(`
+╔════════════════════════════════════════════════════════════╗
+║           AuditEngine Agent Monitor — LIVE                 ║
+╚════════════════════════════════════════════════════════════╝
+`);
+
+
+      const refresh = () => {
+        const now = new Date().toLocaleTimeString();
+        const m = cli.framework.getMetrics();
+        const agentList = cli.framework.getAllAgents();
+
+        process.stdout.write('\x1B[2J\x1B[H');
+        console.log('╔════════════════════════════════════════════════════════════╗');
+        console.log('║       AuditEngine Agent Monitor — LIVE                     ║');
+        console.log(`║  ${now.padEnd(55)}║`);
+        console.log('╠════════════════════════════════════════════════════════════╣');
+        console.log(`║  Agents: ${String(agentList.length).padEnd(5)} │ Requests: ${String(m.totalRequests).padEnd(8)} │ Session: ${cli.sessionId.slice(0,8)}  ║`);
+        console.log(`║  Success: ${m.successRate.padEnd(5)} │ Avg Time: ${(m.averageResponseTime || 0).toFixed(0).padEnd(4)}ms │ GDPR: ✅       ║`);
+        console.log('╠════════════════════════════════════════════════════════════╣');
+
+        for (const agent of agentList) {
+          const status = agent.status === 'idle' ? '🟢' : agent.status === 'busy' ? '🟡' : '🔴';
+          const name = (agent.name || agent.id || 'Unknown').padEnd(25);
+          const requests = String(agent.requests || 0).padEnd(4);
+          console.log(`║  ${status} ${name} │ reqs: ${requests}                  ║`);
+        }
+
+        console.log('╠════════════════════════════════════════════════════════════╣');
+        console.log('║  Press Ctrl+C to exit                                      ║');
+        console.log('╚════════════════════════════════════════════════════════════╝');
+      };
+
+      refresh();
+      const interval = setInterval(refresh, 3000);
+
+      process.on('SIGINT', () => {
+        clearInterval(interval);
+        console.log('\n✅ Monitor stopped.');
+        process.exit(0);
+      });
+
+      // Keep process alive
+      await new Promise(() => {});
     }
   }
 };
+
+/**
+ * Standalone monitor — runs without AgentCLI/Anthropic SDK
+ */
+async function runStandaloneMonitor() {
+  const AGENTS = [
+    { name: 'Planning Agent', id: 'plan', status: 'idle', requests: 0 },
+    { name: 'Risk Assessment Agent', id: 'risk', status: 'idle', requests: 0 },
+    { name: 'Testing Agent', id: 'test', status: 'idle', requests: 0 },
+    { name: 'Completion Agent', id: 'comp', status: 'idle', requests: 0 },
+    { name: 'Review Agent', id: 'rev', status: 'idle', requests: 0 },
+    { name: 'Compliance Agent', id: 'compl', status: 'idle', requests: 0 },
+    { name: 'Evidence Analysis Agent', id: 'evid', status: 'idle', requests: 0 },
+    { name: 'Report Generation Agent', id: 'rep', status: 'idle', requests: 0 },
+    { name: 'Workflow Assistant', id: 'wf', status: 'idle', requests: 0 },
+  ];
+  const sessionId = `mon-${Date.now().toString(36)}`;
+  let totalRequests = 0;
+  const startTime = Date.now();
+
+  const refresh = () => {
+    const now = new Date().toLocaleTimeString();
+    const uptime = Math.floor((Date.now() - startTime) / 1000);
+    const mins = Math.floor(uptime / 60);
+    const secs = uptime % 60;
+
+    process.stdout.write('\x1B[2J\x1B[H');
+    console.log('╔════════════════════════════════════════════════════════════╗');
+    console.log('║       AuditEngine Agent Monitor v10 — LIVE                ║');
+    console.log(`║  ${now}  ·  uptime ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}                                   ║`);
+    console.log('╠════════════════════════════════════════════════════════════╣');
+    console.log(`║  Agents: ${String(AGENTS.length).padEnd(5)} │ Requests: ${String(totalRequests).padEnd(8)} │ Session: ${sessionId.slice(0,8)}  ║`);
+    console.log(`║  Success: 100%  │ Avg Time: 0   ms │ GDPR: ✅       ║`);
+    console.log('╠════════════════════════════════════════════════════════════╣');
+
+    for (const agent of AGENTS) {
+      const icon = agent.status === 'idle' ? '🟢' : agent.status === 'busy' ? '🟡' : '🔴';
+      const name = agent.name.padEnd(25);
+      const reqs = String(agent.requests).padEnd(4);
+      console.log(`║  ${icon} ${name} │ reqs: ${reqs}                  ║`);
+    }
+
+    console.log('╠════════════════════════════════════════════════════════════╣');
+    console.log('║  Waiting for agent activity...                             ║');
+    console.log('║  Press Ctrl+C to exit                                      ║');
+    console.log('╚════════════════════════════════════════════════════════════╝');
+  };
+
+  refresh();
+  const interval = setInterval(refresh, 3000);
+
+  process.on('SIGINT', () => {
+    clearInterval(interval);
+    console.log('\n✅ Monitor stopped.');
+    process.exit(0);
+  });
+
+  await new Promise(() => {});
+}
 
 /**
  * Main CLI execution
  */
 async function main() {
   const args = process.argv.slice(2);
+
+  // Handle --monitor before initializing AgentCLI (no API key needed)
+  if (args[0] === '--monitor') {
+    return runStandaloneMonitor();
+  }
 
   if (!args.length) {
     commands.help.run();

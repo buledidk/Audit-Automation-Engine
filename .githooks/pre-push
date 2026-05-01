@@ -1,0 +1,30 @@
+#!/bin/bash
+# Pre-push gate: lint + tests + build must all pass before pushing to main
+# Every push to main triggers a Vercel production deployment
+
+set -e
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+RESET='\033[0m'
+
+echo -e "${BLUE}🚀 Pre-push checks (main auto-deploys to Vercel)${RESET}"
+echo ""
+
+echo -e "${BLUE}1/3 Linting (errors only — warnings allowed)...${RESET}"
+npx eslint src --quiet || { echo -e "${RED}❌ Lint errors found. Fix before pushing.${RESET}"; exit 1; }
+echo -e "${GREEN}✅ Lint passed${RESET}"
+echo ""
+
+echo -e "${BLUE}2/3 Running tests...${RESET}"
+npx vitest run || { echo -e "${RED}❌ Tests failed. Fix before pushing.${RESET}"; exit 1; }
+echo -e "${GREEN}✅ All tests passed${RESET}"
+echo ""
+
+echo -e "${BLUE}3/3 Building...${RESET}"
+npm run build || { echo -e "${RED}❌ Build failed. Fix before pushing.${RESET}"; exit 1; }
+echo -e "${GREEN}✅ Build succeeded${RESET}"
+echo ""
+
+echo -e "${GREEN}🎉 All checks passed. Pushing to remote.${RESET}"

@@ -29,7 +29,7 @@ export function AIProcedureSuggestions({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedProcedures, setSelectedProcedures] = useState([]);
-  const [showJustification, setShowJustification] = useState(null);
+  const [_showJustification, _setShowJustification] = useState(null);
   const [userFeedback, setUserFeedback] = useState({});
 
   // Initialize AI engine

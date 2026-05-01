@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 /**
  * ═════════════════════════════════════════════════════════════════════════════
@@ -46,7 +46,7 @@ const COLORS = {
 // WORKSHEET HEADER COMPONENT
 // ═════════════════════════════════════════════════════════════════════════════
 
-function WorksheetHeader({ wsData, updateWS }) {
+function WorksheetHeader({ wsData, updateWS }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -145,7 +145,7 @@ function WorksheetHeader({ wsData, updateWS }) {
 // OBJECTIVE & SCOPE SECTION
 // ═════════════════════════════════════════════════════════════════════════════
 
-function ObjectiveAndScope({ wsData, updateWS }) {
+function ObjectiveAndScope({ wsData, updateWS }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -257,7 +257,7 @@ function ObjectiveAndScope({ wsData, updateWS }) {
 // PROCEDURE EXECUTION SECTION
 // ═════════════════════════════════════════════════════════════════════════════
 
-function ProcedureExecution({ wsData, updateWS, procedures }) {
+function ProcedureExecution({ wsData, updateWS, procedures }) { // eslint-disable-line no-unused-vars
   const [selectedProcedures, setSelectedProcedures] = useState(wsData.procedures || []);
 
   const handleAddProcedure = useCallback((procId) => {
@@ -463,7 +463,7 @@ function ProcedureExecution({ wsData, updateWS, procedures }) {
 // RESULTS SUMMARY TABLE
 // ═════════════════════════════════════════════════════════════════════════════
 
-function ResultsSummary({ wsData, updateWS }) {
+function ResultsSummary({ wsData, updateWS }) { // eslint-disable-line no-unused-vars
   // Auto-calculate exception percentages
   const calculateExceptionRate = (exceptions, sample) => {
     if (!sample || sample === 0) return '0.00%';
@@ -579,7 +579,7 @@ function ResultsSummary({ wsData, updateWS }) {
 // ASSERTION TESTING MATRIX
 // ═════════════════════════════════════════════════════════════════════════════
 
-function AssertionMatrix({ wsData, updateWS, assertions }) {
+function AssertionMatrix({ wsData, updateWS, assertions }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -717,7 +717,7 @@ function AssertionMatrix({ wsData, updateWS, assertions }) {
 // EVIDENCE DOCUMENTATION
 // ═════════════════════════════════════════════════════════════════════════════
 
-function EvidenceDocumentation({ wsData, updateWS }) {
+function EvidenceDocumentation({ wsData, updateWS }) { // eslint-disable-line no-unused-vars
   const [evidenceList, setEvidenceList] = useState(wsData.evidence || []);
 
   const addEvidence = () => {
@@ -879,7 +879,7 @@ function EvidenceDocumentation({ wsData, updateWS }) {
 // SENSITIVE AREAS & JUDGMENTS
 // ═════════════════════════════════════════════════════════════════════════════
 
-function SensitiveAreas({ wsData, updateWS }) {
+function SensitiveAreas({ wsData, updateWS }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -973,7 +973,7 @@ function SensitiveAreas({ wsData, updateWS }) {
 // RISKS & CONTROLS ASSESSMENT
 // ═════════════════════════════════════════════════════════════════════════════
 
-function RisksAndControls({ wsData, updateWS }) {
+function RisksAndControls({ wsData, updateWS }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{
       background: COLORS.card,
@@ -1063,7 +1063,7 @@ function RisksAndControls({ wsData, updateWS }) {
 // WORKPAPER CONCLUSION
 // ═════════════════════════════════════════════════════════════════════════════
 
-function WorkpaperConclusion({ wsData, updateWS, assertions }) {
+function WorkpaperConclusion({ wsData, updateWS, assertions }) { // eslint-disable-line no-unused-vars
   const allAssertionsSatisfied = wsData.assertionMatrix?.every(m => m.conclusion === 'Y');
 
   return (
@@ -1185,7 +1185,7 @@ function WorkpaperConclusion({ wsData, updateWS, assertions }) {
 // COMMENT SYSTEM (INTEGRATED THROUGHOUT)
 // ═════════════════════════════════════════════════════════════════════════════
 
-function CommentButton({ section, wsData, updateWS, inline }) {
+function CommentButton({ section, wsData, updateWS, inline }) { // eslint-disable-line no-unused-vars
   const [showComments, setShowComments] = useState(false);
   const comments = wsData.comments?.[section] || [];
 
@@ -1233,15 +1233,18 @@ function CommentButton({ section, wsData, updateWS, inline }) {
             fontSize: '11px'
           }} onKeyPress={(e) => {
             if (e.key === 'Enter' && e.target.value) {
-              const updated = wsData.comments || {};
-              updated[section] = [
-                ...(updated[section] || []),
-                {
-                  author: 'Current User',
-                  date: new Date().toISOString().split('T')[0],
-                  text: e.target.value
-                }
-              ];
+              const prev = wsData.comments || {};
+              const updated = {
+                ...prev,
+                [section]: [
+                  ...(prev[section] || []),
+                  {
+                    author: 'Current User',
+                    date: new Date().toISOString().split('T')[0],
+                    text: e.target.value
+                  }
+                ]
+              };
               updateWS('comments', updated);
               e.target.value = '';
             }
@@ -1256,7 +1259,7 @@ function CommentButton({ section, wsData, updateWS, inline }) {
 // HELPER COMPONENTS
 // ═════════════════════════════════════════════════════════════════════════════
 
-function Field({ label, value, onChange, type = 'text', options, placeholder, readonly, size, maxLength }) {
+function Field({ label, value, onChange, type = 'text', options, placeholder, readonly, size, maxLength }) { // eslint-disable-line no-unused-vars
   const styles = {
     label: {
       color: COLORS.dim,

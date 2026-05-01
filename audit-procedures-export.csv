@@ -1,0 +1,365 @@
+AUDIT_PROCEDURES_WORKPAPER,PHASE,AREA,PROCEDURE_ID,PROCEDURE_NAME,DESCRIPTION,ASSERTION_TESTED,ISA_STANDARD,ESTIMATED_HOURS,SAMPLE_SIZE,STATUS,PROCEDURE_STEPS,EVIDENCE_REQUIRED,EXPECTED_RESULTS,ACTUAL_RESULTS,EXCEPTIONS_FOUND,CONCLUSION,AUDITOR_NAME,DATE_PERFORMED,SIGN_OFF,NOTES
+
+Engagement Planning,Phase 1,Client Understanding,001,Client Background Research,Gather and analyze basic client information,Existence,ISA 210,4,N/A,Pending,"1. Review company registration at Companies House
+2. Obtain prior audit files
+3. Review management team
+4. Analyze organizational structure
+5. Document key contacts","Prior year financial statements
+Company registration details
+Org chart
+Bank references","All key contacts identified
+Prior audit working papers available
+Clear structure documented","","No exceptions","Procedures completed as planned","[Auditor Name]",,☐ Sign Off,"Background research shows established business with professional management"
+
+Engagement Planning,Phase 1,Materiality,002,Calculate Overall Materiality,Determine appropriate materiality thresholds,Valuation,ISA 320,4,N/A,Pending,"1. Select materiality benchmark (revenue/profit/equity)
+2. Apply percentage based on entity type
+3. Calculate overall materiality amount
+4. Calculate performance materiality (75%)
+5. Calculate clearly trivial threshold (5%)
+6. Determine specific area materiality","Financial statements
+Prior year benchmarks
+Industry data","Overall Materiality: [₹/$/€ Amount]
+Performance Materiality: [75% of overall]
+Area-specific amounts by FSLI","Overall Materiality: ₹2,500,000
+Performance Materiality: ₹1,875,000","No exceptions","Materiality appropriately determined","[Auditor Name]",,☐ Sign Off,"Based on revenue benchmark of 5%. Qualitative factors considered."
+
+Risk Assessment,Phase 2,Fraud Risk,003,Fraud Risk Assessment,Conduct fraud brainstorming session,Management Override,ISA 240,6,N/A,Pending,"1. Identify incentive/pressure factors
+2. Assess fraud opportunity factors
+3. Evaluate management rationalization
+4. Identify specific fraud risks
+5. Plan audit response procedures
+6. Document session minutes","Management discussion
+Prior year documentation
+Industry risk factors","3-5 specific fraud risks identified
+Response procedures planned","High revenue pressure from board
+Weak cash management controls
+Related party transactions
+Prior period overstatement risk","Management override risk: HIGH
+Inventory manipulation: LOW
+Revenue overstatement: MEDIUM","Fraud response procedures enhanced. Management override to be specifically tested.","[Auditor Name]",,☐ Sign Off,"Auditor concern: Aggressive revenue targets warrant heightened scrutiny"
+
+Risk Assessment,Phase 2,Control Environment,004,Evaluate Control Environment (COSO),Assess COSO framework components,Overall,ISA 400,8,N/A,Pending,"1. Interview management on tone at top
+2. Review code of conduct
+3. Assess board composition
+4. Evaluate organizational structure
+5. Test competence and training
+6. Document control environment rating","Org policies
+Board minutes
+HR records
+Prior audit documentation","Control environment: Strong/Fair/Weak
+Specific evidence for each COSO component","Control environment rating: FAIR
+- Strong governance
+- Adequate HR policies
+- Moderate ethics enforcement
+- Clear organizational structure","No material control environment deficiencies","Control environment rating: FAIR. Recommend enhanced ethics training.","[Auditor Name]",,☐ Sign Off,"Board oversight strong. Management integrity reasonable. No red flags."
+
+Interim Audit,Phase 3,Control Testing,005,Test Revenue Cycle Controls,Test key controls over revenue transactions,Existence/Completeness,ISA 330,12,30,"Pending","1. Obtain list of all revenue transactions
+2. Select risk-based sample of 30 transactions
+3. For each transaction:
+   - Verify sales order exists
+   - Confirm delivery evidence
+   - Check pricing authorization
+   - Verify revenue recorded correctly
+4. Document test results
+5. Evaluate control effectiveness","Sales orders
+Delivery notes
+Invoices
+System reports","No exceptions in sample
+All controls operating effectively","Tested 30 transactions:
+- 28 without exception
+- 2 pricing exceptions (immaterial)","Pricing exceptions resolved with management. Controls operating effectively.","Revenue cycle controls operating effectively. 2 minor exceptions noted and resolved.","[Auditor Name]",,☐ Sign Off,"Sample showed strong control design and operating effectiveness. No material issues."
+
+Interim Audit,Phase 3,Control Testing,006,Test Segregation of Duties (Accounts Payable),Evaluate system-enforced segregation,Authorization,ISA 400,6,100,"Pending","1. Map segregation of duties matrix
+2. Obtain list of users with AP access
+3. For each user, verify:
+   - Create PO access only
+   - Approve PO access only
+   - Post invoice access only
+   - Payment approval access only
+4. Test for exceptions
+5. Document any conflicts","Access control matrix
+User provisioning documents
+System user access lists","No conflicts in segregation
+All users have appropriate access","1 exception: User ABC001 has both Create and Approve PO access
+Root cause: System limitation, mitigated by compensating controls","Compensating control: Manager monthly review of POs over ₹50,000","SOD exception exists but mitigated by compensating control. Recommend system upgrade.","[Auditor Name]",,☐ Sign Off,"One SOD weakness identified but adequately mitigated. Not a significant deficiency."
+
+Financial Position Testing,Phase 4,Revenue,007,Test Revenue Recognition (IFRS 15 5-Step Model),Validate revenue recognition per IFRS 15,Existence/Accuracy/Cutoff,ISA 500 / IAS 18,16,50,"Pending","STEP 1: IDENTIFY CONTRACT
+1. Obtain contracts for sample
+2. Verify contract with customer exists
+3. Validate authorization and enforceability
+
+STEP 2: IDENTIFY PERFORMANCE OBLIGATIONS
+4. List all promised goods/services
+5. Confirm separate obligations
+6. Document performance obligations
+
+STEP 3: DETERMINE TRANSACTION PRICE
+7. Identify fixed consideration
+8. Estimate variable consideration
+9. Validate constraint on estimates
+
+STEP 4: ALLOCATE PRICE
+10. Determine standalone selling prices
+11. Allocate based on proportionate weights
+
+STEP 5: RECOGNIZE REVENUE
+12. Verify control transfer point
+13. Confirm revenue recorded at correct date
+14. Test supporting documentation","Customer contracts
+Purchase orders
+Delivery evidence
+Invoices
+System reports","50 revenue transactions tested
+IFRS 15 applied correctly
+All 5 steps documented
+No material exceptions","Tested 50 transactions:
+- 48 transactions compliant
+- 2 complex contracts requiring analysis
+  * Contract A: Performance obligation analysis complex
+  * Contract B: Revenue spread incorrectly resolved","Both exceptions resolved. Contracts now recorded correctly per IFRS 15.","Revenue recognition appropriately applied per IFRS 15. All 5 steps validated.","[Auditor Name]",,☐ Sign Off,"Complex revenue streams handled appropriately. Management's IFRS 15 assessment sound."
+
+Financial Position Testing,Phase 4,Receivables,008,Receivables Confirmation Procedure,Obtain direct evidence of receivables,Existence/Accuracy,ISA 505,12,45,"Pending","1. Obtain aged receivables list as of [Date]
+2. Select risk-based sample of 45 customers
+3. Send written confirmations
+4. Follow-up on non-responses
+5. Evaluate exceptions
+6. Perform alternative procedures if needed
+7. Document results","Aged receivables list
+Confirmations sent/received
+Customer responses
+Alternative procedures","Positive confirmations received
+No material discrepancies
+<5% non-response rate","Confirmations:
+- Sent: 45
+- Received: 42 (93%)
+- Confirmed: 42
+- Exceptions: 0
+- Non-responses: 3 (alternative procedures performed)","Alternative procedures on 3 non-responses:
+- Customer A: Subsequent collection verified
+- Customer B: Invoice traced to sales order/delivery
+- Customer C: Invoice agreed to customer statement","Receivables existence and accuracy confirmed. All confirmations reconciled.","[Auditor Name]",,☐ Sign Off,"Strong confirmation response. No discrepancies detected. Receivables properly stated."
+
+Financial Position Testing,Phase 4,Receivables,009,Validate ECL Model (IFRS 9),Test Expected Credit Loss calculation,Valuation,IFRS 9,10,All,"Pending","1. Obtain ECL calculation spreadsheet
+2. Understand staging methodology (Stage 1/2/3)
+3. Test parameters:
+   - Probability of default (PD)
+   - Loss given default (LGD)
+   - Exposure at default (EAD)
+4. Validate historical loss rates
+5. Test ECL = PD × LGD × EAD
+6. Evaluate forward-looking factors
+7. Compare ECL to actual losses
+8. Assess reasonableness","ECL model
+Historical loss data
+Forward-looking indicators
+Industry data","ECL calculated per IFRS 9
+Parameters reasonable and supported
+Model output acceptable","ECL Calculation:
+- Stage 1 (Low risk): ₹250,000 (1.2% loss rate)
+- Stage 2 (Medium risk): ₹450,000 (5.5% loss rate)
+- Stage 3 (Defaulted): ₹180,000 (100% loss rate)
+- Total ECL: ₹880,000","No exceptions. All parameters validated.","ECL model appropriately designed and implemented per IFRS 9.","[Auditor Name]",,☐ Sign Off,"Management's ECL estimates reasonable and well-documented. No audit adjustment needed."
+
+Financial Position Testing,Phase 4,Inventory,010,Inventory Observation and Testing,Observe and test inventory accuracy,Existence/Valuation,ISA 501,20,50,"Pending","OBSERVATION PHASE:
+1. Attend inventory count on [Date] at [Location]
+2. Observe counting procedures
+3. Verify count tags issued sequentially
+4. Note areas with difficulties
+5. Perform test counts: recount 50 items
+6. Verify test counts agree to count sheet
+
+VALUATION PHASE:
+7. Obtain final inventory listing
+8. Recalculate footings
+9. Test pricing for sample of 30 items:
+   - Actual costs vs. standard costs
+   - Lower of cost or NRV
+10. Evaluate obsolescence reserve
+11. Reconcile to general ledger","Inventory count sheets
+Test count results
+Inventory listing
+Cost data
+Pricing documentation","Test counts agree to listing
+Valuation testing complete
+Obsolescence reserve adequate
+Final inventory amount verified","Observation completed [Date]:
+- 5,000 items counted
+- Test count exceptions: 0
+- Pricing test sample: 30 items
+- Pricing exceptions: 0
+- Obsolescence reserve: ₹300,000 (reasonable)
+- Final inventory: ₹15,200,000","No material exceptions noted.","Inventory quantities and valuation appropriately stated. No audit adjustment required.","[Auditor Name]",,☐ Sign Off,"Well-executed count with strong procedural controls. Valuation supportable."
+
+Accounting Concepts,Phase 5,Leases,011,IFRS 16 Lease Accounting Testing,Test lease identification and accounting,Existence/Valuation,IFRS 16,12,All,"Pending,"IDENTIFICATION:
+1. Obtain lease analysis prepared by management
+2. Identify all leases (operating and finance)
+3. Evaluate lease definition: control of asset + use rights
+
+LESSEE ACCOUNTING:
+4. Test ROU asset calculation:
+   - Lease liability: [Amount]
+   - Initial direct costs: [Amount]
+   - ROU asset: [Amount]
+5. Test lease liability measurement:
+   - PV of lease payments
+   - Discount rate determination
+6. Test subsequent accounting:
+   - ROU depreciation
+   - Interest expense
+   - Lease modifications
+
+DISCLOSURES:
+7. Verify IFRS 16 disclosures complete","Lease agreements
+Management lease analysis
+ROU calculations
+Lease schedules","All leases identified
+ROU assets/liabilities calculated
+IFRS 16 disclosures complete","Leases identified:
+- Property leases: 3
+- Equipment leases: 2
+ROU Assets: ₹2,450,000
+Lease Liabilities: ₹2,380,000
+No lease modifications or terminations","Testing shows appropriate accounting treatment per IFRS 16.","Lease accounting appropriately recorded per IFRS 16. Disclosures adequate.","[Auditor Name]",,☐ Sign Off,"Complex lease transactions well documented. ROU calculations validated."
+
+Accounting Concepts,Phase 5,Fair Values,012,IFRS 13 Fair Value Measurement Testing,Test fair value measurements,Valuation,IFRS 13,10,10,"Pending","1. Identify all Level 2 and Level 3 fair values
+2. For each measurement:
+   - Validate methodology
+   - Test observable inputs
+   - Evaluate unobservable inputs
+3. Test valuation model:
+   - Recalculate or validate
+   - Test underlying data
+4. Perform sensitivity analysis
+5. Evaluate reasonableness
+6. Verify disclosures","Fair value schedules
+Valuation reports
+Market data
+Model documentation","Fair values appropriately measured
+Level classifications correct
+Disclosures adequate","Fair value testing:
+- Derivative position: ₹1,200,000 (Level 2)
+- Investment property: ₹8,500,000 (Level 3)
+- Sensitivity analysis completed","No exceptions. Valuations within reasonable range.","Fair value measurements appropriately determined per IFRS 13.","[Auditor Name]",,☐ Sign Off,"Valuation approaches sound. Level 3 fair values supported with reasonable assumptions."
+
+Completion,Phase 6,Final Review,013,Final Analytical Procedures Review,Perform overall analytical review,Overall,ISA 520,8,N/A,"Pending","1. Obtain final financial statements
+2. Recalculate key ratios:
+   - Gross profit margin
+   - Operating margin
+   - Current ratio
+   - Debt-to-equity
+3. Compare to:
+   - Prior year
+   - Budget
+   - Industry benchmarks
+4. Investigate significant variances
+5. Evaluate reasonableness of statements
+6. Assess for unusual items","Final financial statements
+Prior year comparatives
+Budgets
+Ratio analysis","Ratios consistent with expectations
+No unusual year-end adjustments
+Overall statements reasonable","Final ratio analysis:
+- Gross margin: 42% (prior: 40%) ✓
+- Operating margin: 15% (prior: 14%) ✓
+- Current ratio: 1.8 (prior: 1.9) ✓
+- Debt-to-equity: 0.65 (prior: 0.68) ✓
+All within expected range","No unusual variations requiring further investigation.","Analytical procedures support reasonableness of final financial statements.","[Auditor Name]",,☐ Sign Off,"Final statements present fair view. No anomalies detected. Ready for sign-off."
+
+Completion,Phase 6,Disclosures,014,Disclosure Completeness Review,Verify all disclosures complete,Presentation,ISA 700,6,N/A,"Pending","1. Obtain disclosure checklist
+2. For each required disclosure:
+   - Verify disclosure present
+   - Verify accurate and complete
+   - Verify cross-references
+3. Check compliance with:
+   - Applicable standards
+   - Company requirements
+   - Prior year disclosures
+4. Review for:
+   - Accuracy of amounts
+   - Clarity of language
+   - Proper format
+5. Document completeness","Disclosure checklist
+Financial statements
+Accounting standards
+Company policies","All required disclosures present
+Amounts agree to workpapers
+Format consistent with standards","Checklist review:
+- Required disclosures: 45
+- Present: 45
+- Accurate: 45
+- Complete: 45
+- Format compliance: 100%","No missing or inaccurate disclosures identified.","Disclosure review complete. All required disclosures present and accurate.","[Auditor Name]",,☐ Sign Off,"Disclosure package comprehensive and compliant with standards."
+
+Completion,Phase 6,Sign-Off,015,Senior Partner Quality Review,Final audit quality assurance,Overall,ISA 220,8,N/A,"Pending","1. Senior partner reviews:
+   - All significant findings
+   - Risk assessments
+   - Audit procedures
+   - Conclusions
+2. Evaluates:
+   - Adequacy of audit evidence
+   - Appropriateness of audit approach
+   - Compliance with standards
+   - Audit opinion support
+3. Resolves all open items
+4. Approves audit file
+5. Signs off on audit","Entire audit file
+Significant finding summary
+Risk assessment
+Audit program completion","Audit opinion: [Unqualified/Qualified/Adverse/Disclaimer]
+All procedures complete
+Evidence adequate
+Standards complied with","Senior partner review:
+- File reviewed: 100% coverage
+- Procedures verified
+- Evidence adequate
+- Opinion: UNQUALIFIED
+- Approval: GRANTED","No audit matters requiring modification to opinion.","Audit quality review complete. Audit opinion unqualified and supportable.","[Senior Partner Name]",,☐ Sign Off,"High-quality audit execution. Standards fully complied with. Ready for report issuance."
+
+Reporting,Phase 7,Report,016,Audit Report Preparation,Prepare and finalize audit opinion,Overall,ISA 700,6,N/A,"Pending","1. Draft audit report including:
+   - Management responsibility
+   - Auditor responsibility
+   - Basis for opinion
+   - Opinion paragraph
+   - Key audit matters (if applicable)
+   - Other information
+   - Compliance
+2. Review for:
+   - Technical accuracy
+   - Proper referencing
+   - Format compliance
+3. Obtain partner approval
+4. Prepare final version
+5. Arrange report signing","Draft report
+Standards guidance
+Company templates
+Prior year report","Report draft complete
+Opinion: Unqualified/Qualified
+Format compliant
+Ready for partner review","Audit report drafted:
+- Opinion: UNQUALIFIED
+- KAMs identified: 2
+- Format: Standard
+- Length: 3 pages
+- Technical review: PASSED","No technical issues identified.","Audit report prepared and approved. Ready for client issuance.","[Audit Manager]",,☐ Sign Off,"Clear and well-articulated opinion supported by audit procedures performed."
+
+Reporting,Phase 7,Communication,017,Communication with TCWG,Present findings to governance,"Overall","ISA 260",4,"N/A","Pending","1. Prepare summary of:
+   - Audit scope and findings
+   - Key risks identified
+   - Control deficiencies
+   - Management letter points
+   - Significant adjustments
+2. Schedule TCWG meeting
+3. Present findings
+4. Respond to questions
+5. Document discussion
+6. Obtain acknowledgment","Findings summary
+Management letter
+Significant items log
+Board presentation","TCWG meeting held
+Findings presented
+Questions answered
+Understanding confirmed","TCWG Communication:
+- Attendees: 6 board members
+- Presentation: Well received
+- Questions: 5 asked, all answered
+- Recommendation: Approval of financial statements","No significant issues raised by governance.","TCWG communication completed successfully. Board satisfied with audit results.","[Engagement Partner]",,☐ Sign Off,"Effective communication with governance. Strong support for financial statements."

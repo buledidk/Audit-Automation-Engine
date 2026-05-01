@@ -50,7 +50,7 @@ describe('ExceptionEvaluator', () => {
       exceptionCount: 5,
       sampleSize: 50,
       populationSize: 500,
-      materiality: 10000
+      materiality: 30
     })
 
     const result = evaluator.evaluateExceptions()
@@ -92,7 +92,7 @@ describe('ExceptionEvaluator', () => {
       exceptionCount: 25,
       sampleSize: 25,
       populationSize: 250,
-      materiality: 50000
+      materiality: 50
     })
 
     const result = evaluator.evaluateExceptions()

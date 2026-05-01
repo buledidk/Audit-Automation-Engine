@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 /**
  * Offline Mode Panel
@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
  */
 const OfflineModePanel = () => {
   const [connectivity, setConnectivity] = useState(navigator.onLine);
-  const [syncStatus, setSyncStatus] = useState({
+  const [_syncStatus, _setSyncStatus] = useState({
     isOnline: navigator.onLine,
     queuedCount: 0,
     syncInProgress: false,

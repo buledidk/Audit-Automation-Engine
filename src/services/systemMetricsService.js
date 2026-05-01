@@ -86,7 +86,7 @@ class SystemMetricsService extends EventEmitter {
       const avgLoad = os.loadavg()[0];
       const cpuCount = cpus.length;
       return Math.min(100, (avgLoad / cpuCount) * 100);
-    } catch (err) {
+    } catch (err) { // eslint-disable-line no-unused-vars
       return 0;
     }
   }
@@ -99,7 +99,7 @@ class SystemMetricsService extends EventEmitter {
       const totalMem = os.totalmem();
       const freeMem = os.freemem();
       return ((totalMem - freeMem) / totalMem) * 100;
-    } catch (err) {
+    } catch (err) { // eslint-disable-line no-unused-vars
       return 0;
     }
   }

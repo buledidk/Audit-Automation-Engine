@@ -1,0 +1,38 @@
+account,account_name,amount,date
+1000,Revenue - Training Services,-850000,2025-03-31
+1010,Revenue - Online Courses,-320000,2025-03-31
+2000,Cost of Sales - Direct Staff,420000,2025-03-31
+2010,Cost of Sales - Materials,85000,2025-03-31
+3000,Staff Costs - Salaries,195000,2025-03-31
+3010,Staff Costs - NIC,22000,2025-03-31
+3020,Staff Costs - Pension,15000,2025-03-31
+4000,Rent and Rates,48000,2025-03-31
+4010,Insurance,12000,2025-03-31
+4020,IT and Software,35000,2025-03-31
+4030,Marketing,28000,2025-03-31
+4040,Professional Fees,18000,2025-03-31
+4050,Depreciation,15000,2025-03-31
+4060,Bank Charges,3500,2025-03-31
+4070,Sundry Expenses,8500,2025-03-31
+4080,Travel and Subsistence,14000,2025-03-31
+4090,Telephone,6000,2025-03-31
+5000,Fixed Assets - Equipment,75000,2025-03-31
+5010,Fixed Assets - Computers,45000,2025-03-31
+5020,Accumulated Depreciation,-35000,2025-03-31
+6000,Trade Debtors,125000,2025-03-31
+6010,Prepayments,18000,2025-03-31
+6020,Cash at Bank,95000,2025-03-31
+6030,Petty Cash,500,2025-03-31
+6040,VAT Recoverable,15000,2025-03-31
+7000,Trade Creditors,-68000,2025-03-31
+7010,Accruals,-42000,2025-03-31
+7020,VAT Payable,-28000,2025-03-31
+7030,PAYE/NIC Payable,-12000,2025-03-31
+7040,Corporation Tax,-18000,2025-03-31
+8000,Share Capital,-1000,2025-03-31
+8010,Retained Earnings,-45000,2025-03-31
+8020,Dividends Paid,25000,2025-03-31
+9000,Directors Loan Account,-50000,2025-06-15
+9010,Suspense Account,100000,2025-07-12
+9020,Round Test Entry,50000,2025-09-14
+9030,Weekend Entry,25000,2025-09-13

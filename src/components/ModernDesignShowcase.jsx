@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { ModernButton, ModernCard, ModernBadge, ModernProgressBar, ModernInput } from '../design/components/ModernUILibrary';
+import { useState } from 'react';
 
 /**
  * Modern Design Showcase
  * Demonstrates latest UI/UX trends and patterns
  */
 const ModernDesignShowcase = () => {
-  const [searchValue, setSearchValue] = useState('');
+  const [_searchValue, _setSearchValue] = useState('');
   const [activeTab, setActiveTab] = useState('components');
 
   const modernTheme = {

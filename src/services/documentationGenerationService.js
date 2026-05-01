@@ -50,7 +50,7 @@ class DocumentationGenerationService {
   /**
    * Generate narrative for specific FSLI
    */
-  async generateFSLINarrative(fsli, phaseData) {
+  async generateFSLINarrative(fsli, _phaseData) {
     const narrative = `
 FSLI: ${fsli.name || 'Unknown'}
 Amount: £${fsli.amount || 'N/A'}
@@ -96,7 +96,7 @@ Date Tested: ${new Date().toISOString().split('T')[0]}
       sheets: {
         'Summary': {
           columns: ['FSLI', 'Amount', 'Status', 'Risk Level'],
-          rows: Object.entries(doc.narratives).map(([ id, narrative ]) => [
+          rows: Object.entries(doc.narratives).map(([ id, _narrative ]) => [
             id,
             'Amount',
             'Completed',

@@ -10,7 +10,7 @@
  * - ISA 200 compliant
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Anthropic } from '@anthropic-ai/sdk';
 
 const SkepticismBot = ({ assertion, materiality, confidence, evidenceReliability, onChallengeRaised }) => {
@@ -20,7 +20,7 @@ const SkepticismBot = ({ assertion, materiality, confidence, evidenceReliability
   const clientRef = useRef(null);
 
   useEffect(() => {
-    clientRef.current = new Anthropic({
+    clientRef.current = new Anthropic({ dangerouslyAllowBrowser: true,
       apiKey: process.env.REACT_APP_ANTHROPIC_API_KEY,
     });
   }, []);
@@ -123,7 +123,7 @@ Be specific, actionable, and think critically. Document professional skepticism.
     return challenges;
   };
 
-  const assessRiskLevel = (description, assertion) => {
+  const assessRiskLevel = (description, _assertion) => {
     if (description.includes('material') || description.includes('high risk')) {
       return 'HIGH';
     }

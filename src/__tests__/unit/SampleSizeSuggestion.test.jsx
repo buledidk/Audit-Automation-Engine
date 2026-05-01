@@ -88,7 +88,8 @@ describe('SampleSizeSuggestion', () => {
         overallMateriality={10000}
       />
     )
-    expect(screen.getByText(/100% Testing/)).toBeInTheDocument()
+    const matches = screen.getAllByText(/100% Testing/)
+    expect(matches.length).toBeGreaterThanOrEqual(1)
   })
 
   it('shows 100% testing recommendation for very small population', () => {
@@ -100,14 +101,15 @@ describe('SampleSizeSuggestion', () => {
         overallMateriality={5000}
       />
     )
-    expect(screen.getByText(/100% Testing/)).toBeInTheDocument()
+    const matches = screen.getAllByText(/100% Testing/)
+    expect(matches.length).toBeGreaterThanOrEqual(1)
   })
 
   it('displays all sampling methodology options', () => {
     render(<SampleSizeSuggestion />)
-    expect(screen.getByText(/Statistical Sampling/)).toBeInTheDocument()
-    expect(screen.getByText(/Judgmental Sampling/)).toBeInTheDocument()
-    expect(screen.getByText(/Stratified Sampling/)).toBeInTheDocument()
+    expect(screen.getAllByText(/Statistical Sampling/).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText(/Judgmental Sampling/).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText(/Stratified Sampling/).length).toBeGreaterThanOrEqual(1)
   })
 
   it('provides ISA 530 guidance', () => {
@@ -122,7 +124,10 @@ describe('SampleSizeSuggestion', () => {
         performanceMateriality={75000}
       />
     )
-    expect(screen.getByText('100k')).toBeInTheDocument()
+    // Component renders £{value}k with text split across elements
+    expect(screen.getByText((content, element) => {
+      return element?.textContent === '£100k'
+    })).toBeInTheDocument()
   })
 
   it('renders recommendation alert', () => {

@@ -209,7 +209,6 @@ export class CompaniesHouseConnector {
    * Assess company risk based on Companies House data
    */
   assessCompanyRisk(details) {
-    const riskIndicators = [];
     const riskFactors = [];
 
     // Dissolved company

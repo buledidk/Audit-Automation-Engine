@@ -6,7 +6,7 @@
 
 import modelSelectionService from '../services/modelSelectionService.js';
 import connectorManager from '../services/connectorManager.js';
-import agentMonitoringService from '../services/agentMonitoringService.js';
+import agentMonitoringService from '../agents/agentMonitoringService.js';
 import selfHealingService from '../services/selfHealingService.js';
 import systemMetricsService from '../services/systemMetricsService.js';
 
@@ -124,7 +124,6 @@ export async function fullHealthCheck(req, res) {
 
 export async function readiness(req, res) {
   const models = modelSelectionService.getAvailableModels();
-  const connectors = connectorManager.getHealthSummary();
   const agentHealth = agentMonitoringService.getSystemHealth();
 
   const ready =

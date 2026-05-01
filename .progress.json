@@ -1,0 +1,115 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "name": "Supabase schema deployment",
+      "category": "Database",
+      "status": "in-progress",
+      "createdAt": "2026-03-20T01:58:20.071Z",
+      "startedAt": "2026-03-20T01:58:24.439Z"
+    },
+    {
+      "id": 2,
+      "name": "Prisma integration",
+      "category": "Database",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    },
+    {
+      "id": 3,
+      "name": "RLS policies",
+      "category": "Database",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    },
+    {
+      "id": 4,
+      "name": "Auth implementation",
+      "category": "Backend",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    },
+    {
+      "id": 5,
+      "name": "API routes",
+      "category": "Backend",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    },
+    {
+      "id": 6,
+      "name": "Real-time subscriptions",
+      "category": "Backend",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    },
+    {
+      "id": 7,
+      "name": "Dashboard components",
+      "category": "Frontend",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    },
+    {
+      "id": 8,
+      "name": "Working paper UI",
+      "category": "Frontend",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    },
+    {
+      "id": 9,
+      "name": "Export functionality",
+      "category": "Frontend",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    },
+    {
+      "id": 10,
+      "name": "Unit tests",
+      "category": "Testing",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    },
+    {
+      "id": 11,
+      "name": "Integration tests",
+      "category": "Testing",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    },
+    {
+      "id": 12,
+      "name": "E2E tests",
+      "category": "Testing",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    },
+    {
+      "id": 13,
+      "name": "CI/CD pipeline",
+      "category": "DevOps",
+      "status": "in-progress",
+      "createdAt": "2026-03-20T01:58:20.071Z",
+      "startedAt": "2026-03-20T01:58:24.601Z"
+    },
+    {
+      "id": 14,
+      "name": "Vercel deployment",
+      "category": "DevOps",
+      "status": "completed",
+      "createdAt": "2026-03-20T01:58:20.071Z",
+      "completedAt": "2026-03-20T01:58:24.781Z"
+    },
+    {
+      "id": 15,
+      "name": "Security audit",
+      "category": "DevOps",
+      "status": "pending",
+      "createdAt": "2026-03-20T01:58:20.071Z"
+    }
+  ],
+  "builds": [],
+  "createdAt": "2026-03-20T01:58:20.069Z",
+  "updatedAt": "2026-03-20T01:58:24.782Z"
+}

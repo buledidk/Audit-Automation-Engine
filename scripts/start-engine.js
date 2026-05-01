@@ -1,99 +1,75 @@
-import http from 'http';
-import EventEmitter from 'events';
+#!/usr/bin/env node
 
-const PORT = 4000;
-const hub = new EventEmitter();
-const services = new Map();
+/**
+ * start-engine.js — Starts the AuditEngine Express backend
+ *
+ * Usage: node scripts/start-engine.js
+ *
+ * Features:
+ *   - Loads .env from project root
+ *   - Graceful shutdown on SIGINT/SIGTERM
+ *   - Clear startup logging with service URLs
+ */
 
-console.log('\n╔════════════════════════════════════════════════════════╗');
-console.log('║   🚪 API GATEWAY + INTEGRATION HUB STARTED            ║');
-console.log('║   (TERMINAL 2 - Engine)                              ║');
-console.log('╚════════════════════════════════════════════════════════╝\n');
+import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import fs from 'fs';
 
-// Initialize Hub
-console.log('🔌 Initializing Integration Hub...');
-const connectors = ['slack-connector', 'github-connector', 'email-connector'];
-setTimeout(() => {
-  console.log('✅ Hub initialized\n');
-  console.log('🔗 Initializing Connectors...');
-  connectors.forEach((connector, idx) => {
-    setTimeout(() => {
-      services.set(connector, { status: 'online', lastHeartbeat: new Date() });
-      console.log(`   ✅ ${connector}`);
-    }, (idx + 1) * 200);
-  });
-}, 500);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const ROOT = path.resolve(__dirname, '..');
+const SERVER_ENTRY = path.join(ROOT, 'server', 'index.js');
 
-// Create API Gateway
-const server = http.createServer((req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Content-Type', 'application/json');
+// Verify server entry exists
+if (!fs.existsSync(SERVER_ENTRY)) {
+  console.error(`[engine] ✗ Server entry not found: ${SERVER_ENTRY}`);
+  process.exit(1);
+}
 
-  if (req.url === '/health') {
-    res.writeHead(200);
-    res.end(JSON.stringify({ 
-      status: 'healthy', 
-      component: 'api-gateway',
-      timestamp: new Date() 
-    }));
-  } 
-  else if (req.url === '/api/system/status') {
-    res.writeHead(200);
-    res.end(JSON.stringify({
-      services: Array.from(services.keys()),
-      eventQueue: Math.floor(Math.random() * 30),
-      uptime: process.uptime(),
-      component: 'api-gateway'
-    }));
-  } 
-  else if (req.url === '/api/integrations/status') {
-    res.writeHead(200);
-    res.end(JSON.stringify({
-      integrations: Array.from(services.entries()).map(([name, svc]) => ({
-        name,
-        status: svc.status
-      }))
-    }));
-  }
-  else if (req.url === '/api/connected-terminals') {
-    res.writeHead(200);
-    res.end(JSON.stringify({
-      terminal_1_status: 'checking...',
-      terminal_3_status: 'checking...',
-      api_gateway: 'online',
-      timestamp: new Date()
-    }));
-  }
-  else {
-    res.writeHead(404);
-    res.end(JSON.stringify({ error: 'Not found' }));
+// Verify .env exists
+if (!fs.existsSync(path.join(ROOT, '.env'))) {
+  console.error('[engine] ✗ .env file not found. Run: cp .env.template .env');
+  process.exit(1);
+}
+
+const PORT = process.env.PORT || 3001;
+
+console.log(`[engine] Starting AuditEngine backend...`);
+console.log(`[engine] Server: http://localhost:${PORT}`);
+console.log(`[engine] Health: http://localhost:${PORT}/api/health`);
+console.log('');
+
+const child = spawn('node', [SERVER_ENTRY], {
+  cwd: ROOT,
+  stdio: 'inherit',
+  env: { ...process.env },
+});
+
+child.on('error', (err) => {
+  console.error(`[engine] Failed to start server: ${err.message}`);
+  process.exit(1);
+});
+
+child.on('exit', (code, signal) => {
+  if (signal) {
+    console.log(`[engine] Server stopped (signal: ${signal})`);
+  } else if (code !== 0) {
+    console.error(`[engine] Server exited with code ${code}`);
+    process.exit(code);
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`\n✅ API Gateway ready on http://localhost:${PORT}`);
-  console.log('\n📍 Available Endpoints:');
-  console.log(`   GET  http://localhost:${PORT}/health`);
-  console.log(`   GET  http://localhost:${PORT}/api/system/status`);
-  console.log(`   GET  http://localhost:${PORT}/api/integrations/status`);
-  console.log(`   GET  http://localhost:${PORT}/api/connected-terminals`);
-  console.log('\n✅ All services online and communicating\n');
-});
+// Graceful shutdown
+function shutdown(signal) {
+  console.log(`\n[engine] ${signal} received — shutting down...`);
+  child.kill('SIGTERM');
+  setTimeout(() => {
+    console.log('[engine] Forcing exit after timeout');
+    child.kill('SIGKILL');
+    process.exit(1);
+  }, 5000);
+}
 
-// Heartbeat for services
-setInterval(() => {
-  services.forEach((svc) => {
-    svc.lastHeartbeat = new Date();
-  });
-}, 5000);
-
-// Status report every 30 seconds
-setInterval(() => {
-  const timestamp = new Date().toLocaleTimeString();
-  console.log(`[${timestamp}] 📊 HUB STATUS: ${services.size} connectors online`);
-}, 30000);
-
-process.on('SIGINT', () => {
-  console.log('\n\n👋 Engine shutting down gracefully...');
-  process.exit(0);
-});
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));

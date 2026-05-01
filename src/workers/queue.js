@@ -47,7 +47,7 @@ class WorkerQueue {
   /**
    * Queue a job for background processing
    */
-  async enqueueJob(jobType, data, options = {}) {
+  async enqueueJob(jobType, data, _options = {}) {
     console.log(`📋 Enqueuing job: ${jobType}`);
     console.log('   Data:', JSON.stringify(data, null, 2));
 

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 
 /**
  * Sample Size Suggestion Engine
@@ -9,6 +9,136 @@ import React, { useMemo } from "react";
  * - Industry standards
  * - Audit strategy
  */
+const COLORS = {
+  bg: "#0A0E17",
+  border: "rgba(255,255,255,0.08)",
+  text: "#F8F8F8",
+  dim: "rgba(255,255,255,0.6)",
+  accent: "#F5A623",
+  card: "rgba(255,255,255,0.04)",
+  green: "#66BB6A",
+  red: "#EF5350",
+  orange: "#FFA726"
+};
+
+const getRiskColor = (risk) => {
+  return risk === "High" ? COLORS.red : risk === "Medium" ? COLORS.orange : COLORS.green;
+};
+
+const SampleMethodCard = ({ title, data, isRecommended = false }) => ( // eslint-disable-line no-unused-vars
+  <div style={{
+    background: isRecommended ? `${COLORS.accent}15` : COLORS.card,
+    border: `1px solid ${isRecommended ? `${COLORS.accent}40` : COLORS.border}`,
+    borderLeft: `4px solid ${isRecommended ? COLORS.accent : COLORS.dim}`,
+    borderRadius: "8px",
+    padding: "16px",
+    marginBottom: "12px"
+  }}>
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "start",
+      marginBottom: "8px"
+    }}>
+      <div>
+        <h4 style={{
+          color: isRecommended ? COLORS.accent : COLORS.text,
+          margin: "0 0 4px 0",
+          fontSize: "13px",
+          fontWeight: 700
+        }}>
+          {title}
+          {isRecommended && " ✓"}
+        </h4>
+        <p style={{
+          color: COLORS.dim,
+          margin: "0 0 8px 0",
+          fontSize: "11px"
+        }}>
+          {data.description}
+        </p>
+      </div>
+      {!data.appropriate && (
+        <span style={{
+          padding: "4px 8px",
+          background: "rgba(255,167,38,0.2)",
+          color: COLORS.orange,
+          borderRadius: "4px",
+          fontSize: "9px",
+          fontWeight: 600,
+          whiteSpace: "nowrap"
+        }}>
+          NOT RECOMMENDED
+        </span>
+      )}
+    </div>
+
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      gap: "12px"
+    }}>
+      <div>
+        <p style={{ color: COLORS.dim, margin: "0 0 4px 0", fontSize: "9px", fontWeight: 700 }}>
+          SAMPLE SIZE
+        </p>
+        <p style={{
+          color: isRecommended ? COLORS.accent : COLORS.text,
+          margin: 0,
+          fontSize: "18px",
+          fontWeight: 700
+        }}>
+          {data.sample}
+        </p>
+        <p style={{ color: COLORS.dim, margin: "4px 0 0 0", fontSize: "10px" }}>
+          {data.percentage}% of population
+        </p>
+      </div>
+
+      <div>
+        <p style={{ color: COLORS.dim, margin: "0 0 4px 0", fontSize: "9px", fontWeight: 700 }}>
+          CONFIDENCE
+        </p>
+        <p style={{
+          color: isRecommended ? COLORS.accent : COLORS.text,
+          margin: 0,
+          fontSize: "14px",
+          fontWeight: 700
+        }}>
+          {data.confidence}
+        </p>
+      </div>
+
+      <div>
+        <p style={{ color: COLORS.dim, margin: "0 0 4px 0", fontSize: "9px", fontWeight: 700 }}>
+          METHODOLOGY
+        </p>
+        <p style={{
+          color: COLORS.text,
+          margin: 0,
+          fontSize: "11px"
+        }}>
+          {data.methodology}
+        </p>
+      </div>
+    </div>
+
+    {data.reason && (
+      <div style={{
+        marginTop: "8px",
+        padding: "8px",
+        background: "rgba(245,166,35,0.05)",
+        borderRadius: "4px",
+        borderLeft: `2px solid ${COLORS.accent}`,
+        color: COLORS.dim,
+        fontSize: "10px"
+      }}>
+        📌 {data.reason}
+      </div>
+    )}
+  </div>
+);
+
 export function SampleSizeSuggestion({
   riskLevel = "Medium",
   populationSize = 1000,
@@ -131,135 +261,7 @@ export function SampleSizeSuggestion({
     };
   }, [riskLevel, populationSize, populationValue, overallMateriality, performanceMateriality, testingMethodology, accountType]);
 
-  const COLORS = {
-    bg: "#0A0E17",
-    border: "rgba(255,255,255,0.08)",
-    text: "#F8F8F8",
-    dim: "rgba(255,255,255,0.6)",
-    accent: "#F5A623",
-    card: "rgba(255,255,255,0.04)",
-    green: "#66BB6A",
-    red: "#EF5350",
-    orange: "#FFA726"
-  };
 
-  const getRiskColor = (risk) => {
-    return risk === "High" ? COLORS.red : risk === "Medium" ? COLORS.orange : COLORS.green;
-  };
-
-  const SampleMethodCard = ({ title, data, isRecommended = false }) => (
-    <div style={{
-      background: isRecommended ? `${COLORS.accent}15` : COLORS.card,
-      border: `1px solid ${isRecommended ? `${COLORS.accent}40` : COLORS.border}`,
-      borderLeft: `4px solid ${isRecommended ? COLORS.accent : COLORS.dim}`,
-      borderRadius: "8px",
-      padding: "16px",
-      marginBottom: "12px"
-    }}>
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "start",
-        marginBottom: "8px"
-      }}>
-        <div>
-          <h4 style={{
-            color: isRecommended ? COLORS.accent : COLORS.text,
-            margin: "0 0 4px 0",
-            fontSize: "13px",
-            fontWeight: 700
-          }}>
-            {title}
-            {isRecommended && " ✓"}
-          </h4>
-          <p style={{
-            color: COLORS.dim,
-            margin: "0 0 8px 0",
-            fontSize: "11px"
-          }}>
-            {data.description}
-          </p>
-        </div>
-        {!data.appropriate && (
-          <span style={{
-            padding: "4px 8px",
-            background: "rgba(255,167,38,0.2)",
-            color: COLORS.orange,
-            borderRadius: "4px",
-            fontSize: "9px",
-            fontWeight: 600,
-            whiteSpace: "nowrap"
-          }}>
-            NOT RECOMMENDED
-          </span>
-        )}
-      </div>
-
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: "12px"
-      }}>
-        <div>
-          <p style={{ color: COLORS.dim, margin: "0 0 4px 0", fontSize: "9px", fontWeight: 700 }}>
-            SAMPLE SIZE
-          </p>
-          <p style={{
-            color: isRecommended ? COLORS.accent : COLORS.text,
-            margin: 0,
-            fontSize: "18px",
-            fontWeight: 700
-          }}>
-            {data.sample}
-          </p>
-          <p style={{ color: COLORS.dim, margin: "4px 0 0 0", fontSize: "10px" }}>
-            {data.percentage}% of population
-          </p>
-        </div>
-
-        <div>
-          <p style={{ color: COLORS.dim, margin: "0 0 4px 0", fontSize: "9px", fontWeight: 700 }}>
-            CONFIDENCE
-          </p>
-          <p style={{
-            color: isRecommended ? COLORS.accent : COLORS.text,
-            margin: 0,
-            fontSize: "14px",
-            fontWeight: 700
-          }}>
-            {data.confidence}
-          </p>
-        </div>
-
-        <div>
-          <p style={{ color: COLORS.dim, margin: "0 0 4px 0", fontSize: "9px", fontWeight: 700 }}>
-            METHODOLOGY
-          </p>
-          <p style={{
-            color: COLORS.text,
-            margin: 0,
-            fontSize: "11px"
-          }}>
-            {data.methodology}
-          </p>
-        </div>
-      </div>
-
-      {data.reason && (
-        <div style={{
-          marginTop: "8px",
-          padding: "8px",
-          background: "rgba(245,166,35,0.05)",
-          borderRadius: "4px",
-          borderLeft: `2px solid ${COLORS.accent}`,
-          color: COLORS.dim,
-          fontSize: "10px"
-        }}>
-          📌 {data.reason}
-        </div>
-      )}
-    </div>
-  );
 
   return (
     <div style={{ marginBottom: "24px" }}>

@@ -4,11 +4,13 @@
  * Automatically populates audit procedures, findings, and compliance mappings
  */
 
-import claudeClient, { MODELS } from './claudeClient.js';
+import Anthropic from '@anthropic-ai/sdk';
 
 export class AIExtractionService {
   constructor() {
-    this.claude = claudeClient;
+    this.client = new Anthropic({ dangerouslyAllowBrowser: true,
+      apiKey: process.env.ANTHROPIC_API_KEY
+    });
     this.extractionHistory = [];
     this.eventListeners = [];
   }
@@ -125,12 +127,19 @@ Extract all audit-relevant data with high accuracy. Focus on:
 4. Evidence of assertions being tested`;
 
     try {
-      const { text: content } = await this.claude.sendMessage({
-        prompt: userPrompt,
+      const response = await this.client.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 4000,
         system: systemPrompt,
-        model: MODELS.SONNET,
-        maxTokens: 4000,
+        messages: [
+          {
+            role: 'user',
+            content: userPrompt
+          }
+        ]
       });
+
+      const content = response.content[0].text;
 
       // Parse JSON response
       try {
@@ -187,7 +196,7 @@ Extract all audit-relevant data with high accuracy. Focus on:
   /**
    * Map extracted procedures to ISA standards
    */
-  mapToProcedures(procedures, auditContext) {
+  mapToProcedures(procedures, _auditContext) {
     const standardProcedures = {
       'bank confirmation': 'ISA 505',
       'confirmation': 'ISA 505',
@@ -223,7 +232,7 @@ Extract all audit-relevant data with high accuracy. Focus on:
   /**
    * Map compliance gaps to frameworks
    */
-  mapToFrameworks(gaps, auditContext) {
+  mapToFrameworks(gaps, _auditContext) {
     return gaps.map(gap => {
       let framework = gap.framework || 'ISA 200';
 

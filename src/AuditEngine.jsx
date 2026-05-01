@@ -1,41 +1,16 @@
-import { useState, useMemo, lazy, Suspense } from "react";
+import { useState, useMemo } from "react";
 import engagementStore from "./store/engagementStore";
-// Phase A-B: Core audit components (always needed in phase view)
-import AuditProceduresPanel from "./components/AuditProceduresPanel";
-import AgentProgressPanel from "./components/AgentProgressPanel";
-import AgentRecommendationsPanel from "./components/AgentRecommendationsPanel";
-import DocumentationPanel from "./components/DocumentationPanel";
+// Note: Phase components now located in phases/
+// Phase A-B: New System Components (Audit Procedures, Agents, Documentation)
 import useAgentProgress from "./hooks/useAgentProgress";
 import useDocumentGeneration from "./hooks/useDocumentGeneration";
-import FloatingAgentPanel from "./components/FloatingAgentPanel";
-import StatusBar from "./components/StatusBar";
+// Phase D: Creative & Interactive Features
 import useOfflineMode from "./hooks/useOfflineMode";
+// Phase E: Comprehensive Integration Hub
 import useIntegrations from "./hooks/useIntegrations";
-
-// ── Lazy-loaded components (code-split into separate chunks) ──
-const InterimPhase = lazy(() => import("./phases/InterimPhase").then(m => ({ default: m.InterimPhase })));
-const FinalAuditPhase = lazy(() => import("./phases/FinalAuditPhase").then(m => ({ default: m.FinalAuditPhase })));
-const RealTimeAuditDashboard = lazy(() => import("./components/RealTimeAuditDashboard"));
-const CollaborationPanel = lazy(() => import("./components/CollaborationPanel"));
-const SmartAuditForms = lazy(() => import("./components/SmartAuditForms"));
-const OfflineModePanel = lazy(() => import("./components/OfflineModePanel"));
-const IntegrationHub = lazy(() => import("./components/IntegrationHub"));
-const UnifiedActivityDashboard = lazy(() => import("./components/UnifiedActivityDashboard"));
-const EnhancedVisualInterface = lazy(() => import("./components/EnhancedVisualInterface"));
-const ModernDesignShowcase = lazy(() => import("./components/ModernDesignShowcase"));
-const DocumentUploadAndExtractionPanel = lazy(() => import("./components/DocumentUploadAndExtractionPanel"));
-const FinancialAnalysisDashboard = lazy(() => import("./components/FinancialAnalysisDashboard").then(m => ({ default: m.FinancialAnalysisDashboard })));
-const IPVDashboard = lazy(() => import("./components/IPVDashboard"));
-const ClientPortal = lazy(() => import("./components/ClientPortal"));
-
-// Lightweight loading fallback for lazy-loaded panels
-function PanelLoader() {
-  return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "48px", color: "rgba(255,255,255,0.5)" }}>
-      <span style={{ fontSize: "14px" }}>Loading...</span>
-    </div>
-  );
-}
+// Enhanced UI: Industry-aligned design with workflows and business context
+// Modern Design System: Latest UI/UX trends and patterns
+// AI-Powered Document Extraction: Tokenization, extraction, auto-population, and framework reporting
 
 const COLORS = {
   bg: "#0A0E17",
@@ -71,7 +46,7 @@ const PHASES = [
 // ═══════════════════════════════════════════════════════════════════
 // PLANNING PHASE COMPONENT
 // ═══════════════════════════════════════════════════════════════════
-function PlanningPhase({ engagement, updateEngagement, onAdvance, canAdvance, financialData, priorYearData, onFinancialDataChange, onPriorYearDataChange }) {
+function PlanningPhase({ engagement, updateEngagement, onAdvance, canAdvance }) { // eslint-disable-line no-unused-vars
   const [activeTab, setActiveTab] = useState("engagement");
 
   return (
@@ -81,8 +56,8 @@ function PlanningPhase({ engagement, updateEngagement, onAdvance, canAdvance, fi
         <p style={{ color: COLORS.dim, margin: 0 }}>ISA 200, 210, 315, 320 - Set up engagement parameters and audit strategy</p>
       </div>
 
-      <div style={{ display: "flex", gap: "8px", marginBottom: "24px", borderBottom: `1px solid ${COLORS.border}`, paddingBottom: "12px", flexWrap: "wrap" }}>
-        {["engagement", "risk", "materiality", "financial", "strategy", "team"].map(tab => (
+      <div style={{ display: "flex", gap: "8px", marginBottom: "24px", borderBottom: `1px solid ${COLORS.border}`, paddingBottom: "12px" }}>
+        {["engagement", "risk", "materiality", "strategy", "team"].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -212,61 +187,6 @@ function PlanningPhase({ engagement, updateEngagement, onAdvance, canAdvance, fi
         </div>
       )}
 
-      {activeTab === "financial" && (
-        <div>
-          <div style={{ background: COLORS.card, borderRadius: "12px", padding: "24px", border: `1px solid ${COLORS.border}`, marginBottom: "24px" }}>
-            <h3 style={{ color: COLORS.text, marginTop: 0 }}>Financial Statements Input (ISA 520)</h3>
-            <p style={{ color: COLORS.dim, fontSize: "12px", marginBottom: "16px" }}>Enter key financial data for ratio analysis, benchmarking, and going concern assessment</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
-              {[
-                { key: "revenue", label: "Revenue" },
-                { key: "costOfSales", label: "Cost of Sales" },
-                { key: "grossProfit", label: "Gross Profit" },
-                { key: "operatingProfit", label: "Operating Profit" },
-                { key: "profitBeforeTax", label: "Profit Before Tax" },
-                { key: "profitAfterTax", label: "Profit After Tax" },
-                { key: "totalAssets", label: "Total Assets" },
-                { key: "currentAssets", label: "Current Assets" },
-                { key: "inventory", label: "Inventory" },
-                { key: "tradeReceivables", label: "Trade Receivables" },
-                { key: "cashAndEquivalents", label: "Cash & Equivalents" },
-                { key: "totalLiabilities", label: "Total Liabilities" },
-                { key: "currentLiabilities", label: "Current Liabilities" },
-                { key: "nonCurrentLiabilities", label: "Non-Current Liabilities" },
-                { key: "totalEquity", label: "Total Equity" },
-                { key: "operatingCashFlow", label: "Operating Cash Flow" },
-                { key: "interestExpense", label: "Interest Expense" },
-                { key: "depreciation", label: "Depreciation" },
-              ].map(({ key, label }) => (
-                <InputField
-                  key={key}
-                  label={label}
-                  value={financialData[key] || ""}
-                  onChange={(v) => onFinancialDataChange({ ...financialData, [key]: parseFloat(v) || 0 })}
-                  placeholder="0"
-                  type="number"
-                />
-              ))}
-            </div>
-            <div style={{ marginTop: "16px", padding: "12px", background: COLORS.planning + "15", borderRadius: "6px", border: `1px solid ${COLORS.planning}33` }}>
-              <p style={{ color: COLORS.blue, margin: 0, fontSize: "11px" }}>Prior year data enables trend analysis (ISA 520 analytical procedures)</p>
-            </div>
-          </div>
-          {financialData.revenue || financialData.totalAssets ? (
-            <Suspense fallback={<PanelLoader />}>
-              <FinancialAnalysisDashboard
-                financialData={financialData}
-                priorYearData={Object.keys(priorYearData || {}).length > 0 ? priorYearData : null}
-                entityName={engagement.entityName}
-                entityType={engagement.entitySize?.toLowerCase() || "private"}
-                sector={engagement.sector}
-                sicCode={engagement.sicCode}
-              />
-            </Suspense>
-          ) : null}
-        </div>
-      )}
-
       {activeTab === "team" && (
         <div style={{ background: COLORS.card, borderRadius: "12px", padding: "24px", border: `1px solid ${COLORS.border}` }}>
           <h3 style={{ color: COLORS.text, marginTop: 0 }}>Team Allocation</h3>
@@ -307,10 +227,10 @@ function PlanningPhase({ engagement, updateEngagement, onAdvance, canAdvance, fi
 // ═══════════════════════════════════════════════════════════════════
 // RISK ASSESSMENT PHASE COMPONENT
 // ═══════════════════════════════════════════════════════════════════
-function RiskAssessmentPhase({ engagement, updateEngagement, onAdvance, canAdvance, financialData, priorYearData }) {
+function RiskAssessmentPhase({ _engagement, _updateEngagement, onAdvance, canAdvance }) { // eslint-disable-line no-unused-vars
   const [activeTab, setActiveTab] = useState("riskMatrix");
 
-  const calculateRiskRating = (inherent, control) => {
+  const calculateRiskRating = (inherent, control) => { // eslint-disable-line no-unused-vars
     const combined = inherent * control / 5;
     if (combined > 4) return { rating: "CRITICAL", color: COLORS.red };
     if (combined > 3) return { rating: "HIGH", color: COLORS.orange };
@@ -326,7 +246,7 @@ function RiskAssessmentPhase({ engagement, updateEngagement, onAdvance, canAdvan
       </div>
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "24px", borderBottom: `1px solid ${COLORS.border}`, paddingBottom: "12px" }}>
-        {["riskMatrix", "fraud", "estimates", "goingConcern", "relatedParties", "financialHealth"].map(tab => (
+        {["riskMatrix", "fraud", "estimates", "goingConcern", "relatedParties"].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -401,26 +321,6 @@ function RiskAssessmentPhase({ engagement, updateEngagement, onAdvance, canAdvan
         </div>
       )}
 
-      {activeTab === "financialHealth" && (
-        (financialData?.revenue || financialData?.totalAssets) ? (
-          <Suspense fallback={<PanelLoader />}>
-            <FinancialAnalysisDashboard
-              financialData={financialData}
-              priorYearData={Object.keys(priorYearData || {}).length > 0 ? priorYearData : null}
-              entityName={engagement.entityName}
-              entityType={engagement.entitySize?.toLowerCase() || "private"}
-              sector={engagement.sector}
-              sicCode={engagement.sicCode}
-              initialTab="alerts"
-            />
-          </Suspense>
-        ) : (
-          <div style={{ background: COLORS.card, borderRadius: "12px", padding: "24px", border: `1px solid ${COLORS.border}` }}>
-            <p style={{ color: COLORS.dim, textAlign: "center" }}>Enter financial data in the Planning phase Financial tab to see health analysis and alerts here.</p>
-          </div>
-        )
-      )}
-
       {canAdvance && (
         <div style={{ marginTop: "24px", textAlign: "center" }}>
           <button
@@ -449,7 +349,7 @@ function RiskAssessmentPhase({ engagement, updateEngagement, onAdvance, canAdvan
 // ═══════════════════════════════════════════════════════════════════
 // RESULTS DASHBOARD
 // ═══════════════════════════════════════════════════════════════════
-function ResultsDashboard({ engagement, phases }) {
+function ResultsDashboard({ engagement, _phases }) { // eslint-disable-line no-unused-vars
   const phaseCompletion = useMemo(() => {
     return PHASES.map(p => ({
       ...p,
@@ -536,7 +436,7 @@ function ResultsDashboard({ engagement, phases }) {
 // ═══════════════════════════════════════════════════════════════════
 // COMPLETION PHASE
 // ═══════════════════════════════════════════════════════════════════
-function CompletionPhase({ engagement, updateEngagement, onAdvance, canAdvance, financialData, priorYearData }) {
+function CompletionPhase({ _engagement, _updateEngagement, onAdvance, canAdvance }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{ padding: "24px", maxWidth: "1200px" }}>
       <div style={{ marginBottom: "24px" }}>
@@ -618,24 +518,6 @@ function CompletionPhase({ engagement, updateEngagement, onAdvance, canAdvance, 
         </div>
       </div>
 
-      {/* Final Analytical Review — ISA 520 */}
-      {(financialData?.revenue || financialData?.totalAssets) && (
-        <div style={{ marginBottom: "24px" }}>
-          <h3 style={{ color: COLORS.completion, marginBottom: "12px" }}>Final Analytical Review (ISA 520)</h3>
-          <Suspense fallback={<PanelLoader />}>
-            <FinancialAnalysisDashboard
-              financialData={financialData}
-              priorYearData={Object.keys(priorYearData || {}).length > 0 ? priorYearData : null}
-              entityName={engagement.entityName}
-              entityType={engagement.entitySize?.toLowerCase() || "private"}
-              sector={engagement.sector}
-              sicCode={engagement.sicCode}
-              initialTab="trends"
-            />
-          </Suspense>
-        </div>
-      )}
-
       {canAdvance && (
         <div style={{ marginTop: "24px", textAlign: "center" }}>
           <button
@@ -664,7 +546,7 @@ function CompletionPhase({ engagement, updateEngagement, onAdvance, canAdvance, 
 // ═══════════════════════════════════════════════════════════════════
 // REPORTING PHASE
 // ═══════════════════════════════════════════════════════════════════
-function ReportingPhase({ engagement, updateEngagement }) {
+function ReportingPhase({ engagement, _updateEngagement }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{ padding: "24px", maxWidth: "1200px" }}>
       <div style={{ marginBottom: "24px" }}>
@@ -719,7 +601,7 @@ function ReportingPhase({ engagement, updateEngagement }) {
 // SIMPLE HELPER COMPONENTS
 // ═══════════════════════════════════════════════════════════════════
 
-function InputField({ label, value, onChange, placeholder, type = "text" }) {
+function InputField({ label, value, onChange, placeholder, type = "text" }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{ marginBottom: "12px" }}>
       <label style={{ display: "block", color: COLORS.accent, fontSize: "10px", fontWeight: 700, marginBottom: "6px", textTransform: "uppercase" }}>
@@ -745,7 +627,7 @@ function InputField({ label, value, onChange, placeholder, type = "text" }) {
   );
 }
 
-function RiskInput({ label, defaultValue, onChange }) {
+function RiskInput({ label, defaultValue, onChange }) { // eslint-disable-line no-unused-vars
   return (
     <div>
       <label style={{ display: "block", color: COLORS.accent, fontSize: "10px", fontWeight: 700, marginBottom: "6px" }}>
@@ -772,7 +654,7 @@ function RiskInput({ label, defaultValue, onChange }) {
   );
 }
 
-function FraudTriangleBox({ title, examples }) {
+function FraudTriangleBox({ title, examples }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{ background: COLORS.bg, padding: "12px", borderRadius: "6px", border: `1px solid ${COLORS.border}` }}>
       <h5 style={{ color: COLORS.accent, margin: "0 0 6px 0", fontSize: "11px" }}>{title}</h5>
@@ -781,7 +663,7 @@ function FraudTriangleBox({ title, examples }) {
   );
 }
 
-function KPIBox({ label, value, color }) {
+function KPIBox({ label, value, color }) { // eslint-disable-line no-unused-vars
   return (
     <div style={{ background: color + "12", border: `1px solid ${color}33`, borderRadius: "8px", padding: "14px" }}>
       <p style={{ color: COLORS.dim, margin: "0 0 6px 0", fontSize: "11px", fontWeight: 600 }}>{label}</p>
@@ -797,16 +679,14 @@ export default function AuditEngine() {
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
   const [viewMode, setViewMode] = useState("phase"); // phase | results | procedures | agents | documentation | extraction | dashboard | collaboration | forms | offline | integrations | activity | visual | design
   const [engagement, setEngagement] = useState(engagementStore.engagement);
-  const [financialData, setFinancialData] = useState({});
-  const [priorYearData, setPriorYearData] = useState({});
 
   // Phase A-B: New System Hooks
-  const { activeAgents, progress, isRunning, startAgents } = useAgentProgress();
-  const { status: docStatus, documents, generateDocumentation } = useDocumentGeneration();
+  const { _activeAgents, progress, _isRunning, _startAgents } = useAgentProgress();
+  const { status: _docStatus, _documents, generateDocumentation } = useDocumentGeneration();
   // Phase D: Interactive Features Hooks
-  const { isOnline, syncStatus, queueAction, syncNow } = useOfflineMode();
+  const { isOnline, _syncStatus, _queueAction, _syncNow } = useOfflineMode();
   // Phase E: Integration Hub Hooks
-  const { connections, activityLog, isIntegrating, sendSlackNotification, createGitHubIssue, sendEmailReport, uploadToAWS } = useIntegrations();
+  const { _connections, _activityLog, _isIntegrating, _sendSlackNotification, _createGitHubIssue, _sendEmailReport, _uploadToAWS } = useIntegrations();
 
   const currentPhase = PHASES[currentPhaseIndex];
   const canAdvancePhase = true; // Simplified for MVP
@@ -1113,43 +993,9 @@ export default function AuditEngine() {
           >
             🎨 Modern Design System
           </button>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginTop: "8px" }}>
-            <button
-              onClick={() => setViewMode("ipv")}
-              style={{
-                padding: "8px",
-                background: viewMode === "ipv" ? "#F5A623" + "30" : "transparent",
-                border: `1px solid ${viewMode === "ipv" ? "#F5A623" : COLORS.border}`,
-                color: viewMode === "ipv" ? "#F5A623" : COLORS.dim,
-                borderRadius: "4px",
-                fontSize: "10px",
-                fontWeight: 600,
-                cursor: "pointer"
-              }}
-            >
-              💰 IPV
-            </button>
-            <button
-              onClick={() => setViewMode("portal")}
-              style={{
-                padding: "8px",
-                background: viewMode === "portal" ? "#42A5F5" + "30" : "transparent",
-                border: `1px solid ${viewMode === "portal" ? "#42A5F5" : COLORS.border}`,
-                color: viewMode === "portal" ? "#42A5F5" : COLORS.dim,
-                borderRadius: "4px",
-                fontSize: "10px",
-                fontWeight: 600,
-                cursor: "pointer"
-              }}
-            >
-              🏢 Portal
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* RIGHT COLUMN: Content + StatusBar */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {/* MAIN CONTENT AREA */}
       <div style={{ flex: 1, overflow: "auto", background: COLORS.bg }}>
         {viewMode === "phase" ? (
@@ -1160,10 +1006,6 @@ export default function AuditEngine() {
                 updateEngagement={updateEngagement}
                 onAdvance={advancePhase}
                 canAdvance={canAdvancePhase}
-                financialData={financialData}
-                priorYearData={priorYearData}
-                onFinancialDataChange={setFinancialData}
-                onPriorYearDataChange={setPriorYearData}
               />
             )}
             {currentPhaseIndex === 1 && (
@@ -1172,31 +1014,25 @@ export default function AuditEngine() {
                 updateEngagement={updateEngagement}
                 onAdvance={advancePhase}
                 canAdvance={canAdvancePhase}
-                financialData={financialData}
-                priorYearData={priorYearData}
               />
             )}
             {currentPhaseIndex === 2 && (
-              <Suspense fallback={<PanelLoader />}>
-                <InterimPhase
-                  engagement={engagement}
-                  updateEngagement={updateEngagement}
-                  onAdvance={advancePhase}
-                  canAdvance={canAdvancePhase}
-                />
-              </Suspense>
+              <InterimPhase
+                engagement={engagement}
+                updateEngagement={updateEngagement}
+                onAdvance={advancePhase}
+                canAdvance={canAdvancePhase}
+              />
             )}
             {currentPhaseIndex === 3 && (
-              <Suspense fallback={<PanelLoader />}>
-                <FinalAuditPhase
-                  engagement={engagement}
-                  updateEngagement={updateEngagement}
-                  onAdvance={advancePhase}
-                  canAdvance={canAdvancePhase}
-                />
-              </Suspense>
+              <FinalAuditPhase
+                engagement={engagement}
+                updateEngagement={updateEngagement}
+                onAdvance={advancePhase}
+                canAdvance={canAdvancePhase}
+              />
             )}
-            {currentPhaseIndex === 4 && <CompletionPhase engagement={engagement} updateEngagement={updateEngagement} onAdvance={advancePhase} canAdvance={canAdvancePhase} financialData={financialData} priorYearData={priorYearData} />}
+            {currentPhaseIndex === 4 && <CompletionPhase engagement={engagement} updateEngagement={updateEngagement} onAdvance={advancePhase} canAdvance={canAdvancePhase} />}
             {currentPhaseIndex === 5 && <ReportingPhase engagement={engagement} updateEngagement={updateEngagement} />}
           </>
         ) : viewMode === "results" ? (
@@ -1223,79 +1059,46 @@ export default function AuditEngine() {
             />
           </div>
         ) : viewMode === "dashboard" ? (
-          <Suspense fallback={<PanelLoader />}>
-            <div style={{ padding: "24px" }}>
-              <RealTimeAuditDashboard />
-            </div>
-          </Suspense>
+          <div style={{ padding: "24px" }}>
+            <RealTimeAuditDashboard />
+          </div>
         ) : viewMode === "collaboration" ? (
-          <Suspense fallback={<PanelLoader />}>
-            <div style={{ padding: "24px", maxWidth: "1200px" }}>
-              <h2 style={{ color: "#66BB6A", marginBottom: "16px" }}>💬 Collaboration & Team Coordination</h2>
-              <CollaborationPanel />
-            </div>
-          </Suspense>
+          <div style={{ padding: "24px", maxWidth: "1200px" }}>
+            <h2 style={{ color: "#66BB6A", marginBottom: "16px" }}>💬 Collaboration & Team Coordination</h2>
+            <CollaborationPanel />
+          </div>
         ) : viewMode === "forms" ? (
-          <Suspense fallback={<PanelLoader />}>
-            <div style={{ padding: "24px", maxWidth: "1200px" }}>
-              <h2 style={{ color: "#CE93D8", marginBottom: "16px" }}>📝 Smart Audit Forms</h2>
-              <SmartAuditForms />
-            </div>
-          </Suspense>
+          <div style={{ padding: "24px", maxWidth: "1200px" }}>
+            <h2 style={{ color: "#CE93D8", marginBottom: "16px" }}>📝 Smart Audit Forms</h2>
+            <SmartAuditForms />
+          </div>
         ) : viewMode === "offline" ? (
-          <Suspense fallback={<PanelLoader />}>
-            <div style={{ padding: "24px", maxWidth: "1200px" }}>
-              <h2 style={{ color: isOnline ? "#81C784" : "#EF5350", marginBottom: "16px" }}>
-                {isOnline ? "🌐 Online Mode" : "📱 Offline Mode"}
-              </h2>
-              <OfflineModePanel />
-            </div>
-          </Suspense>
+          <div style={{ padding: "24px", maxWidth: "1200px" }}>
+            <h2 style={{ color: isOnline ? "#81C784" : "#EF5350", marginBottom: "16px" }}>
+              {isOnline ? "🌐 Online Mode" : "📱 Offline Mode"}
+            </h2>
+            <OfflineModePanel />
+          </div>
         ) : viewMode === "integrations" ? (
-          <Suspense fallback={<PanelLoader />}>
-            <div style={{ maxWidth: "1400px" }}>
-              <IntegrationHub />
-            </div>
-          </Suspense>
+          <div style={{ maxWidth: "1400px" }}>
+            <IntegrationHub />
+          </div>
         ) : viewMode === "activity" ? (
-          <Suspense fallback={<PanelLoader />}>
-            <div style={{ maxWidth: "1400px" }}>
-              <UnifiedActivityDashboard />
-            </div>
-          </Suspense>
+          <div style={{ maxWidth: "1400px" }}>
+            <UnifiedActivityDashboard />
+          </div>
         ) : viewMode === "visual" ? (
-          <Suspense fallback={<PanelLoader />}>
-            <div style={{ maxWidth: "1400px" }}>
-              <EnhancedVisualInterface />
-            </div>
-          </Suspense>
+          <div style={{ maxWidth: "1400px" }}>
+            <EnhancedVisualInterface />
+          </div>
         ) : viewMode === "extraction" ? (
-          <Suspense fallback={<PanelLoader />}>
-            <div style={{ maxWidth: "1400px" }}>
-              <DocumentUploadAndExtractionPanel engagement={engagement} />
-            </div>
-          </Suspense>
+          <div style={{ maxWidth: "1400px" }}>
+            <DocumentUploadAndExtractionPanel engagement={engagement} />
+          </div>
         ) : viewMode === "design" ? (
-          <Suspense fallback={<PanelLoader />}>
-            <ModernDesignShowcase />
-          </Suspense>
-        ) : viewMode === "ipv" ? (
-          <Suspense fallback={<PanelLoader />}>
-            <IPVDashboard engagement={engagement} updateEngagement={updateEngagement} />
-          </Suspense>
-        ) : viewMode === "portal" ? (
-          <Suspense fallback={<PanelLoader />}>
-            <ClientPortal engagement={engagement} updateEngagement={updateEngagement} />
-          </Suspense>
+          <ModernDesignShowcase />
         ) : null}
       </div>
-
-      {/* Status Bar */}
-      <StatusBar engagement={engagement} />
-      </div>
-
-      {/* Floating Agent Panel - visible on all views */}
-      <FloatingAgentPanel engagement={engagement} />
     </div>
   );
 }

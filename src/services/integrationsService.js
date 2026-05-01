@@ -155,7 +155,7 @@ Generated: ${new Date().toISOString().split('T')[0]}
    * Upload working papers to AWS S3
    */
   async uploadToAWS(bucketName, files) {
-    const uploadData = {
+    const uploadData = { // eslint-disable-line no-unused-vars
       bucket: bucketName,
       files: files.map(f => ({ key: f.name, size: f.size })),
       timestamp: new Date().toISOString(),

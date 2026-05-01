@@ -1,211 +1,295 @@
 /**
- * ACCURACY ENHANCEMENT API ROUTES
- * Express router for /api/accuracy/* endpoints.
- * All routes gated by accuracyFeatureGate middleware.
+ * AUDIT ACCURACY ENHANCEMENT API ROUTES
+ * ====================================
+ * Express routes for AAEE functionality.
+ * Exposes all accuracy enhancement features via REST API.
  */
 
-import { Router } from 'express';
-import accuracyEngine from '../services/AuditAccuracyEnhancementEngine.js';
-import {
-  accuracyFeatureGate,
-  validateAccuracyRequest,
-  accuracyRateLimit,
-} from '../middleware/AccuracyEnhancementMiddleware.js';
+import express from 'express';
+import AuditAccuracyEnhancementEngine from '../services/AuditAccuracyEnhancementEngine.js';
+import { workflowPhaseEnhancementMiddleware } from '../services/accuracy-enhancements/AccuracyEnhancementMiddleware.js';
 
-const router = Router();
+const router = express.Router();
 
-// Apply feature gate to all routes
-router.use(accuracyFeatureGate);
+// Initialize engine
+const engine = new AuditAccuracyEnhancementEngine({
+  enableConsensus: true,
+  enableAnomalyDetection: true,
+  enableConfidenceScoring: true,
+  enableXAI: true,
+  enableContinuousAssurance: true,
+  enableBlockchainEvidence: true,
+  enableFraudDetection: true,
+  enableDataQualityValidation: true,
+  enablePredictiveRisking: true,
+  enableRegulatoryUpdates: true,
+  enableSentimentAnalysis: true,
+  enableReconciliation: true,
+  enableAIProcedures: true,
+  enableDataValidation: true,
+  enableSampling: true
+});
 
-// ============================================================================
-// FULL ASSESSMENT (rate limited — runs all 7 modules)
-// ============================================================================
-
-router.post(
-  '/full-assessment',
-  accuracyRateLimit,
-  validateAccuracyRequest(['engagementId', 'data']),
-  async (req, res) => {
-    try {
-      const { engagementId, data } = req.body;
-      const result = await accuracyEngine.runFullAccuracyAssessment(engagementId, data);
-      res.json({ success: true, result, timestamp: new Date().toISOString() });
-    } catch (error) {
-      console.error('Full accuracy assessment error:', error.message);
-      res.status(500).json({ error: error.message });
-    }
-  }
-);
-
-// ============================================================================
-// INDIVIDUAL MODULE ENDPOINTS
-// ============================================================================
-
-// Mathematical accuracy (ISA 330) — pure computation, no rate limit
-router.post(
-  '/mathematical',
-  validateAccuracyRequest(['data']),
-  async (req, res) => {
-    try {
-      const result = await accuracyEngine.runMathematicalAccuracy(req.body.data);
-      res.json({ success: true, result, timestamp: new Date().toISOString() });
-    } catch (error) {
-      console.error('Mathematical accuracy error:', error.message);
-      res.status(500).json({ error: error.message });
-    }
-  }
-);
-
-// Data quality — pure computation, no rate limit
-router.post(
-  '/data-quality',
-  validateAccuracyRequest(['data']),
-  async (req, res) => {
-    try {
-      const result = await accuracyEngine.runDataQualityAssessment(req.body.data);
-      res.json({ success: true, result, timestamp: new Date().toISOString() });
-    } catch (error) {
-      console.error('Data quality error:', error.message);
-      res.status(500).json({ error: error.message });
-    }
-  }
-);
-
-// Cross-account validation (ISA 520) — no rate limit
-router.post(
-  '/cross-account',
-  validateAccuracyRequest(['data']),
-  async (req, res) => {
-    try {
-      const result = await accuracyEngine.runCrossAccountValidation(req.body.data);
-      res.json({ success: true, result, timestamp: new Date().toISOString() });
-    } catch (error) {
-      console.error('Cross-account validation error:', error.message);
-      res.status(500).json({ error: error.message });
-    }
-  }
-);
-
-// Estimate accuracy (ISA 540) — rate limited (uses OPUS)
-router.post(
-  '/estimates',
-  accuracyRateLimit,
-  validateAccuracyRequest(['estimates']),
-  async (req, res) => {
-    try {
-      const result = await accuracyEngine.runEstimateAccuracy(req.body.estimates, req.body.context || {});
-      res.json({ success: true, result, timestamp: new Date().toISOString() });
-    } catch (error) {
-      console.error('Estimate accuracy error:', error.message);
-      res.status(500).json({ error: error.message });
-    }
-  }
-);
-
-// Reconciliation (ISA 500) — no rate limit
-router.post(
-  '/reconciliation',
-  validateAccuracyRequest(['sourceA', 'sourceB']),
-  async (req, res) => {
-    try {
-      const result = await accuracyEngine.runReconciliation(
-        req.body.sourceA, req.body.sourceB, req.body.rules || {}
-      );
-      res.json({ success: true, result, timestamp: new Date().toISOString() });
-    } catch (error) {
-      console.error('Reconciliation error:', error.message);
-      res.status(500).json({ error: error.message });
-    }
-  }
-);
-
-// Sampling accuracy (ISA 530) — no rate limit
-router.post(
-  '/sampling',
-  validateAccuracyRequest(['sample', 'population']),
-  async (req, res) => {
-    try {
-      const { sample, population, ...options } = req.body;
-      const result = await accuracyEngine.runSamplingAccuracy(sample, population, options);
-      res.json({ success: true, result, timestamp: new Date().toISOString() });
-    } catch (error) {
-      console.error('Sampling accuracy error:', error.message);
-      res.status(500).json({ error: error.message });
-    }
-  }
-);
-
-// ============================================================================
-// BATCH PROCESSING (rate limited — AI calls at 50% cost)
-// ============================================================================
-
-router.post(
-  '/batch',
-  accuracyRateLimit,
-  validateAccuracyRequest(['items']),
-  async (req, res) => {
-    try {
-      const result = await accuracyEngine.runBatchAccuracyChecks(req.body.items);
-      res.json({ success: true, result, timestamp: new Date().toISOString() });
-    } catch (error) {
-      console.error('Batch accuracy check error:', error.message);
-      res.status(500).json({ error: error.message });
-    }
-  }
-);
-
-router.get('/batch/:batchId', async (req, res) => {
+/**
+ * POST /api/accuracy/enhance
+ * Run comprehensive accuracy enhancement analysis
+ */
+router.post('/enhance', async (req, res) => {
   try {
-    const results = await accuracyEngine.awaitBatchResults(req.params.batchId);
-    res.json({ success: true, results, timestamp: new Date().toISOString() });
+    const { auditData } = req.body;
+
+    if (!auditData) {
+      return res.status(400).json({ error: 'auditData is required' });
+    }
+
+    console.log('🚀 Starting comprehensive accuracy enhancement analysis...');
+    const startTime = Date.now();
+
+    const report = await engine.enhanceAuditAccuracy(auditData);
+
+    const duration = Date.now() - startTime;
+
+    res.json({
+      success: true,
+      duration: duration,
+      report: report,
+      summary: {
+        completedEnhancements: Object.keys(report).filter(k => report[k] !== null).length,
+        overallConfidence: report.overallConfidenceScore,
+        recommendations: report.recommendations.length,
+        auditTrailEntries: report.auditTrail.length
+      }
+    });
   } catch (error) {
-    console.error('Batch results error:', error.message);
+    console.error('Accuracy enhancement error:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// ============================================================================
-// MONITORING & DASHBOARD
-// ============================================================================
-
-router.get('/dashboard/:engagementId', (req, res) => {
+/**
+ * POST /api/accuracy/workflow/:phase
+ * Apply accuracy enhancements for specific audit phase
+ */
+router.post('/workflow/:phase', workflowPhaseEnhancementMiddleware(engine, ':phase'), async (req, res) => {
   try {
-    const dashboard = accuracyEngine.getAccuracyDashboard(req.params.engagementId);
-    res.json({ success: true, dashboard, timestamp: new Date().toISOString() });
+    const phase = req.params.phase.toUpperCase();
+    const { auditData, workflowState } = req.body;
+
+    if (!auditData) {
+      return res.status(400).json({ error: 'auditData is required' });
+    }
+
+    console.log(`📊 Applying ${phase} phase enhancements...`);
+
+    const integration = await engine.integrateWithWorkflow(phase, auditData, workflowState || {});
+
+    res.json({
+      success: true,
+      phase: phase,
+      enhancements: {
+        applied: integration.enhancementsApplied,
+        count: integration.enhancementsApplied.length,
+        modifiedData: integration.modifiedData
+      }
+    });
+  } catch (error) {
+    console.error('Workflow enhancement error for phase %s:', req.params.phase, error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/accuracy/planning
+ * Apply accuracy enhancements for planning phase
+ */
+router.post('/planning', async (req, res) => {
+  try {
+    const { auditData } = req.body;
+    const integration = await engine.integrateWithWorkflow('PLANNING', auditData || {}, {});
+    res.json({ success: true, phase: 'PLANNING', enhancements: integration });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-router.get('/alerts/:engagementId', (req, res) => {
+/**
+ * POST /api/accuracy/risk-assessment
+ * Apply accuracy enhancements for risk assessment phase
+ */
+router.post('/risk-assessment', async (req, res) => {
   try {
-    const alerts = accuracyEngine.getAlerts(req.params.engagementId, req.query.severity);
-    res.json({ success: true, alerts, timestamp: new Date().toISOString() });
+    const { auditData } = req.body;
+    const integration = await engine.integrateWithWorkflow('RISK_ASSESSMENT', auditData || {}, {});
+    res.json({ success: true, phase: 'RISK_ASSESSMENT', enhancements: integration });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// ============================================================================
-// STATUS & METRICS
-// ============================================================================
-
-router.get('/status', (req, res) => {
+/**
+ * POST /api/accuracy/testing
+ * Apply accuracy enhancements for testing phase
+ */
+router.post('/testing', async (req, res) => {
   try {
-    const status = accuracyEngine.getStatus();
-    res.json({ success: true, status, timestamp: new Date().toISOString() });
+    const { auditData } = req.body;
+    const integration = await engine.integrateWithWorkflow('TESTING', auditData || {}, {});
+    res.json({ success: true, phase: 'TESTING', enhancements: integration });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
+/**
+ * POST /api/accuracy/reconciliation
+ * Apply accuracy enhancements for reconciliation phase
+ */
+router.post('/reconciliation', async (req, res) => {
+  try {
+    const { auditData } = req.body;
+    const integration = await engine.integrateWithWorkflow('RECONCILIATION', auditData || {}, {});
+    res.json({ success: true, phase: 'RECONCILIATION', enhancements: integration });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/accuracy/reporting
+ * Apply accuracy enhancements for reporting phase
+ */
+router.post('/reporting', async (req, res) => {
+  try {
+    const { auditData } = req.body;
+    const integration = await engine.integrateWithWorkflow('REPORTING', auditData || {}, {});
+    res.json({ success: true, phase: 'REPORTING', enhancements: integration });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/accuracy/metrics
+ * Get enhancement metrics and statistics
+ */
 router.get('/metrics', (req, res) => {
   try {
-    const metrics = accuracyEngine.getMetrics();
-    res.json({ success: true, metrics, timestamp: new Date().toISOString() });
+    const metrics = engine.getMetrics();
+    res.json({
+      success: true,
+      metrics: metrics,
+      timestamp: new Date()
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+/**
+ * POST /api/accuracy/anomalies
+ * Detect anomalies in provided data
+ */
+router.post('/anomalies', async (req, res) => {
+  try {
+    const { auditData } = req.body;
+    const anomalies = await engine.engines.anomalyDetection.detectAnomalies(auditData || {});
+    res.json({ success: true, anomalies: anomalies });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/accuracy/fraud-detection
+ * Analyze fraud patterns
+ */
+router.post('/fraud-detection', async (req, res) => {
+  try {
+    const { auditData } = req.body;
+    const fraud = await engine.engines.fraudPatternRecognition.analyzeFraudRisks(auditData || {});
+    res.json({ success: true, fraudAnalysis: fraud });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/accuracy/data-quality
+ * Validate data quality
+ */
+router.post('/data-quality', async (req, res) => {
+  try {
+    const { auditData } = req.body;
+    const quality = await engine.engines.dataQualityValidation.validateAll(auditData || {});
+    res.json({ success: true, dataQuality: quality });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/accuracy/confidence-scores
+ * Calculate confidence scores for findings
+ */
+router.post('/confidence-scores', async (req, res) => {
+  try {
+    const { results } = req.body;
+    const scores = await engine.engines.confidenceScoring.scoreAllFindings(results || {});
+    res.json({ success: true, confidenceScores: scores });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/accuracy/consensus
+ * Perform multi-agent consensus validation
+ */
+router.post('/consensus', async (req, res) => {
+  try {
+    const { findings, threshold } = req.body;
+    const consensus = await engine.engines.consensus.validateWithConsensus(
+      findings || {},
+      threshold || 0.80
+    );
+    res.json({ success: true, consensus: consensus });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/accuracy/export
+ * Export enhancement results in specified format
+ */
+router.post('/export', async (req, res) => {
+  try {
+    const { format } = req.body;
+    const result = await engine.exportResults(format || 'json');
+
+    if (format === 'markdown') {
+      res.setHeader('Content-Type', 'text/markdown');
+      res.send(result);
+    } else {
+      res.json(JSON.parse(result));
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/accuracy/status
+ * Get system status
+ */
+router.get('/status', (req, res) => {
+  res.json({
+    success: true,
+    status: 'OPERATIONAL',
+    engine: 'AuditAccuracyEnhancementEngine v1.0',
+    enhancements: 15,
+    timestamp: new Date()
+  });
 });
 
 export default router;

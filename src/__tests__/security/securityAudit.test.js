@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect, beforeAll } from "vitest";
+import path from "path";
 
 describe("Security & Compliance Audit", () => {
   // ============================================================================
@@ -242,13 +243,14 @@ describe("Security & Compliance Audit", () => {
   describe("Compliance Documentation", () => {
     it("should have frontend API integration guide", () => {
       const fs = require("fs");
-      const docExists = fs.existsSync("./FRONTEND_API_INTEGRATION.md");
+      const docPath = path.resolve(process.cwd(), "docs/legacy/FRONTEND_API_INTEGRATION.md");
+      const docExists = fs.existsSync(docPath);
       expect(docExists).toBe(true);
     });
 
     it("should document all API endpoints", () => {
       const fs = require("fs");
-      const docContent = fs.readFileSync("./FRONTEND_API_INTEGRATION.md", "utf-8");
+      const docContent = fs.readFileSync("./docs/legacy/FRONTEND_API_INTEGRATION.md", "utf-8");
 
       expect(docContent).toContain("Authentication");
       expect(docContent).toContain("Engagements");

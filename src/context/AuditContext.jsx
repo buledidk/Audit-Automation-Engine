@@ -6,6 +6,7 @@
 
 import React, { createContext, useContext, useReducer, useCallback } from "react";
 import auditService from "../services/auditPlatformService";
+import { onAuthStateChange, getUserByAuthId, isSupabaseConfigured } from "../lib/supabaseClient";
 
 const AuditContext = createContext();
 
@@ -372,6 +373,37 @@ export function AuditProvider({ children }) {
     };
   }, []);
 
+  // Listen for Supabase auth state changes
+  React.useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+
+    const { data: { subscription } } = onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        try {
+          const dbUser = await getUserByAuthId(session.user.id);
+          if (dbUser) {
+            dispatch({ type: ACTIONS.SET_USER, payload: dbUser });
+          } else {
+            dispatch({ type: ACTIONS.SET_USER, payload: { id: session.user.id, email: session.user.email } });
+          }
+          dispatch({ type: ACTIONS.SET_AUTH_TOKEN, payload: session.access_token });
+        } catch (err) {
+          console.warn('Failed to load user profile:', err.message);
+          dispatch({ type: ACTIONS.SET_USER, payload: { id: session.user.id, email: session.user.email } });
+          dispatch({ type: ACTIONS.SET_AUTH_TOKEN, payload: session.access_token });
+        }
+      } else if (event === 'SIGNED_OUT') {
+        dispatch({ type: ACTIONS.LOGOUT });
+      } else if (event === 'TOKEN_REFRESHED' && session) {
+        dispatch({ type: ACTIONS.SET_AUTH_TOKEN, payload: session.access_token });
+      }
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, []);
+
   // Context value with actions
   const value = {
     // State
@@ -387,9 +419,16 @@ export function AuditProvider({ children }) {
       []
     ),
 
-    logout: useCallback(() => {
+    logout: useCallback(async () => {
       dispatch({ type: ACTIONS.LOGOUT });
       localStorage.removeItem("authToken");
+      localStorage.removeItem("token");
+      try {
+        const { signOut } = await import("../lib/supabaseClient");
+        await signOut();
+      } catch (e) {
+        // Ignore if Supabase not configured
+      }
     }, []),
 
     // Engagement actions

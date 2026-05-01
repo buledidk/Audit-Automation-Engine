@@ -24,7 +24,9 @@ export default defineConfig({
       branches: 75,
       statements: 80
     },
-    include: ['src/**/*.test.{js,jsx}', 'src/**/*.spec.{js,jsx}']
+    include: ['src/**/*.test.{js,jsx}', 'src/**/*.spec.{js,jsx}'],
+    fileParallelism: false,
+    testTimeout: 30000
   },
   resolve: {
     alias: {

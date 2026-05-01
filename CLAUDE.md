@@ -45,3 +45,11 @@ Supabase: AuditEngine project under Indus Nexus Limited org (PRO plan)
 - All 19 env vars configured in Vercel
 - CI: 6/6 green on main
 - Separate project: Indus-Nexus-Limited (parked, do not merge)
+
+## Connected Tools & Cross-Collaboration
+- **Vercel** — production deployment at auditengine.agency
+- **Supabase** — PostgreSQL database (project mbvjtondgunckgzrmyhq)
+- **Linear** — development issue tracking
+- **Chrome DevTools** — frontend debugging
+- **Context7** — library documentation lookup
+- **Figma** — UI design implementation

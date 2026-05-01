@@ -4,7 +4,7 @@
  * Integrates Companies House, smart search, and framework reporting
  */
 
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import documentTokenizationService from '../services/documentTokenizationService';
 import aiExtractionService from '../services/aiExtractionService';
 import companiesHouseConnector from '../services/connectors/companiesHouseConnector';

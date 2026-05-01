@@ -10,7 +10,7 @@
  * - Multi-language support
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Anthropic } from '@anthropic-ai/sdk';
 
 const AuditAssistant = ({ engagementId, currentPhase, procedureName, onGuidanceProvided }) => {
@@ -23,7 +23,7 @@ const AuditAssistant = ({ engagementId, currentPhase, procedureName, onGuidanceP
 
   // Initialize Anthropic client
   useEffect(() => {
-    clientRef.current = new Anthropic({
+    clientRef.current = new Anthropic({ dangerouslyAllowBrowser: true,
       apiKey: process.env.REACT_APP_ANTHROPIC_API_KEY,
     });
   }, []);

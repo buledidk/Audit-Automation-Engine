@@ -28,7 +28,7 @@ class SelfHealingService extends EventEmitter {
   onAgentFailure(data) {
     if (!this.autoRecoveryEnabled) return;
 
-    const { agentName, error, executionTime } = data;
+    const { agentName, error, _executionTime } = data;
 
     console.log(`🔄 Self-healing triggered for: ${agentName}`);
 

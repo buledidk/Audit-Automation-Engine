@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 /**
  * Integration Hub
@@ -7,7 +7,7 @@ import React, { useState } from 'react';
  */
 const IntegrationHub = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const [integrations, setIntegrations] = useState({
+  const [integrations, _setIntegrations] = useState({
     slack: { connected: true, messagesSent: 47, lastSyncText: '2 minutes ago', status: 'active' },
     github: { connected: true, issuesCreated: 12, lastSyncText: '5 minutes ago', status: 'active' },
     email: { connected: true, reportsSent: 8, lastSyncText: 'Just now', status: 'active' },

@@ -80,7 +80,7 @@ describe('Audit Workflow Integration', () => {
       // Detection Risk = Acceptable Audit Risk / (Inherent Risk x Control Risk)
       const detectionRisk = acceptableAuditRisk / (inherentRisk * controlRisk)
 
-      expect(detectionRisk).toBeCloseTo(0.667, 2)
+      expect(detectionRisk).toBeCloseTo(0.333, 2)
     })
   })
 

@@ -9,7 +9,7 @@ import {
   ASSERTIONS,
   PROCEDURE_STATUS,
   PROCEDURE_TRACKER,
-  EXCEPTION_EVALUATION,
+  EXCEPTION_EVALUATION, // eslint-disable-line no-unused-vars
   INDUSTRY_VARIATIONS,
   PROCEDURE_LIBRARY
 } from '../data/auditProcedureLibrary';

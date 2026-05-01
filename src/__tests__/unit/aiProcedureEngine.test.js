@@ -173,7 +173,7 @@ describe("AIProcedureEngine", () => {
     const context = {
       fsli: "Revenue",
       riskLevel: "High",
-      priorExceptions: ["Revenue cutoff", "Unbilled services"],
+      priorYearExceptions: ["Revenue cutoff", "Unbilled services"],
       industry: "SaaS",
       complexity: "High",
       materiality: 100000
@@ -299,7 +299,7 @@ More text after JSON...
       const context = {
         fsli: "Revenue",
         riskLevel: "High",
-        priorExceptions: ["Revenue cutoff"],
+        priorYearExceptions: ["Revenue cutoff"],
         industry: "Manufacturing",
         complexity: "High",
         materiality: 500000
@@ -320,7 +320,7 @@ More text after JSON...
       const context = {
         fsli: "Cash",
         riskLevel: "Low",
-        priorExceptions: [],
+        priorYearExceptions: [],
         industry: "Retail",
         complexity: "Low",
         materiality: 100000
@@ -340,7 +340,7 @@ More text after JSON...
       const context = {
         fsli: "Inventory",
         riskLevel: "High",
-        priorExceptions: ["Valuation", "Completeness"],
+        priorYearExceptions: ["Valuation", "Completeness"],
         industry: "Manufacturing",
         complexity: "Very High",
         materiality: 250000
@@ -381,9 +381,9 @@ More text after JSON...
         riskLevel: "High"
       };
 
-      expect(() => {
-        engine.suggestProcedures(context, []);
-      }).toThrow("Procedures array is required");
+      await expect(
+        engine.suggestProcedures(context, [])
+      ).rejects.toThrow("Procedures array is required");
     });
 
     it("handles null procedures array", async () => {
@@ -392,9 +392,9 @@ More text after JSON...
         riskLevel: "High"
       };
 
-      expect(() => {
-        engine.suggestProcedures(context, null);
-      }).toThrow();
+      await expect(
+        engine.suggestProcedures(context, null)
+      ).rejects.toThrow();
     });
   });
 
