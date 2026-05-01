@@ -52,3 +52,9 @@ coverage/
 # Claude Code local settings
 .claude/settings.local.json
 .vercel
+
+# Merged reference folders (separate repos/assets, not part of this repo's source)
+/automation-engine/
+/skills/
+/project-sync/
+/docs-merged/
