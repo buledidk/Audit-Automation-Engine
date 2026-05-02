@@ -1,0 +1,12 @@
+# Large data/reference files (100KB+) — static content, not application logic
+src/AuditMethodology.js
+src/StandardsLibrary.js
+src/RegulatoryData.js
+src/FRSEncyclopaedia.js
+src/IFRSEncyclopaedia.js
+src/TestingProgrammes.js
+src/ChartOfAccounts.js
+src/AuditResearch.js
+src/services/autoPopulationEngine.js
+src/CrossReferenceIndex.js
+src/ComplianceFrameworks.js
