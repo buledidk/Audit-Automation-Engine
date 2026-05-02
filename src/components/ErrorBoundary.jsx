@@ -3,19 +3,41 @@ import { Component } from "react";
 export default class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, errorId: null };
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true, error };
+    const errorId = `err_${Date.now().toString(36)}`;
+    return { hasError: true, error, errorId };
   }
 
   componentDidCatch(error, info) {
-    console.error("ErrorBoundary caught:", error, info.componentStack);
+    // Structured error report for transparency and debugging
+    const errorReport = {
+      id: this.state.errorId,
+      timestamp: new Date().toISOString(),
+      level: this.props.level || "page",
+      message: error?.message || "Unknown error",
+      stack: error?.stack?.split("\n").slice(0, 5).join("\n"),
+      componentStack: info?.componentStack?.split("\n").slice(0, 5).join("\n"),
+      url: window.location.pathname,
+      userAgent: navigator.userAgent,
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+    };
+
+    // Store in sessionStorage for support diagnostics (last 10 errors)
+    try {
+      const errors = JSON.parse(sessionStorage.getItem("ae_error_log") || "[]");
+      errors.push(errorReport);
+      if (errors.length > 10) errors.shift();
+      sessionStorage.setItem("ae_error_log", JSON.stringify(errors));
+    } catch {
+      // sessionStorage may be full or unavailable
+    }
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({ hasError: false, error: null, errorId: null });
   };
 
   render() {
@@ -39,9 +61,14 @@ export default class ErrorBoundary extends Component {
         <div style={{ fontSize: 48, marginBottom: 16 }}>
           {level === "app" ? "Something went wrong" : "Error loading section"}
         </div>
-        <p style={{ fontSize: 13, maxWidth: 500, lineHeight: 1.6, marginBottom: 20, color: "#6B7A90" }}>
+        <p style={{ fontSize: 13, maxWidth: 500, lineHeight: 1.6, marginBottom: 12, color: "#6B7A90" }}>
           {this.state.error?.message || "An unexpected error occurred."}
         </p>
+        {this.state.errorId && (
+          <p style={{ fontSize: 11, color: "#4A5568", marginBottom: 20, fontFamily: "monospace" }}>
+            Error ref: {this.state.errorId}
+          </p>
+        )}
         <div style={{ display: "flex", gap: 12 }}>
           <button
             onClick={this.handleReset}

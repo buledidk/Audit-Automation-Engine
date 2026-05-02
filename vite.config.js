@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   build: {
-    // Strip console.log/warn in production — keeps source clean, removes 879 debug statements from bundles
+    // Strip console.log/warn in production — keeps source clean, removes debug statements from bundles
     esbuild: {
       drop: ['console', 'debugger'],
     },
@@ -19,10 +19,12 @@ export default defineConfig({
     sourcemap: 'hidden',
     // Target modern browsers for smaller output
     target: 'es2022',
+    // Warn on chunks > 500KB (catches regressions)
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // Vendor chunks
+          // Vendor chunks — split heavy deps into separate cacheable files
           if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) return 'vendor-charts';
           if (id.includes('node_modules/xlsx')) return 'vendor-xlsx';
           if (id.includes('node_modules/docx')) return 'vendor-docx';
@@ -30,10 +32,12 @@ export default defineConfig({
           if (id.includes('node_modules/exceljs')) return 'vendor-exceljs';
           if (id.includes('node_modules/@radix-ui')) return 'vendor-radix';
           if (id.includes('node_modules/@supabase')) return 'vendor-supabase';
+          if (id.includes('node_modules/@anthropic-ai')) return 'vendor-anthropic';
+          if (id.includes('node_modules/lucide-react')) return 'vendor-icons';
           if (id.includes('node_modules/react-dom')) return 'vendor-react';
           if (id.includes('node_modules/react-router')) return 'vendor-react';
           if (id.includes('node_modules/react/')) return 'vendor-react';
-          // Data chunks — split large files into individual chunks to stay under 500KB
+          // Data chunks — split large reference files into lazy-loadable chunks
           if (id.includes('StandardsLibrary')) return 'data-standards-lib';
           if (id.includes('RegulatoryData')) return 'data-regulatory';
           if (id.includes('CrossReferenceIndex')) return 'data-crossref';
@@ -45,9 +49,12 @@ export default defineConfig({
           if (id.includes('AuditResearch')) return 'data-research';
           if (id.includes('FinancialModels')) return 'data-models';
           if (id.includes('ComplianceFrameworks')) return 'data-compliance';
+          if (id.includes('standardsEncyclopedia')) return 'data-standards-enc';
           // Export engine chunks
           if (id.includes('ExcelGenerator') || id.includes('WordGenerator') || id.includes('DocxExporter') || id.includes('ExportEngine') || id.includes('XlsxExporter')) return 'exporters';
-          if (id.includes('demoSeed')) return 'demo-data';
+          if (id.includes('demoSeed') || id.includes('demoAgent')) return 'demo-data';
+          // Agent chunks — keep AI agents out of main bundle
+          if (id.includes('/agents/') && !id.includes('node_modules')) return 'agents';
         },
       },
     },

@@ -125,6 +125,27 @@ const AUDIT_TRAINING_EXAMPLES = {
 };
 
 // ═══════════════════════════════════════════════════════════════════
+// STATIC SYSTEM PROMPT (Cached — 90% token savings on repeat calls)
+// ═══════════════════════════════════════════════════════════════════
+
+const AUDIT_SYSTEM_PROMPT = `You are AuditEngine AI, a UK statutory audit specialist.
+You operate within the ISA (UK) 200-810 framework (37 standards), FRS 102, Companies Act 2006, and FRC Ethical Standard 2024.
+
+Core principles:
+- Professional skepticism (ISA 200.15): Question all evidence, consider fraud risk, challenge management assertions.
+- Sufficient appropriate evidence (ISA 500): Prioritise external over internal, corroborate representations, assess reliability.
+- Materiality-driven (ISA 320): All judgments reference overall materiality, performance materiality, and trivial threshold.
+- Risk-based approach (ISA 315): Inherent risk × control risk drives detection risk and procedure design.
+- Documentation standard (ISA 230): Every output must be traceable — who, what, when, why, evidence source, conclusion.
+
+Output requirements:
+- Always cite the specific ISA (UK) paragraph (e.g. ISA 315.12, ISA 540.13).
+- Express numerical results with currency (£), percentages, and basis of calculation.
+- Flag any area where professional judgment was exercised, with reasoning documented.
+- Distinguish between facts (verified), estimates (ISA 540), and representations (ISA 580).
+- Rate confidence: HIGH (>90% evidence coverage), MEDIUM (60-90%), LOW (<60%).`;
+
+// ═══════════════════════════════════════════════════════════════════
 // CLAUDE CLIENT CLASS
 // ═══════════════════════════════════════════════════════════════════
 
@@ -139,6 +160,9 @@ class ClaudeClient {
       batchRequests: 0,
       totalInputTokens: 0,
       totalOutputTokens: 0,
+      cacheHits: 0,
+      cacheMisses: 0,
+      cachedInputTokens: 0,
     };
   }
 
@@ -176,36 +200,28 @@ class ClaudeClient {
   }) {
     this.metrics.totalRequests++;
 
-    // Inject few-shot training examples if domain specified
-    const enrichedPrompt = domain && AUDIT_TRAINING_EXAMPLES[domain]
-      ? `${AUDIT_TRAINING_EXAMPLES[domain]}\n\nNow, apply this training to the following scenario:\n\n${prompt}`
-      : prompt;
-
     // Build request parameters
     const params = {
       model,
       max_tokens: maxTokens,
-      messages: [{ role: "user", content: enrichedPrompt }],
+      messages: [{ role: "user", content: prompt }],
     };
 
-    // System prompt
-    if (system) {
-      params.system = system;
-    }
+    // ── System prompt with prompt caching ──
+    // Structure as array of content blocks so we can mark the static parts
+    // (ISA framework + training examples) as cacheable. Repeated calls with
+    // the same system prefix get a 90% input token discount.
+    params.system = this._buildCachedSystemPrompt(system, domain);
 
     // Thinking configuration
     if (thinking) {
       this.metrics.thinkingRequests++;
       if (budgetTokens) {
-        // Explicit budget — use enabled mode with budget_tokens
         params.thinking = { type: "enabled", budget_tokens: budgetTokens };
       } else {
-        // Adaptive thinking — model decides how much to think
         params.thinking = { type: "enabled", budget_tokens: this._getDefaultBudget(effort) };
       }
-      // Temperature must not be set (or set to 1) when thinking is enabled
     } else {
-      // No thinking — use temperature normally
       if (temperature !== undefined) {
         params.temperature = temperature;
       }
@@ -219,10 +235,17 @@ class ClaudeClient {
     // Make the API call
     const response = await this.client.messages.create(params);
 
-    // Track usage
+    // Track usage including cache metrics
     if (response.usage) {
       this.metrics.totalInputTokens += response.usage.input_tokens || 0;
       this.metrics.totalOutputTokens += response.usage.output_tokens || 0;
+      if (response.usage.cache_read_input_tokens) {
+        this.metrics.cacheHits++;
+        this.metrics.cachedInputTokens += response.usage.cache_read_input_tokens;
+      }
+      if (response.usage.cache_creation_input_tokens) {
+        this.metrics.cacheMisses++;
+      }
     }
 
     // Parse response — handle both thinking and non-thinking formats
@@ -310,6 +333,42 @@ class ClaudeClient {
   // ─────────────────────────────────────────────────────────────────
 
   /**
+   * Build a structured system prompt with cache_control markers.
+   * Static audit framework and training examples are cached (90% savings).
+   * Dynamic per-request system instructions are appended uncached.
+   * @private
+   */
+  _buildCachedSystemPrompt(userSystem, domain) {
+    const blocks = [];
+
+    // Block 1: Static ISA audit framework (cached across all requests)
+    blocks.push({
+      type: "text",
+      text: AUDIT_SYSTEM_PROMPT,
+      cache_control: { type: "ephemeral" },
+    });
+
+    // Block 2: Domain-specific training examples (cached per domain)
+    if (domain && AUDIT_TRAINING_EXAMPLES[domain]) {
+      blocks.push({
+        type: "text",
+        text: `\n\n${AUDIT_TRAINING_EXAMPLES[domain]}\n\nApply this training to the following scenario.`,
+        cache_control: { type: "ephemeral" },
+      });
+    }
+
+    // Block 3: Per-request system instructions (not cached — changes each call)
+    if (userSystem) {
+      blocks.push({
+        type: "text",
+        text: userSystem,
+      });
+    }
+
+    return blocks;
+  }
+
+  /**
    * Parse a Claude API response, extracting thinking and text blocks.
    * @private
    */
@@ -328,7 +387,9 @@ class ClaudeClient {
     return {
       text: outputText,
       thinking: thinkingText,
+      model: response.model || null,
       usage: response.usage || null,
+      stopReason: response.stop_reason || null,
     };
   }
 
@@ -364,6 +425,103 @@ class ClaudeClient {
     }
   }
 
+  // ─────────────────────────────────────────────────────────────────
+  // ACCURACY VALIDATION — Verify AI output quality before use
+  // ─────────────────────────────────────────────────────────────────
+
+  /**
+   * Validate an AI response for accuracy, completeness, and ISA compliance.
+   * Returns a validation report with confidence score and any flags.
+   *
+   * @param {string} text - The AI-generated text to validate
+   * @param {Object} [context] - Optional engagement context for cross-checks
+   * @returns {{ confidence: number, flags: string[], isaRefs: string[], numericalValues: Object[], complete: boolean }}
+   */
+  validateResponse(text, context = {}) {
+    const flags = [];
+
+    // 1. ISA citation check — every audit output should reference standards
+    const isaRefs = (text.match(/ISA\s*\(?UK\)?\s*\d{3}(?:\.\d+)?/gi) || []);
+    const uniqueRefs = [...new Set(isaRefs)];
+    if (uniqueRefs.length === 0) {
+      flags.push("NO_ISA_CITATION: Output lacks ISA (UK) standard references");
+    }
+
+    // 2. Validate known ISA numbers (200-810 range)
+    const VALID_ISA_RANGE = { min: 200, max: 810 };
+    for (const ref of uniqueRefs) {
+      const num = parseInt(ref.match(/\d{3}/)?.[0] || "0");
+      if (num < VALID_ISA_RANGE.min || num > VALID_ISA_RANGE.max) {
+        flags.push(`INVALID_ISA_REF: ${ref} is outside valid ISA range (200-810)`);
+      }
+    }
+
+    // 3. Numerical cross-checks — extract monetary values and percentages
+    const monetaryValues = (text.match(/£[\d,.]+[KMBkmb]?/g) || []).map(v => ({
+      raw: v,
+      value: this._parseMonetaryValue(v),
+    }));
+    const percentages = (text.match(/\d+\.?\d*\s*%/g) || []).map(p => ({
+      raw: p,
+      value: parseFloat(p),
+    }));
+
+    // 4. Check for percentage sanity (nothing > 100% unless valid context)
+    for (const pct of percentages) {
+      if (pct.value > 100 && !text.includes("coverage") && !text.includes("growth")) {
+        flags.push(`PERCENTAGE_ANOMALY: ${pct.raw} exceeds 100% — verify calculation`);
+      }
+    }
+
+    // 5. Materiality cross-check if context provides financials
+    if (context.revenue && monetaryValues.length > 0) {
+      const materialityValues = monetaryValues.filter(v =>
+        v.value > 0 && v.value < context.revenue * 0.1
+      );
+      if (materialityValues.length === 0 && text.toLowerCase().includes("materiality")) {
+        flags.push("MATERIALITY_RANGE: No materiality value falls within expected range (0.5-10% of revenue)");
+      }
+    }
+
+    // 6. Completeness checks
+    const hasConclusion = /conclusion|opinion|result|recommend/i.test(text);
+    const hasEvidence = /evidence|source|document|confirm/i.test(text);
+
+    if (!hasConclusion) flags.push("INCOMPLETE: Missing conclusion or recommendation");
+    if (!hasEvidence) flags.push("INCOMPLETE: Missing evidence reference");
+    if (!/risk|inherent|control|detection/i.test(text)) flags.push("INCOMPLETE: Missing risk assessment reference");
+
+    // 7. Compute confidence score
+    const baseConfidence = 1.0;
+    const penalty = flags.length * 0.12;
+    const boost = uniqueRefs.length * 0.03;
+    const confidence = Math.max(0.1, Math.min(1.0, baseConfidence - penalty + boost));
+
+    return {
+      confidence: Math.round(confidence * 100) / 100,
+      confidenceLabel: confidence >= 0.85 ? "HIGH" : confidence >= 0.6 ? "MEDIUM" : "LOW",
+      flags,
+      isaReferences: uniqueRefs,
+      numericalValues: { monetary: monetaryValues, percentages },
+      complete: hasConclusion && hasEvidence,
+      humanReviewRequired: confidence < 0.7 || flags.length > 2,
+    };
+  }
+
+  /**
+   * Parse a monetary string like "£500K" or "£1.2M" to a number.
+   * @private
+   */
+  _parseMonetaryValue(str) {
+    const cleaned = str.replace(/[£,]/g, "");
+    const multipliers = { k: 1_000, m: 1_000_000, b: 1_000_000_000 };
+    const suffix = cleaned.slice(-1).toLowerCase();
+    if (multipliers[suffix]) {
+      return parseFloat(cleaned.slice(0, -1)) * multipliers[suffix];
+    }
+    return parseFloat(cleaned) || 0;
+  }
+
   /**
    * Get available audit training domains for few-shot prompts.
    */
@@ -375,7 +533,12 @@ class ClaudeClient {
    * Get client metrics.
    */
   getMetrics() {
-    return { ...this.metrics };
+    const total = this.metrics.cacheHits + this.metrics.cacheMisses;
+    return {
+      ...this.metrics,
+      cacheHitRate: total > 0 ? ((this.metrics.cacheHits / total) * 100).toFixed(1) + "%" : "N/A",
+      estimatedSavings: `£${((this.metrics.cachedInputTokens / 1_000_000) * 2.7).toFixed(2)}`,
+    };
   }
 
   /**

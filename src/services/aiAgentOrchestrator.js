@@ -204,10 +204,25 @@ class AIAgentOrchestrator {
           tokensUsed: result.tokensUsed || 0,
           costUsd: result.costUsd || 0,
           success: true
-        }).catch(err => console.warn('⚠️ Quality assessment error:', err));
+        }).catch(err => console.warn('Quality assessment error:', err));
       }
 
-      console.log(`   ✅ Success (${latency}ms)`);
+      // 6. TRANSPARENCY — Log AI provenance to audit trail (ISA 230)
+      this._logAIProvenance({
+        requestId,
+        engagementId: request.engagementId,
+        requestType: request.type,
+        agentName: agentName || request.type,
+        model: result?.model || "claude-sonnet-4-6",
+        latencyMs: latency,
+        inputTokens: result?.usage?.input_tokens || 0,
+        outputTokens: result?.usage?.output_tokens || 0,
+        cacheHit: !!(result?.usage?.cache_read_input_tokens),
+        confidence: result?.confidence || result?.overallConfidence || null,
+        isaReferences: this._extractISAReferences(result),
+        success: true,
+      });
+
       return result;
     } catch (error) {
       const latency = Date.now() - startTime;
@@ -473,6 +488,90 @@ class AIAgentOrchestrator {
       'METHODOLOGY_SUITE': 'SmartProceduresEngine'
     };
     return mapping[requestType] || null;
+  }
+
+  /**
+   * LOG AI PROVENANCE — Full transparency chain (ISA 230 compliance)
+   * Every AI-generated output is logged with: model, tokens, latency,
+   * cache status, confidence, and ISA references cited.
+   * @private
+   */
+  _logAIProvenance(entry) {
+    const provenanceRecord = {
+      id: entry.requestId,
+      timestamp: new Date().toISOString(),
+      engagementId: entry.engagementId,
+      agent: entry.agentName,
+      requestType: entry.requestType,
+      model: entry.model,
+      latencyMs: entry.latencyMs,
+      tokens: {
+        input: entry.inputTokens,
+        output: entry.outputTokens,
+        cacheHit: entry.cacheHit,
+      },
+      confidence: entry.confidence,
+      isaReferences: entry.isaReferences,
+      success: entry.success,
+      // ISA 230 traceability: who can review this AI output
+      reviewable: true,
+      humanApprovalRequired: entry.confidence === null || entry.confidence < 0.7,
+    };
+
+    // Store in provenance log (append-only)
+    if (!this._provenanceLog) this._provenanceLog = [];
+    this._provenanceLog.push(provenanceRecord);
+
+    // Keep last 1000 entries in memory
+    if (this._provenanceLog.length > 1000) {
+      this._provenanceLog = this._provenanceLog.slice(-1000);
+    }
+  }
+
+  /**
+   * Extract ISA (UK) references from AI output for traceability.
+   * Scans result text for patterns like "ISA 315", "ISA (UK) 540.13"
+   * @private
+   */
+  _extractISAReferences(result) {
+    if (!result) return [];
+    const text = typeof result === "string" ? result : JSON.stringify(result);
+    const matches = text.match(/ISA\s*\(?UK\)?\s*\d{3}(?:\.\d+)?/gi) || [];
+    return [...new Set(matches)].slice(0, 20);
+  }
+
+  /**
+   * Get AI provenance log for an engagement (transparency reporting).
+   */
+  getProvenanceLog(engagementId) {
+    if (!this._provenanceLog) return [];
+    if (!engagementId) return this._provenanceLog;
+    return this._provenanceLog.filter(e => e.engagementId === engagementId);
+  }
+
+  /**
+   * Get AI transparency summary for audit committee reporting.
+   */
+  getTransparencySummary(engagementId) {
+    const log = this.getProvenanceLog(engagementId);
+    if (log.length === 0) return { totalAICalls: 0 };
+
+    const totalTokens = log.reduce((sum, e) => sum + e.tokens.input + e.tokens.output, 0);
+    const cacheHits = log.filter(e => e.tokens.cacheHit).length;
+    const lowConfidence = log.filter(e => e.humanApprovalRequired);
+    const allRefs = log.flatMap(e => e.isaReferences);
+    const uniqueRefs = [...new Set(allRefs)];
+
+    return {
+      totalAICalls: log.length,
+      totalTokens,
+      cacheHitRate: log.length > 0 ? ((cacheHits / log.length) * 100).toFixed(1) + "%" : "0%",
+      avgLatencyMs: Math.round(log.reduce((s, e) => s + e.latencyMs, 0) / log.length),
+      modelsUsed: [...new Set(log.map(e => e.model))],
+      isaStandardsCited: uniqueRefs,
+      lowConfidenceItems: lowConfidence.length,
+      humanReviewRequired: lowConfidence.length,
+    };
   }
 }
 

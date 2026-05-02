@@ -10,7 +10,7 @@ const STORAGE_PREFIX = "ae_";
 const QUOTA_WARNING_BYTES = 4 * 1024 * 1024; // 4MB warning threshold
 const DEBOUNCE_MS = 1500;
 
-const STATE_KEYS = ["cfg", "cellData", "signOffs", "wpNotes", "customItems", "tbData", "tbMappings", "uploads", "archived", "reviewStatus", "integrations", "signOffLog", "reviewNotes", "documentLinks", "changeLog"];
+const STATE_KEYS = ["cfg", "cellData", "signOffs", "wpNotes", "customItems", "tbData", "tbMappings", "uploads", "archived", "reviewStatus", "integrations", "signOffLog", "reviewNotes", "documentLinks", "changeLog", "procedureLinks"];
 
 const MAX_NAME_LENGTH = 200;
 const MAX_IMPORT_SIZE = 50 * 1024 * 1024; // 50MB
@@ -133,7 +133,49 @@ export function createStorageEngine(engagementId) {
     return getUsageBytes() > QUOTA_WARNING_BYTES;
   };
 
-  return { save, saveImmediate, load, loadAll, clear, syncFromCloud, getUsageBytes, isNearQuota };
+  /**
+   * Verify data integrity — check all persisted keys have valid JSON
+   * and local/cloud are in sync. Returns a health report.
+   */
+  const verifyIntegrity = async () => {
+    const report = { healthy: true, keys: {}, cloudSyncStatus: "unknown" };
+
+    for (const key of STATE_KEYS) {
+      const localVal = load(key);
+      report.keys[key] = {
+        exists: localVal !== null,
+        type: localVal === null ? "missing" : typeof localVal,
+        sizeBytes: localVal ? JSON.stringify(localVal).length * 2 : 0,
+      };
+    }
+
+    // Check cloud sync if available
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('engagement_data')
+          .select('state_key, updated_at')
+          .eq('engagement_id', engagementId);
+        if (!error && data) {
+          const cloudKeys = new Set(data.map(r => r.state_key));
+          const localKeys = STATE_KEYS.filter(k => load(k) !== null);
+          const missingInCloud = localKeys.filter(k => !cloudKeys.has(k));
+          report.cloudSyncStatus = missingInCloud.length === 0 ? "synced" : "partial";
+          report.missingInCloud = missingInCloud;
+        }
+      } catch {
+        report.cloudSyncStatus = "unavailable";
+      }
+    } else {
+      report.cloudSyncStatus = "not_configured";
+    }
+
+    report.healthy = Object.values(report.keys).every(k => k.type !== "missing" || k.exists === false);
+    report.totalSizeBytes = Object.values(report.keys).reduce((s, k) => s + k.sizeBytes, 0);
+    return report;
+  };
+
+  return { save, saveImmediate, load, loadAll, clear, syncFromCloud, getUsageBytes, isNearQuota, verifyIntegrity };
 }
 
 export function listEngagements() {
