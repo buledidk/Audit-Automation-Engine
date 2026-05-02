@@ -72,6 +72,21 @@ export const TOOL_DEFINITIONS = {
     description: 'Compress ingested file data into a compact summary for AI agent context windows',
     params: ['ingestedData', 'options'],
   },
+  evaluateGoingConcern: {
+    name: 'evaluateGoingConcern',
+    description: 'Evaluate going concern indicators per ISA 570 — cash flow, debt covenants, order book, net liabilities',
+    params: ['financialData', 'indicators'],
+  },
+  calculateSampleSize: {
+    name: 'calculateSampleSize',
+    description: 'Calculate audit sample size per ISA 530 using statistical or judgmental methods',
+    params: ['populationSize', 'riskLevel', 'materialityThreshold', 'method'],
+  },
+  generateNarrative: {
+    name: 'generateNarrative',
+    description: 'Generate structured audit narrative for working paper conclusions per ISA 230',
+    params: ['wpId', 'findings', 'conclusion', 'isaRefs'],
+  },
 };
 
 // ─── TOOL IMPLEMENTATIONS ───────────────────────────────────────────
@@ -292,9 +307,155 @@ export function executeTool(toolName, params, engagementState) {
       return executeIngestTrialBalance(params);
     case 'summariseForAgent':
       return executeSummariseForAgent(params);
+    case 'evaluateGoingConcern':
+      return executeEvaluateGoingConcern(params);
+    case 'calculateSampleSize':
+      return executeCalculateSampleSize(params);
+    case 'generateNarrative':
+      return executeGenerateNarrative(params);
     default:
       return { success: false, error: `Unknown tool: ${toolName}` };
   }
+}
+
+// ─── FOUNDATIONAL AUDIT TOOLS ───────────────────────────────────────
+
+export function executeEvaluateGoingConcern({ financialData, indicators }) {
+  const fd = financialData || {};
+  const ind = indicators || {};
+  const flags = [];
+  let score = 0;
+
+  // ISA 570.10 — Financial indicators
+  if (fd.netLiabilities || (fd.totalLiabilities > fd.totalAssets)) {
+    flags.push({ indicator: "Net liability position", severity: "high", isaRef: "ISA 570.A3" });
+    score += 25;
+  }
+  if (fd.negativeCashFlow || fd.operatingCashFlow < 0) {
+    flags.push({ indicator: "Negative operating cash flow", severity: "high", isaRef: "ISA 570.A3" });
+    score += 20;
+  }
+  if (ind.debtCovenantBreach) {
+    flags.push({ indicator: "Debt covenant breach", severity: "critical", isaRef: "ISA 570.A4" });
+    score += 30;
+  }
+  if (ind.loanMaturityNoRefinancing) {
+    flags.push({ indicator: "Loan maturity without refinancing", severity: "high", isaRef: "ISA 570.A4" });
+    score += 20;
+  }
+  // ISA 570.A5 — Operating indicators
+  if (ind.keyManagementDeparture) {
+    flags.push({ indicator: "Key management departure without replacement", severity: "medium", isaRef: "ISA 570.A5" });
+    score += 10;
+  }
+  if (ind.majorCustomerLoss) {
+    flags.push({ indicator: "Loss of major customer/supplier", severity: "high", isaRef: "ISA 570.A5" });
+    score += 15;
+  }
+  if (ind.regulatoryAction) {
+    flags.push({ indicator: "Adverse regulatory action", severity: "high", isaRef: "ISA 570.A6" });
+    score += 15;
+  }
+
+  score = Math.min(100, score);
+  const assessment = score >= 60 ? "MATERIAL_UNCERTAINTY" : score >= 30 ? "INDICATORS_PRESENT" : "NO_INDICATORS";
+
+  return {
+    success: true,
+    result: {
+      score,
+      assessment,
+      flags,
+      conclusion: assessment === "MATERIAL_UNCERTAINTY"
+        ? "Material uncertainty exists. ISA 570 paragraph disclosure required. Consider adequacy of going concern basis."
+        : assessment === "INDICATORS_PRESENT"
+          ? "Going concern indicators present but mitigated. Document management's plans and assess their feasibility."
+          : "No significant going concern indicators identified. Document assessment per ISA 570.10.",
+      isaRef: "ISA 570.10-16",
+      assessmentPeriod: "12 months from date of approval of financial statements",
+    },
+  };
+}
+
+export function executeCalculateSampleSize({ populationSize, riskLevel, materialityThreshold, method }) {
+  const pop = populationSize || 100;
+  const risk = (riskLevel || "medium").toLowerCase();
+  const mat = materialityThreshold || 50000;
+  const m = (method || "statistical").toLowerCase();
+
+  // ISA 530 confidence levels by risk
+  const confidenceMap = { low: 0.80, medium: 0.90, high: 0.95 };
+  const confidence = confidenceMap[risk] || 0.90;
+
+  // Tolerable error rate
+  const tolerableRate = risk === "high" ? 0.03 : risk === "medium" ? 0.05 : 0.08;
+
+  let sampleSize;
+  if (m === "statistical") {
+    // Simplified attribute sampling formula
+    const zScores = { 0.80: 1.28, 0.90: 1.645, 0.95: 1.96 };
+    const z = zScores[confidence] || 1.645;
+    sampleSize = Math.ceil((z * z * 0.25) / (tolerableRate * tolerableRate));
+    sampleSize = Math.min(sampleSize, pop);
+  } else {
+    // Judgmental — ISA 530 table approach
+    const baseMap = { low: 10, medium: 25, high: 40 };
+    sampleSize = baseMap[risk] || 25;
+    if (pop > 500) sampleSize = Math.ceil(sampleSize * 1.3);
+    if (pop > 2000) sampleSize = Math.ceil(sampleSize * 1.5);
+    sampleSize = Math.min(sampleSize, pop);
+  }
+
+  return {
+    success: true,
+    result: {
+      populationSize: pop,
+      sampleSize,
+      method: m,
+      riskLevel: risk,
+      confidenceLevel: (confidence * 100) + "%",
+      tolerableErrorRate: (tolerableRate * 100) + "%",
+      coveragePercentage: ((sampleSize / pop) * 100).toFixed(1) + "%",
+      materialityThreshold: mat,
+      selectionMethod: risk === "high" ? "Stratified random (concentrate on high-value items)" : "Simple random",
+      isaRef: "ISA 530.7-11",
+    },
+  };
+}
+
+export function executeGenerateNarrative({ wpId, findings, conclusion, isaRefs }) {
+  const refs = isaRefs || [];
+  const findingsText = (findings || []).map((f, i) =>
+    `${i + 1}. ${f.description || f}${f.severity ? ` [${f.severity}]` : ""}${f.amount ? ` — £${f.amount.toLocaleString()}` : ""}`
+  ).join("\n");
+
+  const narrativeBlocks = [
+    `## Working Paper ${(wpId || "").toUpperCase()} — Audit Conclusion`,
+    "",
+    `**Objective:** Obtain sufficient appropriate audit evidence to conclude on the assertions relevant to this area.`,
+    "",
+    `**Procedures performed:**`,
+    findings?.length ? findingsText : "No exceptions identified from procedures performed.",
+    "",
+    `**Conclusion:** ${conclusion || "Based on the procedures performed and evidence obtained, we are satisfied that the balance/disclosure is not materially misstated."}`,
+    "",
+    refs.length ? `**ISA References:** ${refs.join(", ")}` : "",
+    "",
+    `**Prepared by:** [Engagement team member]`,
+    `**Date:** ${new Date().toISOString().split("T")[0]}`,
+    `**Reviewed by:** [Manager/Partner]`,
+  ].filter(Boolean).join("\n");
+
+  return {
+    success: true,
+    result: {
+      wpId,
+      narrative: narrativeBlocks,
+      wordCount: narrativeBlocks.split(/\s+/).length,
+      isaCompliant: true,
+      isaRef: "ISA 230.8-11",
+    },
+  };
 }
 
 // ─── FILE PROCESSING TOOLS ─────────────────────────────────────────

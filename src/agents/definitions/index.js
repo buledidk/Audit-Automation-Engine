@@ -1,14 +1,16 @@
 // ═══════════════════════════════════════════════════════════════
 // Agent Definitions Index — Registry of all available agents
+// 26 agents across 4 categories: Core, Analytical, Operational, Foundational
 // ═══════════════════════════════════════════════════════════════
 
+// Core audit workflow agents (5)
 import { planningAgent } from './planningAgent.js';
 import { riskAssessmentAgent } from './riskAssessmentAgent.js';
 import { testingAgent } from './testingAgent.js';
 import { completionAgent } from './completionAgent.js';
 import { reviewAgent } from './reviewAgent.js';
 
-// Financial Analysis & Specialist Agents
+// Financial analysis & specialist agents (8)
 import { solvencyGoingConcernAgent } from './solvencyGoingConcernAgent.js';
 import { capitalGearingAgent } from './capitalGearingAgent.js';
 import { investorRatiosAgent } from './investorRatiosAgent.js';
@@ -18,15 +20,32 @@ import { fraudRiskAgent } from './fraudRiskAgent.js';
 import { regressionPredictiveAgent } from './regressionPredictiveAgent.js';
 import { estimationValuationAgent } from './estimationValuationAgent.js';
 
+// Foundational audit lifecycle agents (4)
+import { materialityAgent } from './materialityAgent.js';
+import { samplingAgent } from './samplingAgent.js';
+import { goingConcernAgent } from './goingConcernAgent.js';
+import { documentationAgent } from './documentationAgent.js';
+
+// Operational agents — previously unregistered (9)
+import { deadlineAgent } from './deadlineAgent.js';
+import { evidenceCorroborationAgent } from './evidenceCorroborationAgent.js';
+import { evidenceLinkerAgent } from './evidenceLinkerAgent.js';
+import { humanInterfaceAgent } from './humanInterfaceAgent.js';
+import { learningAgent } from './learningAgent.js';
+import { narrativeWriterAgent } from './narrativeWriterAgent.js';
+import { orchestratorAgent } from './orchestratorAgent.js';
+import { qualityGuardianAgent } from './qualityGuardianAgent.js';
+import { riskIntelligenceAgent } from './riskIntelligenceAgent.js';
+
 export const AGENT_DEFINITIONS = {
-  // Core audit workflow agents
+  // ── Core audit workflow (5) ────────────────────────────────────
   planning: planningAgent,
   riskAssessment: riskAssessmentAgent,
   testing: testingAgent,
   completion: completionAgent,
   review: reviewAgent,
 
-  // Financial analysis & specialist agents
+  // ── Financial analysis & specialist (8) ────────────────────────
   solvencyGoingConcern: solvencyGoingConcernAgent,
   capitalGearing: capitalGearingAgent,
   investorRatios: investorRatiosAgent,
@@ -35,6 +54,23 @@ export const AGENT_DEFINITIONS = {
   fraudRisk: fraudRiskAgent,
   regressionPredictive: regressionPredictiveAgent,
   estimationValuation: estimationValuationAgent,
+
+  // ── Foundational audit lifecycle (4) ────────────────────────────
+  materiality: materialityAgent,
+  sampling: samplingAgent,
+  goingConcern: goingConcernAgent,
+  documentation: documentationAgent,
+
+  // ── Operational agents (9) ─────────────────────────────────────
+  deadline: deadlineAgent,
+  evidenceCorroboration: evidenceCorroborationAgent,
+  evidenceLinker: evidenceLinkerAgent,
+  humanInterface: humanInterfaceAgent,
+  learning: learningAgent,
+  narrativeWriter: narrativeWriterAgent,
+  orchestrator: orchestratorAgent,
+  qualityGuardian: qualityGuardianAgent,
+  riskIntelligence: riskIntelligenceAgent,
 };
 
 // Convenience groupings
@@ -55,4 +91,23 @@ export const ANALYTICAL_AGENTS = {
   fraudRisk: fraudRiskAgent,
   regressionPredictive: regressionPredictiveAgent,
   estimationValuation: estimationValuationAgent,
+};
+
+export const FOUNDATIONAL_AGENTS = {
+  materiality: materialityAgent,
+  sampling: samplingAgent,
+  goingConcern: goingConcernAgent,
+  documentation: documentationAgent,
+};
+
+export const OPERATIONAL_AGENTS = {
+  deadline: deadlineAgent,
+  evidenceCorroboration: evidenceCorroborationAgent,
+  evidenceLinker: evidenceLinkerAgent,
+  humanInterface: humanInterfaceAgent,
+  learning: learningAgent,
+  narrativeWriter: narrativeWriterAgent,
+  orchestrator: orchestratorAgent,
+  qualityGuardian: qualityGuardianAgent,
+  riskIntelligence: riskIntelligenceAgent,
 };
