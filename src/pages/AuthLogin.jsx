@@ -1,27 +1,52 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { isSupabaseConfigured } from "../lib/supabaseClient";
 
 export default function AuthLogin() {
   const navigate = useNavigate();
+  const { login, register } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firmName, setFirmName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [mode, setMode] = useState("login"); // login | magic | register
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Supabase Auth integration placeholder — for now, just navigate to dashboard
-    setTimeout(() => {
-      setLoading(false);
-      if (mode === "magic") {
-        setSent(true);
-      } else {
+    setError(null);
+
+    // Dev mode: if Supabase isn't configured, allow pass-through
+    if (!isSupabaseConfigured()) {
+      navigate("/");
+      return;
+    }
+
+    try {
+      if (mode === "login") {
+        await login(email, password);
         navigate("/");
+      } else if (mode === "register") {
+        await register(email, password, { firm_name: firmName });
+        setSent(true); // Supabase sends confirmation email
+      } else if (mode === "magic") {
+        // Magic link — use Supabase signInWithOtp
+        const { default: supabase } = await import("../lib/supabaseClient");
+        if (supabase) {
+          const { error: otpError } = await supabase.auth.signInWithOtp({ email });
+          if (otpError) throw otpError;
+        }
+        setSent(true);
       }
-    }, 800);
+    } catch (err) {
+      setError(err.message || "Authentication failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -98,12 +123,18 @@ export default function AuthLogin() {
                   </div>
                 )}
 
+                {error && (
+                  <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+                    {error}
+                  </div>
+                )}
+
                 {mode === "register" && (
                   <div className="space-y-2">
                     <Label>Firm Name</Label>
                     <div className="relative">
                       <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                      <Input placeholder="Your Firm LLP" className="pl-10" />
+                      <Input placeholder="Your Firm LLP" className="pl-10" value={firmName} onChange={(e) => setFirmName(e.target.value)} />
                     </div>
                   </div>
                 )}

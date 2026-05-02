@@ -241,8 +241,11 @@ export function FinancialAnalysisDashboard({
 
   // Ensure activeTab stays valid when entity type changes
   useEffect(() => {
-    if (!availableTabs.includes(activeTab)) {
-      setActiveTab(availableTabs[0] || "overview");
+    const isValid = availableTabs.includes(activeTab);
+    if (!isValid) {
+      // Deferred state update to avoid cascading renders in effect
+      const id = requestAnimationFrame(() => setActiveTab(availableTabs[0] || "overview"));
+      return () => cancelAnimationFrame(id);
     }
   }, [availableTabs, activeTab]);
 
@@ -252,7 +255,8 @@ export function FinancialAnalysisDashboard({
       return;
     }
 
-    try {
+    // Use microtask to avoid synchronous setState cascade within effect
+    const run = () => { try {
       setError(null);
 
       // Core analysis
@@ -295,7 +299,8 @@ export function FinancialAnalysisDashboard({
       onAnalysisComplete(result);
     } catch (err) {
       setError(err.message || "Financial analysis failed");
-    }
+    } };
+    run();
   }, [financialData, priorYearData, entityType, sector, sicCode, companyNumber, entityName, engine, onAnalysisComplete]);
 
   /* ── Alert counts by severity ── */

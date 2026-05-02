@@ -28,7 +28,7 @@ export function useEventBus() {
  */
 export function useEventSubscription(type, cb) {
   const cbRef = useRef(cb);
-  cbRef.current = cb;
+  useEffect(() => { cbRef.current = cb; });
 
   useEffect(() => {
     const handler = (event) => cbRef.current(event);
@@ -43,7 +43,7 @@ export function useEventSubscription(type, cb) {
  */
 export function useWildcardSubscription(cb) {
   const cbRef = useRef(cb);
-  cbRef.current = cb;
+  useEffect(() => { cbRef.current = cb; });
 
   useEffect(() => {
     const handler = (event) => cbRef.current(event);

@@ -1,5 +1,6 @@
-import { useParams, NavLink } from "react-router-dom";
+import { useParams, NavLink, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import {
   LayoutDashboard, Briefcase, Users, BarChart3, ShieldCheck, // eslint-disable-line no-unused-vars
   GanttChart, Globe, Settings, ChevronLeft, ChevronRight, Bell,
@@ -29,6 +30,7 @@ const ENGAGEMENT_NAV = (engId) => [
 
 export default function AppLayout() {
   const params = useParams();
+  const { isAuthenticated, loading, user, logout } = useAuth();
   const engId = params.engId; // legacy route
   const engagementId = params.id; // new unified route (EngagementShell handles its own sidebar)
   const [collapsed, setCollapsed] = useState(false);
@@ -38,6 +40,18 @@ export default function AppLayout() {
   useEffect(() => {
     setTimeout(() => { setMobileOpen(false); }, 0);
   }, [engId]);
+
+  // Auth gate — redirect to login if not authenticated
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-ae-bg flex items-center justify-center">
+        <div className="text-slate-400 text-sm">Loading...</div>
+      </div>
+    );
+  }
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
 
   const sidebarWidth = collapsed ? 64 : 260;
 
@@ -108,20 +122,20 @@ export default function AppLayout() {
         {!collapsed ? (
           <div className="flex items-center gap-3 px-2">
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs">JP</AvatarFallback>
+              <AvatarFallback className="text-xs">{(user?.email || "U")[0].toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-medium text-white truncate">James Parker</div>
-              <Badge variant="default" className="text-[8px] px-1.5 py-0 h-4 mt-0.5">Partner</Badge>
+              <div className="text-xs font-medium text-white truncate">{user?.user_metadata?.firm_name || user?.email || "User"}</div>
+              <Badge variant="default" className="text-[8px] px-1.5 py-0 h-4 mt-0.5">{user?.user_metadata?.role || "Auditor"}</Badge>
             </div>
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-slate-300">
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-slate-300" onClick={logout}>
               <LogOut className="h-3.5 w-3.5" />
             </Button>
           </div>
         ) : (
           <div className="flex justify-center">
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs">JP</AvatarFallback>
+              <AvatarFallback className="text-xs">{(user?.email || "U")[0].toUpperCase()}</AvatarFallback>
             </Avatar>
           </div>
         )}
