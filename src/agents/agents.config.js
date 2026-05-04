@@ -60,7 +60,24 @@ export const agentConfig = {
     'technical-accounting-lead': 'primary',     // Claude - accounting technical expertise
     'controls-governance-assessor': 'primary',  // Claude - control testing and governance
     'compliance-advisor': 'primary',            // Claude - UK regulatory/Companies House
-    'transactional-testing-agent': 'primary'    // Claude - detailed transaction testing
+    'transactional-testing-agent': 'primary',    // Claude - detailed transaction testing
+
+    // Foundational Agents (ISA lifecycle)
+    MaterialityAgent: 'primary',               // Claude - ISA 320/450 materiality calculations
+    SamplingAgent: 'primary',                  // Claude - ISA 530 statistical/judgmental sampling
+    GoingConcernAgent: 'primary',              // Claude - ISA 570 going concern assessment
+    DocumentationAgent_ISA230: 'primary',      // Claude - ISA 230 documentation completeness
+
+    // Operational Agents
+    DeadlineAgent: 'fallback',                 // Ollama - deadline tracking (fast, no reasoning needed)
+    EvidenceCorroborationAgent: 'primary',     // Claude - evidence quality assessment
+    EvidenceLinkerAgent: 'primary',            // Claude - cross-reference linking
+    HumanInterfaceAgent: 'fallback',           // Ollama - UI interaction routing
+    LearningAgent: 'primary',                  // Claude - pattern learning from past engagements
+    NarrativeWriterAgent: 'primary',           // Claude - ISA 230 narrative generation
+    OrchestratorAgent: 'primary',              // Claude - multi-agent coordination
+    QualityGuardianAgent: 'primary',           // Claude - ISA 220 quality management
+    RiskIntelligenceAgent: 'primary',          // Claude - emerging risk detection
   },
 
   // Fallback chain: try in order
