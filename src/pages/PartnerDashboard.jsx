@@ -8,6 +8,7 @@ import {
   CheckCircle2, XCircle, Clock, ShieldCheck, AlertTriangle,
   Calendar, PoundSterling, Users, TrendingUp, ArrowRight
 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const PARTNER_ENGAGEMENTS = [
   { id: "eng-001", name: "Acme Holdings Ltd", phase: "Execution", progress: 62, quality: 85, team: ["SK", "RM", "AW"], deadline: "2026-06-30", status: "on_track" },

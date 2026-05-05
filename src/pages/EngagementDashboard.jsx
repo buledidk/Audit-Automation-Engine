@@ -8,6 +8,7 @@ import {
   CheckCircle2, Clock, AlertTriangle, XCircle, ShieldCheck,
   ChevronRight, Users, FileText, BarChart3, Lock, Unlock
 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const PHASES = [
   { key: "A", label: "Acceptance", color: "#42A5F5" },
