@@ -4,6 +4,7 @@ import {
   ChevronLeft, Upload, FileText, Link2, Check, AlertTriangle,
   Shield, Eye, Pen, ClipboardCheck, AlertCircle
 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const FSLI_REGISTRY = {
   REV: { name: "Revenue", section: "FRS 102 §23", isa: "ISA 240, ISA 500, ISA 520" },

@@ -9,6 +9,7 @@ import {
   Download, FileText, Search, Eye
 } from "lucide-react";
 import { IPV_CONTROLS, ISA_620_CHECKLIST, IFRS13_HIERARCHY } from "@/services/ipvEngine";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const DEMO_PORTFOLIO = [
   { id: "sec1", name: "Vodafone Group PLC", type: "listed_security", ifrs13Level: 1, clientValue: 125000, independentValue: 124750, variancePct: 0.20, status: "agreed", ticker: "VOD.L", exchange: "LSE" },

@@ -4,6 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ScatterChart, Scatter,
   ZAxis, LineChart, Line, Legend, PieChart, Pie, Cell
 } from "recharts";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 // ─── Ratio Gauges Data ──────────────────────────────────────────────────────
 const RATIO_DATA = [

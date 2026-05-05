@@ -4,6 +4,7 @@ import {
   AlertCircle, Search, Filter, Send, Download, Shield,
   Eye, Lock, Trash2, HelpCircle
 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 
 // ─── PBC Request Statuses ───────────────────────────────────────────────────
 const STATUS_CONFIG = {

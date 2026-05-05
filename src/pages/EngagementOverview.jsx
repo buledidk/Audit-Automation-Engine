@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 import { useEngagement } from "@/context/EngagementContext";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const PHASE_LABELS = { A: "Acceptance", B: "Planning", C: "Execution", D: "Completion" };
 const PHASE_COLORS = { A: "#42A5F5", B: "#FFA726", C: "#CE93D8", D: "#66BB6A" };

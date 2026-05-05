@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { calculateMateriality } from "@/services/materialityEngine";
 import { createEngagement, setActiveEngagementId, createStorageEngine } from "../StorageEngine";
+import { Card, CardContent } from '@/components/ui/card';
 
 const ENTITY_TYPES = [
   { value: "micro", label: "Micro Entity", desc: "Turnover ≤ £1m, Assets ≤ £500k, Employees ≤ 10" },

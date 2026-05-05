@@ -4,6 +4,7 @@ import {
   ArrowRight, Lock, Brain, FileText, Calculator, Briefcase,
   ChevronRight, Star
 } from "lucide-react";
+import { Card, CardContent } from '@/components/ui/card';
 
 const FEATURES = [
   { icon: Brain, title: "35 AI Agents", desc: "Planning, risk, fraud detection, testing, completion — all ISA-compliant with confidence scoring" },

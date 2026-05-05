@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { listEngagements, createEngagement, setActiveEngagementId, createStorageEngine } from "../StorageEngine";
 import { DEMO_ENGAGEMENT } from "@/data/demoEngagement";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const STATUS_COLORS = {
   planning: "#42A5F5",

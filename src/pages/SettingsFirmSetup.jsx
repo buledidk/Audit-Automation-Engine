@@ -3,6 +3,7 @@ import {
   Building2, Shield, Users, CreditCard, Database, Key,
   CheckCircle2, XCircle, Plus, Pencil, Trash2, Save, Wifi, WifiOff
 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 
 const DEMO_FIRM = {
   name: "Indus Nexus Audit LLP",
