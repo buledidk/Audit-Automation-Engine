@@ -87,6 +87,11 @@ export const TOOL_DEFINITIONS = {
     description: 'Generate structured audit narrative for working paper conclusions per ISA 230',
     params: ['wpId', 'findings', 'conclusion', 'isaRefs'],
   },
+  partnerDecisionGate: {
+    name: 'partnerDecisionGate',
+    description: 'Record partner-level judgment on a significant audit matter. Captures decision (approve/escalate/refer), reasoning, ISA reference, and creates immutable audit trail entry.',
+    params: ['matter', 'decision', 'reasoning', 'partnerId', 'isaRef'],
+  },
 };
 
 // ─── TOOL IMPLEMENTATIONS ───────────────────────────────────────────
@@ -313,6 +318,8 @@ export function executeTool(toolName, params, engagementState) {
       return executeCalculateSampleSize(params);
     case 'generateNarrative':
       return executeGenerateNarrative(params);
+    case 'partnerDecisionGate':
+      return executePartnerDecisionGate(params);
     default:
       return { success: false, error: `Unknown tool: ${toolName}` };
   }
@@ -455,6 +462,46 @@ export function executeGenerateNarrative({ wpId, findings, conclusion, isaRefs }
       isaCompliant: true,
       isaRef: "ISA 230.8-11",
     },
+  };
+}
+
+// ─── PARTNER DECISION GATE ─────────────────────────────────────────
+
+export function executePartnerDecisionGate({ matter, decision, reasoning, partnerId, isaRef }) {
+  if (!matter || !decision) {
+    return { success: false, error: 'matter and decision are required' };
+  }
+
+  const validDecisions = ['APPROVE', 'ESCALATE', 'REFER_TO_EQCR', 'REQUEST_MORE_EVIDENCE', 'MODIFY_APPROACH'];
+  const normalised = (decision || '').toUpperCase();
+  if (!validDecisions.includes(normalised)) {
+    return { success: false, error: `Invalid decision. Must be one of: ${validDecisions.join(', ')}` };
+  }
+
+  const entry = {
+    id: `PD-${Date.now().toString(36).toUpperCase()}`,
+    timestamp: new Date().toISOString(),
+    matter,
+    decision: normalised,
+    reasoning: reasoning || 'No reasoning provided — partner must document rationale per ISA 220.18',
+    partnerId: partnerId || 'UNIDENTIFIED',
+    isaRef: isaRef || 'ISA 220.15',
+    immutable: true,
+    auditTrailType: 'PARTNER_DECISION',
+    followUp: normalised === 'APPROVE'
+      ? 'Decision recorded. Audit procedures may proceed as planned.'
+      : normalised === 'ESCALATE'
+        ? 'Escalated to firm technical department. Await technical consultation before proceeding.'
+        : normalised === 'REFER_TO_EQCR'
+          ? 'Referred to Engagement Quality Control Reviewer (EQCR) per ISQM 1. Await EQCR conclusion.'
+          : normalised === 'REQUEST_MORE_EVIDENCE'
+            ? 'Additional audit evidence requested. Team to obtain and resubmit for partner review.'
+            : 'Audit approach modification required. Update risk response and procedures before continuing.',
+  };
+
+  return {
+    success: true,
+    result: entry,
   };
 }
 

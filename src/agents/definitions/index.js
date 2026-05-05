@@ -26,6 +26,11 @@ import { samplingAgent } from './samplingAgent.js';
 import { goingConcernAgent } from './goingConcernAgent.js';
 import { documentationAgent } from './documentationAgent.js';
 
+// Advisory & quality agents (3)
+import { riskEscalationAgent } from './riskEscalationAgent.js';
+import { cfoAdvisoryAgent } from './cfoAdvisoryAgent.js';
+import { qualityDocumentationAgent } from './qualityDocumentationAgent.js';
+
 // Operational agents — previously unregistered (9)
 import { deadlineAgent } from './deadlineAgent.js';
 import { evidenceCorroborationAgent } from './evidenceCorroborationAgent.js';
@@ -60,6 +65,11 @@ export const AGENT_DEFINITIONS = {
   sampling: samplingAgent,
   goingConcern: goingConcernAgent,
   documentation: documentationAgent,
+
+  // ── Advisory & quality (3) ──────────────────────────────────────
+  riskEscalation: riskEscalationAgent,
+  cfoAdvisory: cfoAdvisoryAgent,
+  qualityDocumentation: qualityDocumentationAgent,
 
   // ── Operational agents (9) ─────────────────────────────────────
   deadline: deadlineAgent,
@@ -98,6 +108,12 @@ export const FOUNDATIONAL_AGENTS = {
   sampling: samplingAgent,
   goingConcern: goingConcernAgent,
   documentation: documentationAgent,
+};
+
+export const ADVISORY_AGENTS = {
+  riskEscalation: riskEscalationAgent,
+  cfoAdvisory: cfoAdvisoryAgent,
+  qualityDocumentation: qualityDocumentationAgent,
 };
 
 export const OPERATIONAL_AGENTS = {
