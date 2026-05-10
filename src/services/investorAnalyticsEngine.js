@@ -6,14 +6,15 @@
  * Integrates with: Claude API (web search), Companies House API, FTSE 250 data
  */
 
-import Anthropic from '@anthropic-ai/sdk';
 import { FinancialRatioEngine } from './financialRatioEngine.js';
 import { matchCompanyToSector, getSectorBenchmarks, FTSE_250_INDEX_STATS } from '../data/ftse250Data.js';
 import { COMPANIES_HOUSE_API } from '../data/standardsEncyclopedia/companiesHouse.js';
 
 export class InvestorAnalyticsEngine {
-  constructor(apiKey) {
-    this.apiKey = apiKey || import.meta.env?.VITE_CLAUDE_API_KEY;
+  // S1-00: removed an unused field that pulled the legacy Vite-prefixed Anthropic
+  // env var (which would have been baked into the client bundle), plus the dead
+  // SDK import. AI calls in this file flow through claudeClient.js.
+  constructor() {
     this.ratioEngine = new FinancialRatioEngine();
     this.cache = new Map();
     this.cacheTTL = 1800000; // 30 minutes

@@ -6,13 +6,11 @@
  * Model: Claude 3.5 Haiku (fast, real-time)
  */
 
-import Anthropic from "@anthropic-ai/sdk";
+import { AiProxyClient } from "../services/aiProxyClient.js";
 
 export class WorkflowAssistantAgent {
   constructor() {
-    this.client = new Anthropic({ dangerouslyAllowBrowser: true,
-      apiKey: process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY,
-    });
+    this.client = new AiProxyClient();
     this.model = "claude-haiku-4-5"; // Fast model for real-time
     this.cache = new Map();
     this.CACHE_TTL = 15 * 60 * 1000; // 15 minutes (shorter for dynamic content)

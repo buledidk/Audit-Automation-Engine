@@ -11,7 +11,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { Anthropic } from '@anthropic-ai/sdk';
+import { AiProxyClient } from '../services/aiProxyClient.js';
 
 const AuditAssistant = ({ engagementId, currentPhase, procedureName, onGuidanceProvided }) => {
   const [messages, setMessages] = useState([]);
@@ -21,11 +21,9 @@ const AuditAssistant = ({ engagementId, currentPhase, procedureName, onGuidanceP
   const messagesEndRef = useRef(null);
   const clientRef = useRef(null);
 
-  // Initialize Anthropic client
+  // Initialize AI client (server-side proxy)
   useEffect(() => {
-    clientRef.current = new Anthropic({ dangerouslyAllowBrowser: true,
-      apiKey: process.env.REACT_APP_ANTHROPIC_API_KEY,
-    });
+    clientRef.current = new AiProxyClient();
   }, []);
 
   // Auto-scroll to latest message

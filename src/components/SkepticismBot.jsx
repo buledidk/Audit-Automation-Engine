@@ -11,7 +11,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { Anthropic } from '@anthropic-ai/sdk';
+import { AiProxyClient } from '../services/aiProxyClient.js';
 
 const SkepticismBot = ({ assertion, materiality, confidence, evidenceReliability, onChallengeRaised }) => {
   const [challenges, setChallenges] = useState([]);
@@ -20,9 +20,7 @@ const SkepticismBot = ({ assertion, materiality, confidence, evidenceReliability
   const clientRef = useRef(null);
 
   useEffect(() => {
-    clientRef.current = new Anthropic({ dangerouslyAllowBrowser: true,
-      apiKey: process.env.REACT_APP_ANTHROPIC_API_KEY,
-    });
+    clientRef.current = new AiProxyClient();
   }, []);
 
   const buildSystemPrompt = () => {

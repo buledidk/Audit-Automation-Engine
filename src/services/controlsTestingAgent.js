@@ -9,7 +9,7 @@
  * ISA References: ISA 315, ISA 330.8, ISA 265
  */
 
-import { Anthropic } from "@anthropic-ai/sdk";
+import { AiProxyClient } from "./aiProxyClient.js";
 import { CONTROL_LIBRARY } from "../data/controlLibrary.js";
 
 // Map audit sections to transaction cycle keys in CONTROL_LIBRARY
@@ -36,9 +36,7 @@ const AUDIT_APPROACH = {
 
 class ControlsTestingAgent {
   constructor() {
-    this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY,
-    });
+    this.client = new AiProxyClient();
     this.model = "claude-sonnet-4-6";
     this.cache = new Map();
     this.CACHE_TTL = 60 * 60 * 1000; // 1 hour

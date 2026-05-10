@@ -151,8 +151,12 @@ Output requirements:
 
 class ClaudeClient {
   constructor() {
+    // S1-00 (phase 1): drop the VITE_CLAUDE_API_KEY browser-bundled fallback.
+    // Phase 2 will migrate this whole client to the AiProxyClient (`/api/ai`),
+    // which also requires extending the proxy to support batches. Until then,
+    // claudeClient.js must only be imported from server-side code paths.
     this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY,
+      apiKey: process.env.ANTHROPIC_API_KEY,
     });
     this.metrics = {
       totalRequests: 0,

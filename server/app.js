@@ -19,6 +19,7 @@ import rbacMiddleware from "../src/middleware/rbacMiddleware.js";
 import metricsRouter from "../src/api/metrics.js";
 import adminRouter from "../src/api/admin.js";
 import smartMethodologyRouter from "../src/api/smart-methodology-routes.js";
+import aiRouter from "../src/api/ai.js";
 import supabaseAdmin, { isServerSupabaseConfigured } from './supabaseServer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -812,6 +813,7 @@ app.post("/api/orchestrator/risk-assessment", authenticateToken, rbacMiddleware(
 app.use("/api/metrics", metricsRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/methodology", smartMethodologyRouter);
+app.use("/api/ai", authenticateToken, auditLog("AI_QUERY"), aiRouter);
 
 // ============================================================================
 // ERROR HANDLING

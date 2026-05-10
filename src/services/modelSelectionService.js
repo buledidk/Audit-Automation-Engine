@@ -7,7 +7,7 @@
  * Models: Claude 3.5 Sonnet (primary), GPT-4 (secondary), Llama 3 (fallback)
  */
 
-import Anthropic from "@anthropic-ai/sdk";
+import { AiProxyClient } from "./aiProxyClient.js";
 
 class ModelSelectionService {
   constructor() {
@@ -67,11 +67,9 @@ class ModelSelectionService {
     this.statusCacheTTL = 5 * 60 * 1000; // 5 minutes
     this.rateLimitTracking = new Map();
 
-    // Initialize model clients
+    // Initialize model clients (primary uses AiProxyClient — server-side /api/ai)
     this.clients = {
-      primary: process.env.ANTHROPIC_API_KEY
-        ? new Anthropic({ dangerouslyAllowBrowser: true, apiKey: process.env.ANTHROPIC_API_KEY })
-        : null,
+      primary: new AiProxyClient(),
       secondary: null, // OpenAI client initialized on demand
       fallback: null, // Ollama client initialized on demand
     };

@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-AuditEngine is a UK statutory audit automation platform. React 19 + Vite 8 frontend, Express 5 backend, Supabase PostgreSQL for cloud persistence, Claude API for AI-powered audit intelligence. Deployed to Vercel at auditengine.agency (multi-region CDG/LHR/SFO). 305 tests, 14 AI agents, ISA (UK) 200-810 coverage.
+AuditEngine is a UK statutory audit automation platform. React 19 + Vite 8 frontend, Express 5 backend, Supabase PostgreSQL for cloud persistence, Claude API for AI-powered audit intelligence (server-side `/api/ai` proxy — see `src/services/aiProxyClient.js`). Deployed to Vercel at auditengine.agency (multi-region CDG/LHR/SFO). 773 tests, 14 AI agents, ISA (UK) 200-810 coverage.
 
 ## Tech Stack
 
@@ -101,7 +101,7 @@ Two layers that do different things:
 
 - `npm run dev` — Start Vite dev server
 - `npm run build` — Production build
-- `npx vitest run` — Run all tests (219/219 must pass)
+- `npx vitest run` — Run all tests (773/773 must pass)
 - `npm run lint` — ESLint v9 flat config
 - `npm run agents` — CLI agent orchestration tool
 - `npm run agents:plan` / `agents:review` / `agents:security` / `agents:compliance` / `agents:docs` / `agents:test` / `agents:report` — Individual agent commands
@@ -112,7 +112,7 @@ Two layers that do different things:
 - **Structure:** `src/__tests__/unit/` (5 files), `src/__tests__/integration/` (5 files), `src/__tests__/agents/` (1 file), `src/__tests__/security/` (1 file)
 - **Setup:** `src/__tests__/setup.js` provides jsdom, @testing-library/jest-dom matchers, window.matchMedia mock
 - **Coverage gates:** lines 80%, functions 80%, branches 75%, statements 80% (vitest.config.js)
-- **Test count:** 305 tests must all pass before pushing
+- **Test count:** 773 tests must all pass before pushing
 - **Mocking:** Use `vi.fn()` and `vi.mock()`. Mock Supabase client, Anthropic SDK, and localStorage
 - **What to test:** Every new service needs unit tests. Agent definitions need integration tests verifying step outputs. Components need render tests minimum. Security-sensitive code needs dedicated security tests.
 
@@ -125,8 +125,8 @@ Two layers that do different things:
 
 ## Environment Variables
 
-- `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` — Supabase connection
-- `VITE_CLAUDE_API_KEY` — Anthropic API
+- `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` — Supabase connection (browser-safe; RLS-protected)
+- `ANTHROPIC_API_KEY` — Anthropic API, **server-side only**. Never use the `VITE_` prefix because Vite bakes `VITE_*` vars into the client bundle. Browser code calls AI via the `/api/ai` server proxy (see `src/services/aiProxyClient.js`). Sprint 1 S1-00 (May 2026) eliminated the previous browser-bundled fallback.
 - `VITE_APP_ENV`, `VITE_APP_VERSION` — App config
 - `.env.local`, `.env.production`, `.env.vercel` — gitignored, contain live secrets
 
@@ -144,7 +144,7 @@ Two layers that do different things:
 - Node 20.x required
 - Pushes to `main` auto-deploy to Vercel — only merge develop→main when ready to ship
 - Keep vercel.json clean (SPA rewrite, multi-region CDG/LHR/SFO)
-- Tests must stay at 305/305 before pushing
+- Tests must stay at 773/773 before pushing
 - Build must produce 0 errors
 
 ## Common Pitfalls
@@ -158,10 +158,11 @@ Two layers that do different things:
 
 ## Deploy Checklist
 
-1. All 305 tests pass (`npx vitest run`)
+1. All 773 tests pass (`npx vitest run`)
 2. Build succeeds with 0 errors (`npm run build`)
 3. Lint is clean (`npm run lint`)
-4. Vercel env vars set (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_CLAUDE_API_KEY)
+4. CI gate passes (`npm run check:no-browser-anthropic`) — no Anthropic SDK browser-exposure patterns
+5. Vercel env vars set (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, ANTHROPIC_API_KEY — note: NOT `VITE_CLAUDE_API_KEY`)
 5. vercel.json regions configured (cdg, lhr, sfo)
 6. `npm audit` — no critical vulnerabilities
 7. RLS policies deployed (`database/003_rls_policies.sql`)

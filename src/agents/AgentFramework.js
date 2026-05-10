@@ -5,9 +5,9 @@
  * Integrated with ModelSelectionService for multi-model support
  */
 
-import Anthropic from '@anthropic-ai/sdk';
 import { randomUUID } from 'crypto';
 import { EventEmitter } from 'events';
+import { AiProxyClient } from '../services/aiProxyClient.js';
 import { modelSelectionService } from '../services/modelSelectionService.js';
 
 export class AgentFramework extends EventEmitter {
@@ -22,10 +22,7 @@ export class AgentFramework extends EventEmitter {
       ...config
     };
 
-    this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
-      dangerouslyAllowBrowser: true
-    });
+    this.client = new AiProxyClient();
 
     this.agents = new Map();
     this.agentLog = [];

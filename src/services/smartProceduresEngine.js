@@ -9,7 +9,7 @@
  * ISA References: ISA 330, ISA 315, ISA 240, ISA 500
  */
 
-import { Anthropic } from "@anthropic-ai/sdk";
+import { AiProxyClient } from "./aiProxyClient.js";
 import auditSectionsService from "./auditSectionsService.js";
 import controlsTestingAgent from "./controlsTestingAgent.js";
 import substantiveProceduresAgent from "./substantiveProceduresAgent.js";
@@ -27,9 +27,7 @@ const PIPELINE_STEPS = {
 
 class SmartProceduresEngine {
   constructor() {
-    this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY,
-    });
+    this.client = new AiProxyClient();
     this.model = "claude-sonnet-4-6";
     this.executions = new Map(); // Store completed executions
   }

@@ -11,7 +11,7 @@
  */
 
 // Import all agents and engines
-import Anthropic from "@anthropic-ai/sdk";
+import { AiProxyClient } from "./aiProxyClient.js";
 import { AIProcedureEngine } from "./aiProcedureEngine.js";
 import { ExceptionPredictionEngine } from "./exceptionPredictionEngine.js";
 import { JurisdictionEngine } from "./jurisdictionEngine.js";
@@ -364,9 +364,7 @@ class AIAgentOrchestrator {
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       throw new Error("AI_CHAT requires a non-empty messages array");
     }
-    const client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY,
-    });
+    const client = new AiProxyClient();
     const response = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 1500,

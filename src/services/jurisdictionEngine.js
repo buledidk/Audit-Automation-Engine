@@ -7,11 +7,11 @@
  * COPY & PASTE READY - Production Grade
  */
 
-import Anthropic from "@anthropic-ai/sdk";
+import { AiProxyClient } from "./aiProxyClient.js";
 
 export class JurisdictionEngine {
-  constructor(apiKey = process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY) {
-    this.client = new Anthropic({ dangerouslyAllowBrowser: true, apiKey });
+  constructor() {
+    this.client = new AiProxyClient();
     this.model = "claude-sonnet-4-6";
 
     // Jurisdiction Configuration - UK/EU FOCUS

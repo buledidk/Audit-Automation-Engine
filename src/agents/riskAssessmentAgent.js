@@ -6,13 +6,11 @@
  * Model: Claude 3.5 Sonnet
  */
 
-import Anthropic from "@anthropic-ai/sdk";
+import { AiProxyClient } from "../services/aiProxyClient.js";
 
 export class RiskAssessmentAgent {
   constructor() {
-    this.client = new Anthropic({ dangerouslyAllowBrowser: true,
-      apiKey: process.env.ANTHROPIC_API_KEY || process.env.VITE_CLAUDE_API_KEY,
-    });
+    this.client = new AiProxyClient();
     this.model = "claude-sonnet-4-6";
     this.cache = new Map();
     this.CACHE_TTL = 60 * 60 * 1000; // 1 hour

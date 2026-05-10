@@ -4,13 +4,11 @@
  * Automatically populates audit procedures, findings, and compliance mappings
  */
 
-import Anthropic from '@anthropic-ai/sdk';
+import { AiProxyClient } from './aiProxyClient.js';
 
 export class AIExtractionService {
   constructor() {
-    this.client = new Anthropic({ dangerouslyAllowBrowser: true,
-      apiKey: process.env.ANTHROPIC_API_KEY
-    });
+    this.client = new AiProxyClient();
     this.extractionHistory = [];
     this.eventListeners = [];
   }
