@@ -34,7 +34,7 @@ export async function initializeAuditTeam() {
 
   // Create the agent framework
   const framework = new AgentFramework({
-    model: 'claude-opus-4-6',
+    model: 'claude-opus-4-7',
     maxTokens: 8000,
     temperature: 0.3,
     timeout: 30000

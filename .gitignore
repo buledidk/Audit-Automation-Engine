@@ -51,6 +51,8 @@ coverage/
 
 # Claude Code local settings
 .claude/settings.local.json
+.claude/worktrees/
+.claude/DK_CAREER_CONTEXT.md
 .vercel
 
 # Merged reference folders (separate repos/assets, not part of this repo's source)

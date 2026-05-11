@@ -14,7 +14,7 @@ export class AgentFramework extends EventEmitter {
   constructor(config = {}) {
     super();
     this.config = {
-      model: config.model || 'claude-opus-4-6',
+      model: config.model || 'claude-opus-4-7',
       maxTokens: config.maxTokens || 4096,
       temperature: config.temperature || 0.7,
       timeout: config.timeout || 30000,
@@ -103,8 +103,8 @@ export class AgentFramework extends EventEmitter {
           system: systemPrompt,
           messages: [{ role: 'user', content: userMessage }]
         };
-        // Enable adaptive thinking for Opus 4.6 and Sonnet 4.6
-        if (model === 'claude-opus-4-6' || model === 'claude-sonnet-4-6') {
+        // Enable adaptive thinking for Opus 4.7 and Sonnet 4.6
+        if (model === 'claude-opus-4-7' || model === 'claude-sonnet-4-6') {
           params.thinking = { type: 'adaptive' };
         }
         return params;

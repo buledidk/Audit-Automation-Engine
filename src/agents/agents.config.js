@@ -98,37 +98,37 @@ export const agentConfig = {
   // Agent-specific configurations
   agents: {
     supervisor: {
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-7',
       capabilities: ['task-coordination', 'agent-management', 'workflow-orchestration'],
       responseFormat: 'structured',
       requiresApproval: true
     },
     codeAnalyst: {
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-7',
       capabilities: ['code-review', 'security-analysis', 'performance-analysis'],
       focusAreas: ['security', 'performance', 'maintainability', 'error-handling'],
       maxCodeSize: 50000
     },
     security: {
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-7',
       capabilities: ['vulnerability-scanning', 'encryption-review', 'compliance-check'],
       frameworks: ['OWASP Top 10', 'ISO 27001', 'CWE'],
       riskScoring: true
     },
     documentation: {
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-7',
       capabilities: ['documentation-generation', 'api-documentation', 'technical-writing'],
       formats: ['markdown', 'html', 'pdf'],
       includeExamples: true
     },
     compliance: {
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-7',
       capabilities: ['gdpr-audit', 'data-protection-review', 'compliance-reporting'],
       frameworks: ['GDPR', 'UK FCA', 'ICO', 'ISA', 'ISO 27001'],
       requiresAuditTrail: true
     },
     testing: {
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-7',
       capabilities: ['test-strategy', 'test-design', 'coverage-analysis'],
       minCoverageTarget: 80,
       includeSecurityTests: true
@@ -139,7 +139,7 @@ export const agentConfig = {
     // ═══════════════════════════════════════════════════════════════════════════
 
     'technical-accounting-lead': {
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-7',
       capabilities: [
         'ifrs-16-leases',
         'ifrs-15-revenue',
@@ -173,7 +173,7 @@ export const agentConfig = {
     },
 
     'controls-governance-assessor': {
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-7',
       capabilities: [
         'coso-internal-control-framework',
         'control-environment-assessment',
@@ -209,7 +209,7 @@ export const agentConfig = {
     },
 
     'compliance-advisor': {
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-7',
       capabilities: [
         'companies-house-2006-act',
         'schedule-1-presentation',
@@ -248,7 +248,7 @@ export const agentConfig = {
     },
 
     'transactional-testing-agent': {
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-7',
       capabilities: [
         'substantive-procedures',
         'transaction-testing',

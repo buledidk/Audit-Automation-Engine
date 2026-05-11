@@ -75,7 +75,7 @@ import {
 
 // Initialize framework
 const framework = new AgentFramework({
-  model: 'claude-opus-4-6',
+  model: 'claude-opus-4-7',
   maxTokens: 8000,
   temperature: 0.3,
   timeout: 30000
@@ -160,7 +160,7 @@ OPENAI_API_KEY=sk-... (optional, for fallback)
 OLLAMA_URL=http://localhost:11434 (optional, for local fallback)
 
 # Agent Configuration
-AGENT_MODEL=claude-opus-4-6
+AGENT_MODEL=claude-opus-4-7
 AGENT_MAX_TOKENS=8000
 AGENT_TEMPERATURE=0.3
 AGENT_TIMEOUT=30000

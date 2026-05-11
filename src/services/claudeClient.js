@@ -1,14 +1,14 @@
 /**
  * Centralized Claude API Client
  * Provides unified access to Anthropic's Claude API with:
- * - Opus 4.6 adaptive thinking for deep reasoning
+ * - Opus 4.7 adaptive thinking for deep reasoning
  * - Sonnet 4.6 for standard analysis tasks
  * - Haiku 4.5 for fast, real-time responses
  * - Batch API for bulk procedure processing (50% cheaper)
  * - Few-shot training prompts for audit domain expertise
  * - Unified response parsing (handles thinking + text blocks)
  *
- * @version 2.0.0 — Opus 4.6 with adaptive thinking
+ * @version 2.0.0 — Opus 4.7 with adaptive thinking
  */
 
 import Anthropic from "@anthropic-ai/sdk";
@@ -19,7 +19,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 export const MODELS = {
   /** Deep reasoning — complex audit judgments, risk assessment, report generation */
-  OPUS: "claude-opus-4-6",
+  OPUS: "claude-opus-4-7",
   /** Standard analysis — procedures, compliance, evidence evaluation */
   SONNET: "claude-sonnet-4-6",
   /** Fast responses — real-time workflow guidance, quick questions */

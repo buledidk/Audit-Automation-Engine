@@ -331,7 +331,7 @@ Edit `agents.config.js` to customize:
 ### Framework Settings
 ```javascript
 {
-  model: 'claude-opus-4-6',
+  model: 'claude-opus-4-7',
   maxTokens: 4096,
   temperature: 0.7,
   timeout: 30000,

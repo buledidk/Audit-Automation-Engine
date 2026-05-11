@@ -4,12 +4,19 @@
 
 AuditEngine is a UK statutory audit automation platform. React 19 + Vite 8 frontend, Express 5 backend, Supabase PostgreSQL for cloud persistence, Claude API for AI-powered audit intelligence (server-side `/api/ai` proxy — see `src/services/aiProxyClient.js`). Deployed to Vercel at auditengine.agency (multi-region CDG/LHR/SFO). 773 tests, 14 AI agents, ISA (UK) 200-810 coverage.
 
+## DK career context (load once per session)
+
+For DK identity, sector depth, technical depth and operating rules, load:
+`/Users/dkbuledi/audit-engine/.claude/DK_CAREER_CONTEXT.md` (symlink to the dk-empire master copy at `/Users/dkbuledi/dk-empire/.claude/DK_CAREER_CONTEXT.md`).
+
+Single source of truth for all agents in this estate. Update at the source; agents inherit on next invocation.
+
 ## Tech Stack
 
 - **Frontend:** React 19, Vite 8, React Router 7, JSX (not TypeScript)
 - **Backend:** Express 5, Socket.io 4.8
 - **Database:** Supabase PostgreSQL (offline-first, localStorage primary)
-- **AI:** Anthropic Claude Sonnet 4.6 (primary), Claude Opus 4.6 (agents), Haiku 4.5 (fast), OpenAI GPT-4 (fallback), Ollama (local)
+- **AI:** Anthropic Claude Sonnet 4.6 (primary), Claude Opus 4.7 (agents), Haiku 4.5 (fast), OpenAI GPT-4 (fallback), Ollama (local)
 - **Export:** docx, exceljs, xlsx, pdfkit, pdfmake
 - **Testing:** Vitest 4 with jsdom, Testing Library
 - **Deploy:** Vercel (auditengine.agency), Docker, GitHub Actions

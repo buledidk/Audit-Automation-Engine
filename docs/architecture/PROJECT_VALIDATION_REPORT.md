@@ -177,7 +177,7 @@ Source Code → ESLint (0 errors) → Vite → Production Build (82 modules) →
 ### Claude Code Settings
 ✅ **Status**: Properly configured in `.claude/settings.json`
 - Permissions: Read, Write, Edit, Glob, Grep, npm/node/git Bash commands
-- Model: claude-opus-4-6
+- Model: claude-opus-4-7
 - Thinking: Enabled
 - Git Ignore: Respected
 

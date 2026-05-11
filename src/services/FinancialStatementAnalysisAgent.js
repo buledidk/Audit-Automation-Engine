@@ -303,7 +303,7 @@ export class FinancialStatementAnalysisAgent {
     const batchRequests = items.map(item => ({
       id: `fs_${item.id}`,
       prompt: `Analyze these financial statement items for ${item.type}:\n${JSON.stringify(item.data)}`,
-      model: ['estimates', 'compliance', 'risk'].includes(item.type) ? 'claude-opus-4-6' : 'claude-sonnet-4-6',
+      model: ['estimates', 'compliance', 'risk'].includes(item.type) ? 'claude-opus-4-7' : 'claude-sonnet-4-6',
       maxTokens: 4096,
       system: 'You are a financial statement analysis specialist. Return valid JSON only.',
     }));
