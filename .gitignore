@@ -53,6 +53,9 @@ coverage/
 .claude/settings.local.json
 .vercel
 
+# AuditEngine launcher runtime state (PIDs + logs)
+.auditengine/
+
 # Merged reference folders (separate repos/assets, not part of this repo's source)
 /automation-engine/
 /skills/
