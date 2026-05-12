@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Top-level shim → scripts/launcher/launch.sh
+set -e
+exec "$(dirname "$0")/scripts/launcher/launch.sh" "$@"

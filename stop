@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Top-level shim → scripts/launcher/stop.sh
+set -e
+exec "$(dirname "$0")/scripts/launcher/stop.sh" "$@"
