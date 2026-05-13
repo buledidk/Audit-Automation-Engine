@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // Agent Definitions Index — Registry of all available agents
-// 26 agents across 4 categories: Core, Analytical, Operational, Foundational
+// 31 agents across 5 categories: Core, Analytical, Foundational, Advisory, Finance Ops, Operational
 // ═══════════════════════════════════════════════════════════════
 
 // Core audit workflow agents (5)
@@ -30,6 +30,13 @@ import { documentationAgent } from './documentationAgent.js';
 import { riskEscalationAgent } from './riskEscalationAgent.js';
 import { cfoAdvisoryAgent } from './cfoAdvisoryAgent.js';
 import { qualityDocumentationAgent } from './qualityDocumentationAgent.js';
+
+// Finance operations agents (5) — Anthropic Financial Services integration
+import { glReconciliationAgent } from './glReconciliationAgent.js';
+import { statementAuditAgent } from './statementAuditAgent.js';
+import { monthEndCloseAgent } from './monthEndCloseAgent.js';
+import { valuationReviewAgent } from './valuationReviewAgent.js';
+import { earningsReviewAgent } from './earningsReviewAgent.js';
 
 // Operational agents — previously unregistered (9)
 import { deadlineAgent } from './deadlineAgent.js';
@@ -70,6 +77,13 @@ export const AGENT_DEFINITIONS = {
   riskEscalation: riskEscalationAgent,
   cfoAdvisory: cfoAdvisoryAgent,
   qualityDocumentation: qualityDocumentationAgent,
+
+  // ── Finance operations agents (5) ───────────────────────────────
+  glReconciliation: glReconciliationAgent,
+  statementAudit: statementAuditAgent,
+  monthEndClose: monthEndCloseAgent,
+  valuationReview: valuationReviewAgent,
+  earningsReview: earningsReviewAgent,
 
   // ── Operational agents (9) ─────────────────────────────────────
   deadline: deadlineAgent,
@@ -114,6 +128,14 @@ export const ADVISORY_AGENTS = {
   riskEscalation: riskEscalationAgent,
   cfoAdvisory: cfoAdvisoryAgent,
   qualityDocumentation: qualityDocumentationAgent,
+};
+
+export const FINANCE_OPS_AGENTS = {
+  glReconciliation: glReconciliationAgent,
+  statementAudit: statementAuditAgent,
+  monthEndClose: monthEndCloseAgent,
+  valuationReview: valuationReviewAgent,
+  earningsReview: earningsReviewAgent,
 };
 
 export const OPERATIONAL_AGENTS = {

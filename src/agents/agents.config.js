@@ -78,6 +78,13 @@ export const agentConfig = {
     OrchestratorAgent: 'primary',              // Claude - multi-agent coordination
     QualityGuardianAgent: 'primary',           // Claude - ISA 220 quality management
     RiskIntelligenceAgent: 'primary',          // Claude - emerging risk detection
+
+    // Finance Operations Agents (Anthropic Financial Services integration)
+    GLReconciliationAgent: 'primary',            // Claude - GL recon, break tracing
+    StatementAuditAgent: 'primary',              // Claude - financial statement review
+    MonthEndCloseAgent: 'primary',               // Claude - close checklist, accruals, JE validation
+    ValuationReviewAgent: 'primary',             // Claude - ISA 540 valuation review
+    EarningsReviewAgent: 'primary',              // Claude - ISA 520 analytical procedures
   },
 
   // Fallback chain: try in order

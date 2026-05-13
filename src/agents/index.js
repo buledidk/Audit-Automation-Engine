@@ -30,6 +30,16 @@ export { AgentCLI } from './AgentCLI.js';
 // Default export
 export { default as AgentIntegration } from './AgentIntegration.js';
 
+// Finance Operations Agents (5 — Anthropic Financial Services)
+export { FINANCE_OPS_AGENTS } from './definitions/index.js';
+export {
+  glReconciliationAgent,
+  statementAuditAgent,
+  monthEndCloseAgent,
+  valuationReviewAgent,
+  earningsReviewAgent,
+} from './definitions/index.js';
+
 // Operational Agents (9 new agents)
 export { OPERATIONAL_AGENTS } from './definitions/index.js';
 export {
